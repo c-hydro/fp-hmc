@@ -1,167 +1,176 @@
-===
-hmc
-===
-
-.. image:: https://travis-ci.org/TUW-GEO/ascat.svg?branch=master
-    :target: https://travis-ci.org/TUW-GEO/ascat
-
-.. image:: https://coveralls.io/repos/github/TUW-GEO/ascat/badge.svg?branch=master
-   :target: https://coveralls.io/github/TUW-GEO/ascat?branch=master
-
-.. image:: https://badge.fury.io/py/ascat.svg
-    :target: http://badge.fury.io/py/ascat
-
-.. image:: https://zenodo.org/badge/12761/TUW-GEO/ascat.svg
-   :target: https://zenodo.org/badge/latestdoi/12761/TUW-GEO/ascat
-
-.. image:: https://readthedocs.org/projects/ascat/badge/?version=latest
-   :target: http://ascat.readthedocs.org/
-
-Read and convert data acquired by ASCAT on-board the series of Metop satellites. Written in Python.
-
-Works great in combination with `pytesmo <https://github.com/TUW-GEO/pytesmo>`_.
-
-Citation
-========
-
-If you use the software in a publication then please cite it using the Zenodo DOI:
-
-.. image:: https://zenodo.org/badge/12761/TUW-GEO/ascat.svg
-   :target: https://zenodo.org/badge/latestdoi/12761/TUW-GEO/ascat
-
-Supported Products
-==================
-
-This gives a short overview over the supported products. Please see the documentation for detailed examples of how to work with a product.
-
-Read ASCAT data from different sources into a common format supported by pytesmo.
-
-Time Series Products
---------------------
-
-* Metop ASCAT Surface Soil Moisture (SSM) Climate Data Record (CDR) in time series format
-
-  Available in netCDF format from `H SAF <http://hsaf.meteoam.it/soil-moisture.php>`_ (H25, H108-H112)
+.. _license_label: LICENSE.rst
 
 
-* CGLS SWI(Soil Water Index) Time Series (SWI_TS)
+Flood PROOFS Modelling System
+=============================
 
-  Available from the `Copernicus Global Land Service (CGLS) <http://land.copernicus.eu/global/products/swi>`_ 
+Welcome to the **FloodPROOFS Modelling System** GitHub repository. This is a Modelling System supported by the Italian Civil Department (DPC) and is used for preventing and reducing hydrogeological risk.
 
+Background
+**********
 
-* ASCAT SWI(Soil Water Index) Time Series
+**Flood-PROOFS** (Flood PRObabilistic Operative Forecasting System) is a system designed by CIMA Research Foundation to support decision makers during the operational phases of flood forecasting and monitoring. The goal is to protect the population and infrastructure from damage caused by intense precipitation events.
 
-  Available in binary format from `TU Wien <http://rs.geo.tuwien.ac.at/products/>`_
+The Flood-PROOFS system manages the data flow deriving from various modelling tools developed by the CIMA Research Foundation to return a quantitative assessment of the effects that precipitation can have on the territory in terms of flow and probability to overcome the critical thresholds in the different basins. 
 
-Model Run
----------
-
-General example usage: 
-python HMC_Model_RUN_Manager.py -settingfile settingsfile.config -logfile logfile.config -time yyyymmddHHMM
-
-Example:
-python HMC_Model_RUN_Manager.py
--settingfile /home/fabio/Desktop/PyCharm_Workspace_Python2/HMC-2.0.6/config/config_algorithms/hmc_model_run-manager_algorithm_local_history_ws-db.config
--logfile /home/fabio/Desktop/PyCharm_Workspace_Python2/HMC-2.0.6/config/config_logs/hmc_model_run-manager_logging_local_history_ws-db.config
--time 201610200000
-
-Libraries
-~~~~~~~~~
-
-References external libraries:
-numpy-scipy:        <http://www.scipy.org/SciPy>
-python-netcdf:      <http://netcdf4-python.googlecode.com/svn/trunk/docs/netCDF4-module.html>
-python-gdal:        <https://pypi.python.org/pypi/GDAL/>
+The system has been operating since 2008 at various Functional Centers (Autonomous Region of Valle d'Aosta and Marche) where it is used for the issue of hydro-meteorological warnings for civil protection purposes. At the technical offices of the Valle d'Aosta Water Company (CVA) it is instead useful to study and implement strategies to mitigate flood events or to secure facilities in the event of flooding.
 
 
-`H SAF <http://hsaf.meteoam.it/soil-moisture.php>`_ provides several different image products:
+Components
+**********
 
-* H16 - SSM ASCAT-B NRT R : Metop-B ASCAT soil moisture 12.5km sampling NRT
-* H103 - SSM ASCAT-B NRT O : Metop-B ASCAT soil moisture 25km sampling NRT
-* H101 - SSM ASCAT-A NRT R : Metop-A ASCAT soil moisture 12.5km sampling NRT
-* H102 - SSM ASCAT-A NRT O : Metop-A ASCAT soil moisture 25km sampling NRT
-* SM OBS 2 - H08 - Small scale surface soil moisture by radar scatterometer in BUFR format over Europe
-* SM DAS 2 - H14 - Profile index in the roots region by scatterometer data assimilation in GRIB format, global
+The Flood-PROOFS forecasting chain consists in three different parts, which are summarized as follows:
+    • **Processing**: tools to organize input and output datasets written in python3 language usually named **Hydrological Data Engines [hyde]** package;
+    • **Simulation**: tools to set and run Hydrological Model Continuum (HMC) written both in python3 and fortran programming language usually named **Hydrological Model Continuum [hmc]** package;
+    • **Publishing and Visualization**: tools to control, view and analyze results written both in python3 and R programming language usually named as **Hydrological Analysis tools [hat]** package;
+    • **Labs**: laboratories for running components of the modelling system, for trainings and educational use;
+    • **Utilities**: common functionality required by the previous components.
 
-The products H16, H103, H101, H102 come in the same BUFR format. Since the default filenames are slightly different the following readers should be used:
+All codes and datasets are freely available and users can be get them from our github repository [1_].
 
-* H16 - :py:class:`ascat.h_saf.H16img`
-* H101 - :py:class:`ascat.h_saf.H101img`
-* H102 - :py:class:`ascat.h_saf.H102img`
-* H103 - :py:class:`ascat.h_saf.H103img`
+Prerequisites
+*************
 
-They are available after registration from the `H SAF Website <http://hsaf.meteoam.it/soil-moisture.php>`_
+In order to use the Flood-PROOFS forecasting chain, users are strongly raccomanted to control if the following characteristics, libraries and packages are available and correctly installed on their machine.
 
-The H07 (SM OBS 1) is discontinued and replaced by H101, H102, H16 and H103.
+Usually, Flood-PROOFS libraries are installed on **Linux Debian/Ubuntu 64bit** environment and all libraries, packages and applications must be compilled and/or installed in according with this operative system.
 
-* H07 - :py:class:`ascat.h_saf.H07img`
+All codes, subroutines and scripts are developed using both **Python** (version 3 and greater) [2_] and **Fortran** (version 2003 and greater) [3_]. QGIS geographic information system (version 2.18 and greater) [4_] is used to develop tools to organize, create and control static and dynamic datasets. R (version 3.4.4 and greater) [5_] is used to perform statistical analysis.
 
-EUMETSAT
-~~~~~~~~
+The libraries and the packages are mainly divided in four categories:
 
-EUMETSAT provides ASCAT Level 1 and Level 2 data among others through the `EUMETSAT Data Centre <http://www.eumetsat.int/website/home/Data/DataDelivery/EUMETSATDataCentre/index.html>`_. At the moment this package supports the following products:
+    • python3 packages and applications;
+    • R packages and applications;
+    • fortran libraries;
+    • other software and applications (Jupyter Notebook, QGIS, Panoply, cdo, ncview ...)
 
-* ASCAT Soil Moisture at 12.5 km Swath Grid - Metop in BUFR format
-  :py:class:`ascat.eumetsat.AscatAL2Ssm125` and :py:class:`ascat.eumetsat.AscatBL2Ssm125`.
-* ASCAT Soil Moisture at 12.5 km Swath Grid - Metop in BUFR format - 3 Minute PDU files.
-  :py:class:`ascat.eumetsat.AscatAL2Ssm125PDU` and :py:class:`ascat.eumetsat.AscatBL2Ssm125PDU`.
-  For reading half orbits use :py:class:`ascat.eumetsat.AscatAL2Ssm125PDUChunked`
-  and :py:class:`ascat.eumetsat.AscatBL2Ssm125PDUChunked`
-* ASCAT Soil Moisture at 12.5 km Swath Grid - Metop in netCDF format
-  :py:class:`ascat.eumetsat.AscatAL2Ssm125Nc` and :py:class:`ascat.eumetsat.AscatBL2Ssm125Nc`.
-* ASCAT Soil Moisture at 25.0 km Swath Grid - Metop in BUFR format
-  :py:class:`ascat.eumetsat.AscatAL2Ssm250` and :py:class:`ascat.eumetsat.AscatBL2Ssm250`.
-* ASCAT Soil Moisture at 25.0 km Swath Grid - Metop in BUFR format - 3 Minute PDU files.
-  :py:class:`ascat.eumetsat.AscatAL2Ssm250PDU` and :py:class:`ascat.eumetsat.AscatBL2Ssm250PDU`.
-  For reading half orbits use :py:class:`ascat.eumetsat.AscatAL2Ssm250PDUChunked`
-  and :py:class:`ascat.eumetsat.AscatBL2Ssm250PDUChunked`
-* ASCAT Soil Moisture at 25.0 km Swath Grid - Metop in netCDF format
-  :py:class:`ascat.eumetsat.AscatAL2Ssm250Nc` and :py:class:`ascat.eumetsat.AscatBL2Ssm250Nc`.
+Python3 libraries
+-----------------
 
-Installation
-============
+The python3 standard library is not sufficient to correctly install all Flood-PROOFS applications; for this reason some extra libraries are needed to guarantee all functionalities. 
+To install all python3 libraries a bash script named “setup_fp_env_python.sh” is provided [6_]; basically, the script calls a **miniconda** [7_] installation that allow to get all needed libraries and install them into “$HOME/user/fp_libs_python/” folder. During the installation, a virtual environment named “fp_env_python” is created too.
+Once all libraries are correctly installed and configurated, to activate “fp_env_python” by command-line is necessary to execute the following:
 
-The packages you have to install depend on the features you want to use. The H SAF soil moisture NRT products are disseminated in BUFR (H16, H103, H101, H102, H08) or GRIB (H14) format. So to read them you will have to install the appropriate packages which will be explained shortly. Unfortunately neither BUFR nor GRIB readers work on Windows so if you need these formats then Linux or OS X are your only options.
+.. code-block:: bash
+    
+   >> export PATH="$HOME/fp_libs_python/bin:$PATH"
+   >> source activate fp_env_python
 
-For installation we recommend `Miniconda <http://conda.pydata.org/miniconda.html>`_. So please install it according to the official installation instructions. As soon as you have the ``conda`` command in your shell you can continue.
+By default, the “fp_env_python” environment is shown in parentheses () or brackets [] at the beginning of your command prompt:
 
-The following script will download and install all the needed packages.
+.. code-block:: bash
 
-.. code::
+   (fp_env_python) >> 
 
-    conda create -q -n ascat python=2 numpy pandas netCDF4 pytest pip pyproj
-    source activate ascat
-    conda install -c conda-forge pybufr-ecmwf # for reading BUFR files
-    conda install -c conda-forge pygrib=2.0.1 # for reading GRIB files
-    pip install ascat
+Activating the virtual enviroment permits to use a correct configuration andall applications and scripts of Flood-PROOFS forecasting chain will work properly.
 
-This script should work on Windows, Linux or OSX but on Windows you will get errors for the installation commands of pybufr-ecmwf and pygrib.
+Fortran libraries
+-----------------
 
+Hydrological model Continuum needs netcdf4 library to read input provided by other preprocessing tools and to write output for external applications (such as Panoply, cdo, ncview ...).
+To set and compile netcdf4 library a bash script named “setup_fp_env_system.sh” is provided. 
+Script downloads **zlib** [8_], **hdf5** [9_] and **netcdf4** [10_] libraries from their repositories; after downloading source compressed archives, script creates a folder in “$HOME/user/fp_libs_system/” where all libraries will be compilled and installed. During the installation, a environment file named “fp_env_system” is created for saving LD_LIBRARY_PATH (for native code libraries) and PATH (for executables) references of installed libraries.
+
+HMC libraries
+-------------
+After preparing all necessary libraries and environmental settings, source files of HMC must be compiled to run properly [11_]; usually, sources are compiled using **GNU compilers** (such as gcc and gfortran) that have to be installed on user’s machine. To compile and optimize HMC codes a bash file named “setup_fp_env_hmc.sh” is provided. Using this setup file, user will have to answer some questions about how to compile HMC codes.
+Usually, to build Continuum for production use, options have to set as follows:
+
+    • set compiler type [1] for using GNU/GFortran compiler;
+    • set optimization option [2] for using production mode; 
+    • set profiler option [2] for skipping profiling used to control model performances;
+    • set NetCDF4 library [1] for using NetCDF4 input and output files format.
+
+
+Potential Users
+***************
+The FloodPROOFS Modelling System has been released to enable different applications (for example local/regional scenario assessment) and further development by external users.
+
+Potential users are anticipated to predominately be interested in the ability to run the system with local data (including scenario modelling) and to modify the system with new capabilities. The potential collaborators have expressed a range of potential goals for their use of the modelling system, including performing comparisons with existing models, tailoring the hydrological performance to specific land uses and cropping types.
+
+Broadly speaking, there are four potential user categories of the FloodPROOFS modelling system:
+
+    • **Data user**: who accessing the model outputs through the Bureau's website.
+    • **Case study user**: who work to evaluate his/her case using data over a selected time period.
+    • **Applying users**: who would primarily be interested in applying the current model to a region of interest using localised and/or scenario data where available.
+    • **Contributor users**: who will extend the capabilities of the model with new research and coding (modify the system with new capabilities)
+
+It is expected that the majority of early adopters of the FloodPROOFS modelling system will be Applying users looking to apply the system with local data/scenarios, with more Contributor users adopting the system as it becomes well known and established.
 
 Contribute
-==========
+**********
 
 We are happy if you want to contribute. Please raise an issue explaining what is missing or if you find a bug. We will also gladly accept pull requests against our master branch for new features or bug fixes.
 
 Development setup
 -----------------
 
-For Development we also recommend a ``conda`` environment. You can create one including test dependencies and debugger by running ``conda env create -f environment.yml``. This will create a new ``ascat-dev`` environment which you can activate by using ``source activate ascat-dev``.
+For Development we also recommend a "conda" environment. You can create one including test dependencies and debugger by running 
+
+.. code-block:: bash
+
+   >> conda env create -n fp_env_dev -c <list_of_packages>
+
+or alternatively using a file:
+
+.. code-block:: bash
+
+   >> "conda env create -n fp_env_dev  -f <file_of_packages.yml> 
+
+This will create a new "fp_env_dev" environment which you can activate by using "source activate fp_env_dev".
 
 Guidelines
 ----------
 
 If you want to contribute please follow these steps:
+    • Fork the one of the Flood-PROOFS repositories to your account
+    • Clone the repository, make sure you use "git clone --recursive" to also get the test data repository.
+    • make a new feature branch from the repository master branch
+    • Add your feature
+    • Please include tests for your contributions in one of the test directories. We use py.test so a simple function called "test_my_feature" is enough
+    • submit a pull request to our master branch
 
-- Fork the ascat repository to your account
-- Clone the repository, make sure you use ``git clone --recursive`` to also get the test data repository.
-- make a new feature branch from the ascat master branch
-- Add your feature
-- Please include tests for your contributions in one of the test directories. We use py.test so a simple function called test_my_feature is enough
-- submit a pull request to our master branch
+Authors
+*******
 
-Note
-====
+    .. include:: AUTHORS.rst
+        :start-line: 4
+        :tab-width: 8
 
-This project has been set up using PyScaffold 2.5.6. For details and usage
-information on PyScaffold see http://pyscaffold.readthedocs.org/.
+License
+*******
+
+By accessing or using the FloodPROOFS modelling system, code, data or documentation, you agree to be bound by the FloodPROOFS license available. See the license_ for details. 
+
+Changelog
+*********
+
+All notable changes and bugs fixing to this project will be documented in this changelog_ file.
+
+References
+**********
+| [1_] CIMA Hydrology and Hydraulics GitHub Repository
+| [2_] Python programming language
+| [3_] Fortran programming language
+| [4_] QGIS project
+| [5_] R programming language
+| [6_] FloodPROOFS virtual environment tools
+| [7_] Conda environment manager
+| [8_] ZLIB compression library
+| [9_] HDF5 data software library 
+| [10_] NetCDF4 data software library 
+| [11_] Hydrological Model Continuum codes
+
+.. _1: https://github.com/c-hydro
+.. _2: https://www.python.org/
+.. _3: https://en.wikipedia.org/wiki/Fortran
+.. _4: https://qgis.org/en/site/
+.. _5: https://www.r-project.org/
+.. _6: https://github.com/c-hydro/fp-env
+.. _7: https://conda.io/miniconda.html
+.. _8: https://zlib.net/
+.. _9: https://www.hdfgroup.org/solutions/hdf5/
+.. _10: https://www.unidata.ucar.edu/
+.. _11: https://github.com/c-hydro/hmc-dev
+.. _license: LICENSE.rst
+.. _changelog: CHANGELOG.rst

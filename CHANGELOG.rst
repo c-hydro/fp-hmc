@@ -2,11 +2,19 @@
 Changelog
 =========
 
+Version 1.8.4 (20200120)
+========================
+
+- Fix bugs in probabilistic mode
+- Insert package documentation
+- Insert model documentation
+- Update configuration files in json format
+
 Version 1.8.0 (20180521)
 ========================
 
 - Codes and package refactoring based on HMC Fortran codes version 2.0.7.
-- Python 3 porting and refactoring. 
+- Python 3 refactoring. 
 
 Version 1.7.0 (20161114)
 ========================
@@ -31,4 +39,3 @@ Version 1.0.0 (20140401)
 
 - Initial version with methods and classes migrated from research projects (DRIHM and DRIHM2US)
   based on DRiFt and Continuum Codes old versions.
-
