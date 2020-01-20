@@ -2,13 +2,13 @@
 Changelog
 =========
 
-Version 2.0.7 (20180521)
+Version 1.8.0 (20180521)
 ========================
 
 - Codes and package refactoring based on HMC Fortran codes version 2.0.7.
-- Python 3 refactoring. 
+- Python 3 porting and refactoring. 
 
-Version 2.0.6 (20161114)
+Version 1.7.0 (20161114)
 ========================
 
 - Codes and package refactoring based on HMC Fortran codes version 2.0.6.
