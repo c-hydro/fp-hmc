@@ -1,0 +1,591 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Description &mdash; hmc 1.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Applications" href="applications.html" />
+    <link rel="prev" title="Overview" href="intro.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> hmc
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Overview</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Description</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#overland-channel-flow">Overland channel flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#vegetation-interception">Vegetation interception</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#infiltration-and-subsurface-flow">Infiltration and Subsurface Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#deep-flow-and-water-table">Deep Flow and Water Table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#energy-balance-and-evapotranspiration">Energy Balance and Evapotranspiration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#parameters">Parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="applications.html">Applications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="executables.html">Executables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">Developers</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">hmc</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Description</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/description.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="description">
+<h1>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>Continuum is a continuous distributed hydrological model, usually named HMC, that strongly relies on a
+morphological approach, based on a novel way for the drainage network components identification.
+The model is a compromise between models with a strong empirical connotation, which
+are easy to implement but far from reality, and complex physically based models which
+try to reproduce the hydrological processes with high detail but which introduce a
+hard parameterization and consequent uncertainty and lack of robust parameters identification.</p>
+<div class="figure align-left">
+<a class="reference internal image-reference" href="_images/hmc_intro_logo.jpg"><img alt="HMC logo" src="_images/hmc_intro_logo.jpg" style="width: 250.0px; height: 250.0px;" /></a>
+</div>
+<p>The HMC aims at an equilibrium between simplicity and rigorous physical
+modeling while maintaining comparable performances to existing models; the reduced
+complexity of the schematizations and the relatively small number of parameters leads
+to a considerably lower calibration effort, increasing model robustness and portability
+to data scarce environments. The resulting increased computational efficiency leads to
+an easier utilization of the model in ensemble mode so that a direct quantification of
+prediction uncertainties is possible. All the main hydrological phenomena are modeled in a
+distributed way. Nowadays satellite products of meteorological, hydrological
+and “vegetation” variables are becoming promising and widely available all over the world. Examples of
+meteorological satellite products are: TRMM evapotranspiration estimations, H-SAF soil moisture.
+These kind of data are now available for a high percentage of the earth’s surface.
+This leads to a panorama where the possibility of running a hydrologic model using only
+satellite information is real. Along these lines develops one of the most important features
+of the HMC: it can be calibrated using only satellite data, e.g. surface temperature
+and/or soil moisture; results in reproducing observed discharge in this framework are quite promising.
+This makes the model suitable for application in data scarce environments.</p>
+<div class="figure align-right">
+<a class="reference internal image-reference" href="_images/hmc_intro_words.png"><img alt="HMC words description" src="_images/hmc_intro_words.png" style="width: 350.0px; height: 200.0px;" /></a>
+</div>
+<p>The model is able to reproduce the spatial-temporal evolution of soil moisture, energy fluxes,
+surface soil temperature and evapotranspiration. Moreover, it can account for seasonal vegetation
+variability in terms of interception and evaporation. Deep flow and water table evolution are
+modelled with a simple scheme that reproduces the main physical characteristics of the process
+and a distributed interaction between water table and soil surface with a low level of
+parameterization. The introduction of the so-called “force-restore” equation for the surface
+energy balance allows the LST estimation and makes the model feasible to exploit remote sensing data.
+These latter can be used for calibration or, more appropriately, in a data assimilation framework.
+Referring to already tested calibration methodologies and making some basic assumptions, the
+calibration task can be reduced to just six parameters at catchment scale that are then spatially
+distributed by means of simple assumptions  on the physical processes that they describe.
+Consequently, the parameter space is really small for a distributed continuous model, and HMC can
+be implemented with easily accessible data and territorial information (digital elevation model,
+basic soil and vegetation parameters). If more detailed territorial information were available,
+the parameterization methodology could be approached reducing the number of assumptions and linking
+the parameters more tightly to territorial characteristics.
+The sensitivity analysis has been carried out on five parameters: two parameters regulate the
+overland flow, the shape of the hydrograph and response time; two parameters are related to
+the soil characteristics and affect infiltration and relative soil humidity; and one parameter
+takes into account soil porosity and the ratio between vertical and horizontal saturated soil conductivity.
+A nice separation can be found between parameters in the fact that they influence quite distinct
+response of the model, with the result of further simplifying the calibration procedure. Standard
+calibration and validation based on streamflow data have been carried out on different periods and
+on different outlet sections (in terms of soil use, slope and response time). The model produces
+good results in terms of discharge. Further work is needed to introduce the modelling of the snow
+cover evolution and of the snowmelt in order to carry out multi-annual simulations where data are
+available. Model initialization influences the simulation for quite a long period; in particular
+the definition of initial water table level is a sensitive choice. The ideal situation is to extend as far as
+possible the warm-up period, including a long period without rainfall events.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/hmc_hydro_casalcermelli_2008.png"><img alt="HMC hydrograph at Casalcermelli 2008" src="_images/hmc_hydro_casalcermelli_2008.png" style="width: 600.0px; height: 600.0px;" /></a>
+</div>
+<p>The water table initialization methodology here is based on a possible spatial distribution of water
+table that exploits morphological constraints. Further validation analysis has been carried out
+comparing LST estimated by the model and satellite measurements at both pixel and basin scale.
+The results provide evidence that HMC reliably models the LST dynamics at various temporal scales,
+with some periods of overestimation, particularly during the warmer hours of summer. During the cold
+season the modelled LST has a lower variability with respect to the satellite estimates, but here
+the percentage of reliable data is quite scarce because of the more frequent cloud covering, and
+this makes the comparison more uncertain. The approach followed in the design of HMC
+proposes concentrating the efforts in augmenting the number of state variables that are predicted
+by the model and those that are also observables by using classical or remote instruments of measure.
+Specific attention is paid to distributed variables (e.g. LST fields) that offer very different
+information when compared to integral measures (e.g. discharge time series). The LST comparison
+showed potential for additional constraints to be used in the calibration phase or to be
+exploited in a more comprehensive assimilation framework. The distributed nature of the LST in
+comparison to traditional calibration time series (e.g. discharge data series) can add important
+information for a better estimation of state variables and parameter patterns.
+A demonstration of this potential is carried out by calibrating a sub-set of the parameters referring to LST satellite
+estimation and to morphologic information derived by the DEM. The results are comforting, and the
+proposed methodology led to a parameter set that well reproduces both satellite LST and streamflow
+observations, the latter used only in the validation phase. LST was successfully used to drive the
+calibration procedure. This was possible thanks to the model structure and the way parameters
+are treated and distributed in time and space. This could have a strong application impact in environments
+where reliable streamflow data are not available, given the worldwide availability of LST data.</p>
+</div>
+<div class="section" id="overland-channel-flow">
+<h2>Overland channel flow<a class="headerlink" href="#overland-channel-flow" title="Permalink to this headline">¶</a></h2>
+<div class="figure align-right">
+<a class="reference internal image-reference" href="_images/hmc_example_overland_and_channel_flow.gif"><img alt="HMC overland and channel flow example" src="_images/hmc_example_overland_and_channel_flow.gif" style="width: 250.0px; height: 250.0px;" /></a>
+</div>
+<p>The surface flow schematization distinguishes between channel and hillslope flow. In channels the momentum
+equation per unit of width is derived from the kinematic schematization with a nonlinear dependence between
+discharge and water velocity. The water depth for the i-th channel cell is evaluated combining the momentum
+equation and the mass balance equation:</p>
+<div class="math notranslate nohighlight">
+\[\frac{dh_i}{dt} = I_i - \frac{1}{\Delta x} \cdot{u_c} \cdot \sqrt{tg(\beta_i)} \cdot{h^{1.5}_i}\]</div>
+<p>where <span class="math notranslate nohighlight">\(I_i\)</span> represents the input per unit of area (the sumof runoff, saturation excess and inow
+discharge from upstream) to the grid cell [L T −1 ].
+On the hillslopes the overland ow has a linear equation for the motion:</p>
+<div class="math notranslate nohighlight">
+\[q = \Delta x \cdot u_h \cdot h_i\]</div>
+<p>where <span class="math notranslate nohighlight">\(u_h\)</span> parameterizes the main morphologic characteristics of the hillslopes [T −1 ] (slope, roughness, etc.).
+The nal schematization is equivalent to a linear reservoir model. The parameters <span class="math notranslate nohighlight">\(u_h\)</span> and <span class="math notranslate nohighlight">\(u_c\)</span>
+need calibration at basin scale (i.e. one value for the entire catchment).
+In both hillslopes and channels, the re-infiltration process is accounted for: the input to the i-th cell must exceed its
+infiltration capacity; otherwise, it infiltrates the soil. Exfiltration is also possible.</p>
+</div>
+<div class="section" id="vegetation-interception">
+<h2>Vegetation interception<a class="headerlink" href="#vegetation-interception" title="Permalink to this headline">¶</a></h2>
+<p>Interception includes the portion of rainfall that is caught by tree leaves, grass and vegetation
+cover in general, and is evaporated before it touches the ground.</p>
+<div class="figure align-left">
+<a class="reference internal image-reference" href="_images/hmc_example_vegetation_interception.png"><img alt="HMC vegetation interception example" src="_images/hmc_example_vegetation_interception.png" style="width: 250.0px; height: 250.0px;" /></a>
+</div>
+<p>Ponding effects are also included in this initial abstraction. Interception is modelled by a simple empirical equation.
+A maximum retention capacity <span class="math notranslate nohighlight">\(S_v\)</span> is introduced, and it is estimated as a function of the leaf area index (LAI)
+by the relationship:</p>
+<div class="math notranslate nohighlight">
+\[S_v = 0.95 + 0.5 \cdot LAI - 0.06 \cdot LAI^2\]</div>
+<p>The water in the reservoir with capacity <span class="math notranslate nohighlight">\(S_v\)</span> is evaporated at the evaporation rate derived by the
+latent heat flux estimation without affecting the infiltration computation; the input is the precipitation.
+The advantage of using a LAI-dependent expression is that the model takes into account vegetation variability
+in space and time. LAI is usually updated every 15 days from satellite optical sensor data (e.g. from MODIS).</p>
+</div>
+<div class="section" id="infiltration-and-subsurface-flow">
+<h2>Infiltration and Subsurface Flow<a class="headerlink" href="#infiltration-and-subsurface-flow" title="Permalink to this headline">¶</a></h2>
+<div class="figure align-right">
+<a class="reference internal image-reference" href="_images/hmc_example_infiltration_subsurface_flow.gif"><img alt="HMC infiltration and subsurface flow example" src="_images/hmc_example_infiltration_subsurface_flow.gif" style="width: 400.0px; height: 250.0px;" /></a>
+</div>
+<p>The infiltration methodology is a modification of the Horton equation based on physically interpretable parameters.
+It accounts for soil moisture evolution even in condition of intermittent and low-intensity rainfall (namely lower
+than the infiltration capacity of the soil). The soil is schematized as a reservoir with capacity <span class="math notranslate nohighlight">\(V_{max}\)</span> [L],
+and a selective filter <span class="math notranslate nohighlight">\(g(t)\)</span> [L T−1 ] manages the inflow:</p>
+<div class="math notranslate nohighlight">
+\[g(t) = f_0 + (f_1 - f_0) + \frac{V(t)}{V_{max}}\]</div>
+<p>where <span class="math notranslate nohighlight">\(f_0\)</span> is the maximum infiltration rate for completely dry soils and <span class="math notranslate nohighlight">\(f_1\)</span> is the asymptotic minimum
+infiltration rate for saturated soils considered as a function of <span class="math notranslate nohighlight">\(f_0\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[f_1 = c_t \cdot f_0\]</div>
+<p>The method proposed has been further modified by introducing the field capacity of the soil, defined as the water
+content that can be held by capillarity against the force of gravity:</p>
+<div class="math notranslate nohighlight">
+\[V_{fc} = c_t \cdot V_{max}\]</div>
+<p>with the parameter <span class="math notranslate nohighlight">\(c_t\)</span> ∈ [0, 1]. In this configuration, the dynamic mass-balance equation for the soil can
+be written for each cell:</p>
+<div class="math notranslate nohighlight">
+\[\frac{dV}{dt} = g(t) - r_p(t)\]</div>
+<p>where:</p>
+<div class="math notranslate nohighlight">
+\[r_p(t) = f_1 \cdot (V(t) - \frac{c_t \cdot V_{max}}{V_{max} \cdot (1 -c_t)} )\]</div>
+<p>The infiltration scheme has four parameters: the initial infiltration rate <span class="math notranslate nohighlight">\(f_0\)</span>, the maximum soil retention
+capacity <span class="math notranslate nohighlight">\(V_{max}\)</span>, and the parameters to define soil field capacity <span class="math notranslate nohighlight">\(c_t\)</span> and final infiltration rate <span class="math notranslate nohighlight">\(c_f\)</span>.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/hmc_scheme_vegetation_infiltration_subflow.png"><img alt="HMC infiltration and subsurface flow scheme" src="_images/hmc_scheme_vegetation_infiltration_subflow.png" style="width: 600.0px; height: 200.0px;" /></a>
+</div>
+<p>The parameters <span class="math notranslate nohighlight">\(f_0\)</span> and <span class="math notranslate nohighlight">\(V_{max}\)</span> are related to the soil type and land use through the curve number (CN) parameter.
+They can be easily derived by soil use and soil type maps and they vary spatially in the catchment; <span class="math notranslate nohighlight">\(c_t\)</span> and <span class="math notranslate nohighlight">\(c_f\)</span>
+are calibration parameters and are assumed to be constant for the whole basin. In this way the pattern of <span class="math notranslate nohighlight">\(f_1\)</span> and <span class="math notranslate nohighlight">\(V_{fc}\)</span>
+is spatially modulated by the pattern of <span class="math notranslate nohighlight">\(V_{max}\)</span>. The percolation rate separates into two components: a contribution
+to subsurface flow <span class="math notranslate nohighlight">\(r_{Hy}\)</span> and one to deep flow <span class="math notranslate nohighlight">\(r_d\)</span> or recharging water table defined as:</p>
+<div class="math notranslate nohighlight">
+\[r_{Hy} = sin(\alpha) \cdot r_p(t)\]</div>
+<div class="math notranslate nohighlight">
+\[r_d = (1 - sin(\alpha)) \cdot r_p(t)\]</div>
+<p>where the angle <span class="math notranslate nohighlight">\(\alpha\)</span> is such that <span class="math notranslate nohighlight">\(\tan(\alpha)\)</span> is the downslope index; <span class="math notranslate nohighlight">\(sin(\alpha)\)</span> is a decomposition term
+that increases with the terrain slope, reproducing the major proneness of the high slope areas to subsurface flow due to gravity.
+The downslope index seems to be less sensitive than local surface slope to changes in DEM resolution, and it is able to capture
+dominant controls on local drainage regimes, especially in cases where profile curvature exerts a strong control on the drainage
+pattern. The subsurface flow is propagated between cells following the surface drainage network directions, and the soil moisture
+state of each cell is updated by considering both the infiltration, estimated by the modified Horton method, and the inflow
+from the upper cells. Therefore a cell can reach saturation because of the percolation from upper cells causing saturation excess.
+The water in the reservoir with capacity <span class="math notranslate nohighlight">\(S_v\)</span> is evaporated at the evaporation rate derived by the latent heat flux estimation
+without affecting the infiltration computation; the input is the precipitation. The advantage of using a LAI-dependent expression
+is that the model takes into account vegetation variability in space and time.</p>
+</div>
+<div class="section" id="deep-flow-and-water-table">
+<h2>Deep Flow and Water Table<a class="headerlink" href="#deep-flow-and-water-table" title="Permalink to this headline">¶</a></h2>
+<p>Several approaches are possible to describe the dynamics of both the deep flow and the water table, with examples from Darcy’s law
+applications to conceptual reservoir models. However, it is often difficult to have the data necessary for the correct implementation
+and parameterization of water table dynamics. In HMC the water table evolution is modelled with a simplified approach that maintains
+a physical and distributed description of the process.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/hmc_scheme_flux_partition.png"><img alt="HMC flux partition example" src="_images/hmc_scheme_flux_partition.png" style="width: 550.0px; height: 450.0px;" /></a>
+</div>
+<p>Above all we are interested in the water table interaction with the subsurface
+flow and soil surface and in its effects on surface flow and soil moisture spatial pattern; the adopted scheme allows also the
+reproduction of the baseflow far from rainfall events with a parsimonious parameterization. The layer of soil containing the aquifer
+is schematized as a unique homogeneous layer bounded by the lower impervious (bedrock) surface and the bottom of the root zone.
+The thickness of this layer is expressed in terms of maximum volume of water content of the aquifer, and it is estimated using the
+surface slope as a proxy. The maximum water content in every cell (i) of the basin is given by:</p>
+<div class="math notranslate nohighlight">
+\[VW_{mi} = VW_{max} \cdot \frac{\tan(\alpha_{max}) - \tan(\alpha_{i})}{\tan(\alpha_{max}) - \tan(\alpha_{min})}\]</div>
+<p>where <span class="math notranslate nohighlight">\(VW_{max}\)</span> is the absolute maximum water content of the aquifer on the whole investigated area; this sets a limit that
+is basically a calibration parameter. The reservoir is fed with rd (see previous section). The effect of porosity is considered
+as a multiplicative factor in the Darcy’s equation used to estimate the flux per unit area between two contiguous cells (i and j):</p>
+<div class="math notranslate nohighlight">
+\[q{_{ij}} = \frac{h{_{Wi}} - h{_{Wj}}}{\Delta{x}} \cdot R{_{f}} \cdot f{_{1i}}\]</div>
+<p>where x is the DEM spatial resolution, f1i the final infiltration rate estimated, <span class="math notranslate nohighlight">\(h_{w}\)</span> the water table level and <span class="math notranslate nohighlight">\(R_{f}\)</span>
+a factor that also takes care of differentiating the saturated vertical and horizontal conductivity. Each cell can drain towards all
+the neighbouring cells following the 2-D water table gradient that depends on the elevation and on the water content of each cell.
+When the water table reaches the surface (<span class="math notranslate nohighlight">\(VW_{i} = VW_{mi}\)</span>), the deep percolation term is inhibited, while the condition
+<span class="math notranslate nohighlight">\(VW(t) ∼ 0\)</span> is a limit that can only be reached after a very long and anomalous dry period.</p>
+</div>
+<div class="section" id="energy-balance-and-evapotranspiration">
+<h2>Energy Balance and Evapotranspiration<a class="headerlink" href="#energy-balance-and-evapotranspiration" title="Permalink to this headline">¶</a></h2>
+<p>The representation of surface mass and energy turbulent fluxes requires the solution of a conservation equation for mass and energy
+driven by temperature and moisture content. Since the vertical gradient of such variables is quite large, a high-resolution multiple
+layer model would be required to estimate soil surface temperature and moisture content with accuracy. Such an approach demands substantial
+amounts of computing resources to solve the balance equations.</p>
+<div class="figure align-left">
+<a class="reference internal image-reference" href="_images/hmc_example_deep_flow_watertable.jpg"><img alt="HMC flux partition example" src="_images/hmc_example_deep_flow_watertable.jpg" style="width: 250.0px; height: 250.0px;" /></a>
+</div>
+<p>An alternative approach makes use of computationally efficient parameterization of soil heat and moisture flux terms.
+In other studies is showed that the heat flux into the soil could be parameterized by the sum of a temperature-derivative term and
+the difference between ground surface and  deep soil temperature.
+This approach is known as the “force-restore” method, because the forcing by net radiation is modified by a restoring term that contains
+the deep soil temperature. Since then the “force-restore” method has been widely used in land surface modelling.
+Some studies demonstrated that the “force-restore” equation is the solution of the heat diffusion equation, with purely sinusoidal forcing
+assuming that the thermal properties are constant with depth and the surface forcing term is also nearly independent of air temperature and
+has a strong periodic behaviour in time. The HMC solves a complete and explicit energy balance at the interface between soil surface and
+atmosphere by using the “force-restore” approach for land surface temperature.
+Theoretically, the control volume to which the balance is applied is the unit area bounded vertically by the surface of the soil
+and the top of the canopy, assuming the thermal capacity of this volume is negligible. The horizontal energy fluxes are neglected.
+In practice, the volume is extended to the unit cell of the numerical scheme used. This approximation is a fair trade-off between parsimony in parameterization and accuracy in the description of the processes.The conservation of energy at soil surface is given by:</p>
+<div class="math notranslate nohighlight">
+\[G = R_n - H - LE\]</div>
+<p>where <span class="math notranslate nohighlight">\(R_n\)</span> is the net radiation, <span class="math notranslate nohighlight">\(H\)</span> the sensible heat flux, <span class="math notranslate nohighlight">\(LE\)</span> the latent heat flux and <span class="math notranslate nohighlight">\(G\)</span> the ground
+flux (all [E t−1 L−2 ]). This latter term closes the budget, and it represents the heat propagated by diffusion towards the deep
+layers of the soil. The shortwave component of <span class="math notranslate nohighlight">\(R_n\)</span> is derived from radiometer observations when the density of observations is
+appropriate. Otherwise, it is estimated by combining the extraterrestrial component of the radiation computed, attenuated using
+meteorological variables and cloud cover. The terrain parameter characterizations that influence both direct and diffuse components
+of the radiation are computed. The longwave components are rarely available from observations, and they are therefore estimated
+using the Stefan–Boltzmann law as a function of air temperature and humidity. The daily cycle of LST has the implicit signature of
+the energy balance. Maximum amplitudes of LST diurnal cycle are usually reached in the presence of bare and dry soil. The presence
+of moisture on the surface and in the subsurface soil greatly moderates the daily range of LST. The vegetation cover has a similar
+effect. The “force-restore” approach leads to the following equation for LST:</p>
+<div class="math notranslate nohighlight">
+\[\frac{dLST}{dt} = 2 \cdot \sqrt{\pi \omega} \frac{(R{_{n}} - H - LE)}{\varphi} - 2\pi\omega \cdot(LST - T{_{deep}})\]</div>
+<p>where <span class="math notranslate nohighlight">\(\varphi\)</span> φ [E L−2 T−1 t−(1/2) ] is the effective thermal inertia and <span class="math notranslate nohighlight">\(T_{deep}\)</span> [T] is a “restoring” deep ground
+temperature. <span class="math notranslate nohighlight">\(T_{deep}\)</span> is evaluated by filtering data for air temperature at ground level; <span class="math notranslate nohighlight">\(\varphi\)</span> is the thermal inertia, and
+it is a function of conductivity, density and specific heat capacity of soil, and it is eventually related to soil moisture.
+The fluxes are estimated using bulk formulations. The equation input variables are commonly observed by ground-based micrometeorological
+networks. The soil parameters used in the estimation of the thermal inertia, usually constant at basin scale, can be estimated by a
+data assimilation process, or related to soil type when reliable maps are available. In HMC the evapotranspiration <span class="math notranslate nohighlight">\(LE\)</span> [m s−1] is
+estimated as:</p>
+<div class="math notranslate nohighlight">
+\[ET = \frac{LE}{\rho{_{w}} \lambda{_{LE}}}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\rho_{w}\)</span> [m L−3 ] is the water density, and <span class="math notranslate nohighlight">\(ET\)</span> is deducted from the interception storage <span class="math notranslate nohighlight">\(S_v\)</span> if not empty,
+otherwise from the subsurface reservoir <span class="math notranslate nohighlight">\(V(t)\)</span> adding the following:</p>
+<div class="math notranslate nohighlight">
+\[\frac{dS{_{v}}}{dt} = ET\]</div>
+<p>if <span class="math notranslate nohighlight">\(S_v\)</span> greater then 0 and:</p>
+<div class="math notranslate nohighlight">
+\[\frac{dV}{dt} = ET\]</div>
+<p>if <span class="math notranslate nohighlight">\(S_v\)</span> greater equal 0.</p>
+</div>
+<div class="section" id="parameters">
+<h2>Parameters<a class="headerlink" href="#parameters" title="Permalink to this headline">¶</a></h2>
+<p>Six model parameters need calibration on the basis of input–output time series: <span class="math notranslate nohighlight">\(c_{f}\)</span>, <span class="math notranslate nohighlight">\(c_{t}\)</span>, <span class="math notranslate nohighlight">\(h_{h}\)</span>, <span class="math notranslate nohighlight">\(u_{c}\)</span>,
+<span class="math notranslate nohighlight">\(R_{f}\)</span>, <span class="math notranslate nohighlight">\(VW_{max}\)</span>.&nbsp;The first two parameters <span class="math notranslate nohighlight">\(c_{f}\)</span> and <span class="math notranslate nohighlight">\(c_{t}\)</span> mainly rule the generation of runoff and the
+movement of water in the different soil layers, while <span class="math notranslate nohighlight">\(u_{h}\)</span> and <span class="math notranslate nohighlight">\(u_{c}\)</span> control the surface water motion.
+<span class="math notranslate nohighlight">\(VW_{max}\)</span> represents the maximum storage capacity of the aquifer, and <span class="math notranslate nohighlight">\(R_{f}\)</span> summarizes the effect of soil porosity
+as well as of the ratio between vertical and horizontal saturated soil conductivity. The range of variation of the parameters has
+been defined based on prior knowledge of the parameter meaning, which defines their mathematical and physical range of validity.</p>
+<table border="1" class="colwidths-auto docutils" id="id1">
+<caption><span class="caption-text">Summary of the model parameters that need calibration with their brief description</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<tbody valign="top">
+<tr class="row-odd"><td>Parameters</td>
+<td>Units</td>
+<td>Description</td>
+</tr>
+<tr class="row-even"><td>uh</td>
+<td>[s-1]</td>
+<td>Flow motion coefficient in hillslopes</td>
+</tr>
+<tr class="row-odd"><td>uc</td>
+<td>[m-0.5s-1]</td>
+<td>Friction coefficient in channels</td>
+</tr>
+<tr class="row-even"><td>cf</td>
+<td>[-]</td>
+<td>Defines the infiltration capacity at saturation</td>
+</tr>
+<tr class="row-odd"><td>ct</td>
+<td>[-]</td>
+<td>Defines the mean field capacity</td>
+</tr>
+<tr class="row-even"><td>Rf</td>
+<td>[-]</td>
+<td>Related to anisotropy between the vertical and
+horizontal saturated conductivity, and to porosity</td>
+</tr>
+<tr class="row-odd"><td>VWmax</td>
+<td>[mm]</td>
+<td>Maximum water capacity of the aquifer on the whole
+investigated area</td>
+</tr>
+</tbody>
+</table>
+<p>The parameters <span class="math notranslate nohighlight">\(u_{c}\)</span> and <span class="math notranslate nohighlight">\(u_{h}\)</span> impact the water flow on the surface. High values of these two parameters lead to
+narrow and highly peaked hydrographs; <span class="math notranslate nohighlight">\(u_{h}\)</span> has influence on the general shape of the hydrograph while <span class="math notranslate nohighlight">\(u_{c}\)</span> has
+an increasing influence with the increasing length of the channelled paths (e.g. large/elongated basins). It modifies the peak
+flow value as well as the peak arrival time. The impact estimation of parameters <span class="math notranslate nohighlight">\(u_{h}\)</span> and <span class="math notranslate nohighlight">\(u_{c}\)</span> has been made
+considering a short period of simulation (16 to 18 August 2006) since they influence directly the overland and channel flow.
+The first subplot in the following figure shows that <span class="math notranslate nohighlight">\(u_{h}\)</span> has a considerable influence on both the Tiglieto and
+Casalcermelli outlets.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/hmc_parameters_influence_1.png"><img alt="HMC influence of parameters part 1." src="_images/hmc_parameters_influence_1.png" style="width: 500.0px; height: 500.0px;" /></a>
+</div>
+<p>The peak values and the hydrograph shape have quite a large range of variation, while peak times are not
+significantly affected by this parameter. The second subplot shows the influence of <span class="math notranslate nohighlight">\(u_{c}\)</span>. It mainly affects the shape
+and the peak times on the Casalcermelli outlet section, while hydrographs of the Tiglieto outlet show negligible differences.
+Note that Casalcermelli has a drainage area that is one order of magnitude larger in respect to Tiglieto. The parameter <span class="math notranslate nohighlight">\(c_{t}\)</span>
+is related to the soil field capacity and defines the fraction of water volume in the soil not available for percolation and
+subsurface flow. It has an impact on the dynamics of soil saturation between rain events: higher values of <span class="math notranslate nohighlight">\(c_{t}\)</span> reduce the
+soil drying time scale especially during the cold season, with consequently higher runoff coefficients for single rainfall events.
+However, the subsurface flow tends to vanish rapidly, because water level drops easily under the field capacity.
+The parameter <span class="math notranslate nohighlight">\(c_{f}\)</span> controls both the velocity of subsurface flow and the dynamics of saturation of the single cells. Low
+values of <span class="math notranslate nohighlight">\(c_{f}\)</span> (i.e. low values saturated hydraulic conductivity) tend to cause the rapid saturation during rainfall events
+associated with slow subsurface flow increasing runoff production. Higher values of <span class="math notranslate nohighlight">\(c_{f}\)</span> produce a rapid subsurface flow with
+saturated areas that quickly concentrate along the drainage network. The combination of the two soil parameters <span class="math notranslate nohighlight">\(c_{t}\)</span> and
+<span class="math notranslate nohighlight">\(c_{f}\)</span> controls the distribution of the volumes of soil and surface water in space and time, and it impacts soil humidity
+propagation; <span class="math notranslate nohighlight">\(c_{t}\)</span> and <span class="math notranslate nohighlight">\(c_{f}\)</span> influence the mass balance over long periods and regulate the exchanges between
+subsurface flow and runoff. The third and fourth panels in the previuous figure show how they affect the tails of the hydrographs and
+the values of peak flows in the period between 7 and 10 December 2006. The effect of the combination of these two parameters is quite
+complex, and it is only partially represented in the figures. They must be calibrated over long periods of time using, at best, external
+soil information when available.</p>
+<p>The parameter <span class="math notranslate nohighlight">\(R_{f}\)</span> regulates the response of the deep flow and mainly influences low flow regimes, while for larger basins it
+also affects high discharges. In the figure below the period between 14 and 17 September 2006 is shown. The effects of <span class="math notranslate nohighlight">\(R_{f}\)</span>
+on the Tiglieto outlet are negligible during the flood while the influence on low flows is more relevant for both the outlet sections.
+Particular remarks need to be made about <span class="math notranslate nohighlight">\(VW_{max}\)</span> – a measure of the capacity of the basin for storing water in its aquifer
+and deep soil layer. All these simulations highlighted another important feature of the model.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/hmc_parameters_influence_2.png"><img alt="HMC influence of parameters part 2." src="_images/hmc_parameters_influence_2.png" style="width: 500.0px; height: 500.0px;" /></a>
+</div>
+<p>Because of its internal structure, similarly to other complete hydrological models, it is possible to map different
+processes and therefore different parts of the hydrograph, onto the parameters, so that different parts of the hydrograph time
+series can be used separately to better identify model parameter values. Further analysis is needed to show sensitivity to spatial
+and temporal resolution.</p>
+<p>It is not easy to define a value for <span class="math notranslate nohighlight">\(VW_{max}\)</span> that reproduces a correct or realistic distribution of the deep soil layer water
+storage throughout the basin due to the fact that this distribution is hard to observe. Tests made using different values of <span class="math notranslate nohighlight">\(VW_{max}\)</span>
+in a physically acceptable range and starting from the same initial condition show that the model has low sensitivity to this parameter
+when the period of simulation covers between 6–12 months. This is related to the slow temporal dynamic of the water table.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/hmc_sensitivity_analysis.png"><img alt="HMC sensitivity analysis." src="_images/hmc_sensitivity_analysis.png" style="width: 500.0px; height: 500.0px;" /></a>
+</div>
+<p>If data series for very long simulations (many years) are available, the parameter <span class="math notranslate nohighlight">\(VW_{max}\)</span> can be re-calibrated and adjusted.
+In the adopted scheme the initialization of the related state variable <span class="math notranslate nohighlight">\(VW(t)\)</span> is more important than its upper limit. In fact,
+practice demonstrates that the definition of the water table initial condition <span class="math notranslate nohighlight">\(VW(t = 0)\)</span> evidently influences simulated
+discharge. A reasonable initial condition produces a rapid stabilization of the water table with dynamics driven by the water input from
+upper soil layer. Two considerations are made in order to define these:</p>
+<blockquote>
+<div><ul class="simple">
+<li>in correspondence with the drainage network, the water table is generally next to soil surface, because it is continuously recharged by the upstream portions of catchment;</li>
+<li>the mountainous parts of the water table receive reduced contribution, because they drain small areas and are characterized by high gradients, and here the water table has lower levels.</li>
+</ul>
+</div></blockquote>
+<p>Based on these considerations, water table initial conditions are set as follows; <span class="math notranslate nohighlight">\(VW(t = 0)\)</span>, in correspondence with channels,
+is set close to <span class="math notranslate nohighlight">\(VW_{max}\)</span>. In the hillslopes the level of <span class="math notranslate nohighlight">\(VW(t = 0)\)</span> is estimated supposing it is inversely proportional to the
+downslope index <span class="math notranslate nohighlight">\(\alpha\)</span>.</p>
+<p>In order to carry out a basic sensitivity analysis, we considered what appear to be the most sensitive
+parameters (<span class="math notranslate nohighlight">\(u_c\)</span>, <span class="math notranslate nohighlight">\(u_h\)</span>, <span class="math notranslate nohighlight">\(c_t\)</span>, <span class="math notranslate nohighlight">\(c_f\)</span>) and a set of 2000 model runs has been generated using a Monte Carlo approach,
+sampling the parameters from a uniform distribution bounded by the parameter domain.</p>
+<p>The runs have been carried out on a sub-period of the
+calibration period where two major flood events occurred (July – September 2006). To show the results a dot plot representation has been
+drawn using the Nash–Sutcliffe coefficient (NS) as skill estimator. From figure above, it is possible to clearly identify a behavioural domain
+for <span class="math notranslate nohighlight">\(u_h\)</span> and <span class="math notranslate nohighlight">\(u_c\)</span>, while a lot of uncertainty in the streamflow simulation due to <span class="math notranslate nohighlight">\(c_f\)</span> and <span class="math notranslate nohighlight">\(c_t\)</span> is present.
+This could be due to the very nonlinear relationship that connects these last two parameters with streamflow.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/hmc_parameters_range.png"><img alt="HMC parameters range." src="_images/hmc_parameters_range.png" style="width: 400.0px; height: 200.0px;" /></a>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="applications.html" class="btn btn-neutral float-right" title="Applications" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="intro.html" class="btn btn-neutral float-left" title="Overview" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Fabio Delogu
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
