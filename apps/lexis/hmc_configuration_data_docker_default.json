@@ -4,7 +4,7 @@
     "__comment": " --- DataLand configuration [TAGS: $DOMAIN, $VAR, $RUN] --- ",
     "Gridded"     : {
       "FileName"    : "$DOMAIN.$VAR.txt",
-      "FilePath"    : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/static/land/",
+      "FilePath"    : "$TARGET_DATA_STATIC/land/",
       "FileType"    : 1,
       "FileTimeRes" : null,
       "FileVars"    : {
@@ -30,7 +30,7 @@
     },
     "Point": {
       "FileName"    : "$DOMAIN.info_$VAR.txt",
-      "FilePath"    : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/static/point/",
+      "FilePath"    : "$TARGET_DATA_STATIC/point/",
       "FileType"    : 1,
       "FileTimeRes" : null,
       "FileVars"    : {
@@ -46,7 +46,7 @@
     "__comment": " --- DataForcing configuration [TAGS: $yyyy, $mm, $dd, $HH, %MM, %RUN, $VAR, $MODE] --- ",
     "Gridded"     : {
       "FileName"    : "hmc.forcing-grid.$yyyy$mm$dd$HH$MM.nc",
-      "FilePath"    : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/run/$RUN/data/forcing/$MODE/gridded/$yyyy/$mm/$dd/",
+      "FilePath"    : "/home/fp/fp_run/data/forcing/gridded/$yyyy/$mm/$dd/",
       "FileType"    : 2,
       "FileTimeRes" : 3600,
       "FileVars"    : {
@@ -59,32 +59,32 @@
           "VarName"         : {
             "Rain"            : {
               "FileName"          : "ws.db.$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "$MOUNT_DATA_DYNAMIC_FORCING_OBS//$yyyy/$mm/$dd/",
+              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/observation/ws/$yyyy/$mm/$dd/",
               "FileVar"		      : "Rain"
                                 },
             "AirTemperature"  : {
               "FileName"          : "ws.db.$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "$MOUNT_DATA_DYNAMIC_FORCING_OBS/$yyyy/$mm/$dd/",
+              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/observation/ws/$yyyy/$mm/$dd/",
               "FileVar"		      : "AirTemperature"
                                 },
             "Wind"            : {
               "FileName"          : "ws.db.$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/dynamic/outcome/observation/ws/$yyyy/$mm/$dd/",
+              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/observation/ws/$yyyy/$mm/$dd/",
               "FileVar"		      : "Wind"
                                 },
             "RelHumidity"       : {
               "FileName"          : "ws.db.$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/dynamic/outcome/observation/ws/$yyyy/$mm/$dd/",
+              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/observation/ws/$yyyy/$mm/$dd/",
               "FileVar"		      : "RelHumidity"
                                 },
             "IncRadiation"		: {
               "FileName"          : "ws.db.$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/dynamic/outcome/observation/ws/$yyyy/$mm/$dd/",
+              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/observation/ws/$yyyy/$mm/$dd/",
               "FileVar"		      : "IncRadiation"
                                 },
             "AirPressure"		: {
               "FileName"          : "ws.db.$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/dynamic/outcome/observation/ws/$yyyy/$mm/$dd/",
+              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/observation/ws/$yyyy/$mm/$dd/",
               "FileVar"		      : "AirPressure"
                                 }
                               }
@@ -97,33 +97,33 @@
           "VarDims"           : {"X": "west_east", "Y": "south_north", "time" :"time"},
           "VarName"           : {
             "Rain"				: {
-              "FileName"          : "nwp.lami.$yyyy$mm$dd0000.nc.gz",
-              "FilePath"          : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/dynamic/outcome/nwp/lami-i7/$yyyy/$mm/$dd/$RFarm_ID/",
+              "FileName"          : "nwp.wrf.$yyyy$mm$dd0000.nc.gz",
+              "FilePath"          : "$TARGET_DATA_DYNAMIC_FOR/nwp/wrf/$yyyy/$mm/$dd/$RFarm_ID/",
               "FileVar"		      : "Rain"
                                 },
             "AirTemperature"	: {
-              "FileName"          : "nwp.lami.$yyyy$mm$dd0000.nc.gz",
-              "FilePath"          : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/dynamic/outcome/nwp/lami-i7/$yyyy/$mm/$dd/",
+              "FileName"          : "nwp.wrf.$yyyy$mm$dd0000.nc.gz",
+              "FilePath"          : "$TARGET_DATA_DYNAMIC_FOR/nwp/wrf/$yyyy/$mm/$dd/",
               "FileVar"		      : "AirTemperature"
                                 },
             "Wind"				: {
-              "FileName"          : "nwp.lami.$yyyy$mm$dd0000.nc.gz",
-              "FilePath"          : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/dynamic/outcome/nwp/lami-i7/$yyyy/$mm/$dd/",
+              "FileName"          : "nwp.wrf.$yyyy$mm$dd0000.nc.gz",
+              "FilePath"          : "$TARGET_DATA_DYNAMIC_FOR/nwp/wrf/$yyyy/$mm/$dd/",
               "FileVar"		      : "Wind"
                                 },
             "RelHumidity"		: {
-              "FileName"          : "nwp.lami.$yyyy$mm$dd0000.nc.gz",
-              "FilePath"          : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/dynamic/outcome/nwp/lami-i7/$yyyy/$mm/$dd/",
+              "FileName"          : "nwp.wrf.$yyyy$mm$dd0000.nc.gz",
+              "FilePath"          : "$TARGET_DATA_DYNAMIC_FOR/nwp/wrf/$yyyy/$mm/$dd/",
               "FileVar"		      : "RelHumidity"
                                 },
             "IncRadiation"		: {
-              "FileName"          : "nwp.lami.$yyyy$mm$dd0000.nc.gz",
-              "FilePath"          : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/dynamic/outcome/nwp/lami-i7/$yyyy/$mm/$dd/",
+              "FileName"          : "nwp.wrf.$yyyy$mm$dd0000.nc.gz",
+              "FilePath"          : "$TARGET_DATA_DYNAMIC_FOR/nwp/wrf/$yyyy/$mm/$dd/",
               "FileVar"		      : "IncRadiation"
                                 },
             "AirPressure"		: {
-              "FileName"          : "nwp.lami.$yyyy$mm$dd0000.nc.gz",
-              "FilePath"          : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/dynamic/outcome/nwp/lami-i7/$yyyy/$mm/$dd/",
+              "FileName"          : "nwp.wrf.$yyyy$mm$dd0000.nc.gz",
+              "FilePath"          : "$TARGET_DATA_DYNAMIC_FOR/nwp/wrf/$yyyy/$mm/$dd/",
               "FileVar"		      : "AirPressure"
                                 }
                               }
@@ -132,7 +132,7 @@
     },
     "Point"       : {
       "FileName"    : "hmc.$VAR.$yyyy$mm$dd$HH$MM.txt",
-      "FilePath"	: "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/run/$RUN/data/forcing/point/$yyyy/$mm/$dd/",
+      "FilePath"	: "/home/fp/fp_run/data/forcing/point/$yyyy/$mm/$dd/",
       "FileType"	: 1,		
       "FileTimeRes"	: 3600, 	
       "FileVars"	: {
@@ -145,17 +145,17 @@
           "VarName"           : {
             "Discharge"			: {
               "FileName"          : "rs.db.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/dynamic/outcome/observation/rs/$yyyy/$mm/$dd/",
+              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/observation/rs/$yyyy/$mm/$dd/",
               "FileVar"		      : "discharge"
                                 },
             "DamV"				: {
               "FileName"          : "damv.db.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/dynamic/outcome/observation/dp/$yyyy/$mm/$dd/",
+              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/observation/dp/$yyyy/$mm/$dd/",
               "FileVar"		      : "damv"
                                 },
             "DamL"				: {
               "FileName"          : "daml.db.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/dynamic/outcome/observation/dp/$yyyy/$mm/$dd/",
+              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/observation/dp/$yyyy/$mm/$dd/",
               "FileVar"		      : "daml"
                                 }
                             }
@@ -165,7 +165,7 @@
     },
     "TimeSeries"  : {
       "FileName"    : "hmc.forcing-ts.plant_$NAME_PLANT.txt",
-      "FilePath"	: "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/run/$RUN/data/forcing/timeseries/",
+      "FilePath"	: "/home/fp/fp_run/data/forcing/timeseries/",
       "FileType"	: 1,		
       "FileTimeRes" : 3600, 	
       "FileVars"	: {
@@ -178,12 +178,12 @@
           "VarName"           : {
             "DamQ"				: {
               "FileName"          : "hmc.forcing-ts.plant_$NAME_PLANT.txt",
-              "FilePath"          : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/dynamic/outcome/observation/turbinate/$yyyy/$mm/$dd/",
+              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/observation/turbinate/$yyyy/$mm/$dd/",
               "FileVar"		      : ""
                                 },
             "IntakeQ"			: {
               "FileName"          : "hmc.forcing-ts.plant_$NAME_PLANT.txt",
-              "FilePath"          : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/dynamic/outcome/observation/turbinate/$yyyy/$mm/$dd/",
+              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/observation/turbinate/$yyyy/$mm/$dd/",
               "FileVar"		      : ""
                                 }
                               }
@@ -196,7 +196,7 @@
     "__comment": " --- DataUpdating configuration [TAGS: $yyyy, $mm, $dd, $HH, %RUN, $VAR, $MODE] --- ",
     "Gridded"	  : {
       "FileName"    : "hmc.forcing-grid.$yyyy$mm$dd$HH$MM.nc",
-      "FilePath"	: "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/run/$RUN/data/forcing/gridded/$yyyy/$mm/$dd/",
+      "FilePath"	: "/home/fp/fp_run/data/forcing/gridded/$yyyy/$mm/$dd/",
       "FileType"	: 2,
       "FileTimeRes"	: 3600,
       "FileVars"	: {
@@ -209,22 +209,22 @@
           "VarName"           : {
             "SnowHeight"		: {
               "FileName"          : "ws.db.$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/dynamic/outcome/observation/ws/$yyyy/$mm/$dd/",
+              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/observation/ws/$yyyy/$mm/$dd/",
               "FileVar"		      : "SnowLevel"
                                 },
             "SnowKernel"	    : {
               "FileName"          : "ws.db.$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/dynamic/outcome/observation/ws/$yyyy/$mm/$dd/",
+              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/observation/ws/$yyyy/$mm/$dd/",
               "FileVar"		      : "SnowKernel"
                                 },
             "SnowCoverArea"		: {
               "FileName"          : "MOD10A1.005_marche_$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/dynamic/outcome/observation/modis/$yyyy/$mm/$dd/",
+              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/observation/modis/$yyyy/$mm/$dd/",
               "FileVar"		      : "snow_cover_daily"
                                 },
             "SnowQualityArea"	: {
               "FileName"          : "MOD10A1.005_marche_$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/dynamic/outcome/observation/modis/$yyyy/$mm/$dd/",
+              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/observation/modis/$yyyy/$mm/$dd/",
               "FileVar"		      : "snow_spatial_qa_filter"
                                 }
                               }
@@ -237,7 +237,7 @@
     "__comment": " --- DataOutcome configuration [TAGS: $yyyy, $mm, $dd, $HH, %RUN, $VAR, $MODE, $SECTION, $BASIN] --- ",
     "Gridded"	  : {
       "FileName"    : "hmc.output-grid.$yyyy$mm$dd$HH$MM.nc.gz",	
-      "FilePath"	: "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/run/$RUN/data/outcome/$MODE/gridded/$yyyy/$mm/$dd/",
+      "FilePath"	: "/home/fp/fp_run/data/outcome/gridded/$yyyy/$mm/$dd/",
       "FileType"	: 2,
       "FileTimeRes"	: 3600, 
       "FileVars"	: {
@@ -250,7 +250,7 @@
           "VarName"           : {
             "ALL"				: {
               "FileName"          : "hmc.output-grid.$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/archive/$RUN/$yyyy/$mm/$dd/$HH/outcome/gridded/$MODE/",
+              "FilePath"          : "$TARGET_DATA_RESULTS/$yyyy/$mm/$dd/$HH/outcome/gridded/",
               "FileVar"		      : "ALL"
                                 }
                               }
@@ -259,7 +259,7 @@
     },
     "Point"		  : {
       "FileName"    : "hmc.$VAR.$yyyy$mm$dd$HH$MM.txt",
-      "FilePath"	: "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/run/$RUN/data/outcome/$MODE/point/$yyyy/$mm/$dd/",
+      "FilePath"	: "/home/fp/fp_run/data/outcome/point/$yyyy/$mm/$dd/",
       "FileType"	: 1,
       "FileTimeRes" : 3600,
       "FileVars"	: {
@@ -272,22 +272,22 @@
           "VarName"           : {
             "Discharge"	        : {
               "FileName"          : "hmc.discharge.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/archive/$RUN/$yyyy/$mm/$dd/$HH/outcome/point/$MODE/discharge/",
+              "FilePath"          : "$TARGET_DATA_RESULTS/$yyyy/$mm/$dd/$HH/outcome/point/discharge/",
               "FileVar"		      : "discharge"
                                 },
             "DamV"				: {
               "FileName"          : "hmc.vdam.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/archive/$RUN/$yyyy/$mm/$dd/$HH/outcome/point/$MODE/dam_volume/",
+              "FilePath"          : "$TARGET_DATA_RESULTS/$yyyy/$mm/$dd/$HH/outcome/point/dam_volume/",
               "FileVar"		      : "vdam"
                                 },
             "DamL"				: {
               "FileName"          : "hmc.ldam.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/archive/$RUN/$yyyy/$mm/$dd/$HH/outcome/point/$MODE/dam_level/",
+              "FilePath"          : "$TARGET_DATA_RESULTS/$yyyy/$mm/$dd/$HH/outcome/point/dam_level/",
               "FileVar"		      : "ldam"
                                 },
             "VarAnalysis"		: {
               "FileName"          : "hmc.var-analysis.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/archive/$RUN/$yyyy/$mm/$dd/$HH/outcome/point/$MODE/analysis/",
+              "FilePath"          : "$TARGET_DATA_RESULTS/$yyyy/$mm/$dd/$HH/outcome/point/analysis/",
               "FileVar"		      : "var-analysis"
                                 }
                               }
@@ -296,7 +296,7 @@
     },
     "TimeSeries"  : {
       "FileName"    : "hmc.$VAR.txt",
-      "FilePath"    : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/run/$RUN/data/outcome/$MODE/timeseries/",
+      "FilePath"    : "/home/fp/fp_run/data/outcome/time_series/",
       "FileType"	: 1,
       "FileTimeRes"	: 3600,
       "FileVars"	: {
@@ -309,22 +309,22 @@
           "VarName"           : {
             "Discharge"			: {
               "FileName"          : "hmc.hydrograph.txt",
-              "FilePath"          : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/archive/$RUN/$yyyy/$mm/$dd/$HH/outcome/timeseries/$MODE/",
+              "FilePath"          : "$TARGET_DATA_RESULTS/$yyyy/$mm/$dd/$HH/outcome/time_series/",
               "FileVar"		      : "hydrograph"
                                 },
             "DamV"				: {
               "FileName"          : "hmc.vdam.txt",
-              "FilePath"          : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/archive/$RUN/$yyyy/$mm/$dd/$HH/outcome/timeseries/$MODE/",
+              "FilePath"          : "$TARGET_DATA_RESULTS/$yyyy/$mm/$dd/$HH/outcome/time_series/",
               "FileVar"		      : "vdam"
                                 },
             "DamL"				: {
               "FileName"          : "hmc.ldam.txt",
-              "FilePath"          : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/archive/$RUN/$yyyy/$mm/$dd/$HH/outcome/timeseries/$MODE/",
+              "FilePath"          : "$TARGET_DATA_RESULTS/$yyyy/$mm/$dd/$HH/outcome/time_series/",
               "FileVar"		      : "ldam"
                                 },
             "VarAnalysis"		: {
               "FileName"          : "hmc.var-analysis.txt",
-              "FilePath"          : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/archive/$RUN/$yyyy/$mm/$dd/$HH/outcome/timeseries/$MODE/",
+              "FilePath"          : "$TARGET_DATA_RESULTS/$yyyy/$mm/$dd/$HH/outcome/time_series/",
               "FileVar"		      : "var-analysis"
                                 }
                               }
@@ -338,7 +338,7 @@
           "VarName"           : {
             "Discharge"			: {
               "FileName"          : "hydrograph_$SECTION_$BASIN_$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/archive/$RUN/$yyyy/$mm/$dd/$HH/outcome/dewetra/$MODE/",
+              "FilePath"          : "$TARGET_DATA_RESULTS/$yyyy/$mm/$dd/$HH/outcome/web_app/",
               "FileVar"		      : "hydrograph"
                                 }
                               }
@@ -350,7 +350,7 @@
     "__comment": " --- DataState configuration [TAGS: $yyyy, $mm, $dd, $HH, %RUN, $VAR, $MODE] --- ",
     "Gridded"	  : {
       "FileName":   "hmc.state-grid.$yyyy$mm$dd$HH$MM.nc.gz",
-      "FilePath" 	: "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/run/$RUN/data/state/$MODE/gridded/$yyyy/$mm/$dd/",
+      "FilePath" 	: "/home/fp/fp_run/data/state/gridded/$yyyy/$mm/$dd/",
       "FileType"	: 2,
       "FileTimeRes" : 86400,
       "FileVars"	: {
@@ -363,7 +363,7 @@
           "VarName"           : {
             "ALL"				: {
               "FileName"          : "hmc.state-grid.$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/archive/$RUN/$yyyy/$mm/$dd/$HH/state/gridded/$MODE/",
+              "FilePath"          : "$TARGET_DATA_RESULTS/$yyyy/$mm/$dd/$HH/state/gridded/",
               "FileVar"		      : "ALL"
                                 }
                               }
@@ -372,7 +372,7 @@
     },
 	"Point"		  : {
       "FileName"    : "hmc.state-point.$yyyy$mm$dd$HH$MM.txt",
-      "FilePath"	: "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/run/$RUN/data/state/$MODE/point/$yyyy/$mm/$dd/",
+      "FilePath"	: "/home/fp/fp_run/data/state/point/$yyyy/$mm/$dd/",
       "FileType"	: 1,
       "FileTimeRes"	: 86400,
       "FileVars"	: {
@@ -385,7 +385,7 @@
           "VarName"           : {
             "ALL"				: {
               "FileName"          : "hmc.state-point.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/archive/$RUN/$yyyy/$mm/$dd/$HH/state/point/$MODE/",
+              "FilePath"          : "$TARGET_DATA_RESULTS/$yyyy/$mm/$dd/$HH/state/point/",
               "FileVar"		      : "ALL"
                                 }
                               }
@@ -397,7 +397,7 @@
     "__comment": " --- DataRestart configuration [TAGS: $yyyy, $mm, $dd, $HH, %RUN, $VAR, $MODE] --- ",
     "Gridded"	  : {
       "FileName" 	: "hmc.state-grid.$yyyy$mm$dd$HH$MM.nc.gz",
-      "FilePath"	: "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/run/$RUN/data/restart/$MODE/",
+      "FilePath"	: "/home/fp/fp_run/data/restart/",
       "FileType"	: 2,
       "FileTimeRes" : 86400,
       "FileVars"	: {
@@ -410,7 +410,7 @@
           "VarName"           : {
             "ALL"				: {
               "FileName"          : "hmc.state-grid.$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/restart/$yyyy/$mm/$dd/",
+              "FilePath"          : "$TARGET_DATA_RESTART/$yyyy/$mm/$dd/",
               "FileVar"		      : "ALL"
                                 }
                               }
@@ -419,7 +419,7 @@
     },
     "Point"	      : {
       "FileName"    : "hmc.state-point.$yyyy$mm$dd$HH$MM.txt",
-      "FilePath"	: "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/run/$RUN/data/restart/$MODE/",
+      "FilePath"	: "/home/fp/fp_run/data/restart/",
       "FileType"	: 1,
       "FileTimeRes" : 86400,
       "FileVars"	: {
@@ -432,7 +432,7 @@
           "VarName"           : {
             "ALL"				: {
               "FileName"          : "hmc.state-point.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/restart/$yyyy/$mm/$dd/",
+              "FilePath"          : "$TARGET_DATA_RESTART/$yyyy/$mm/$dd/",
               "FileVar"		      : "ALL"
                                 }
                               }
@@ -444,7 +444,7 @@
     "__comment": " --- DataObs configuration [TAGS: $yyyy, $mm, $dd, $HH, %RUN, $VAR, $MODE] --- ",
     "Point"       : {
       "FileName"    : "hmc.$VAR.$yyyy$mm$dd$HH$MM.txt",
-      "FilePath"	: "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/run/$RUN/data/forcing/point/$yyyy/$mm/$dd/",
+      "FilePath"	: "/home/fp/fp_run/data/forcing/point/$yyyy/$mm/$dd/",
       "FileType"	: 1,
       "FileTimeRes"	: 3600,
       "FileVars"	: {
@@ -457,17 +457,17 @@
           "VarName"           : {
             "Discharge"			: {
               "FileName"          : "discharge.observed.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/archive/$RUN/$yyyy/$mm/$dd/$HH/obs/point/$MODE/discharge/",
+              "FilePath"          : "$TARGET_DATA_RESULTS/$yyyy/$mm/$dd/$HH/obs/point/discharge/",
               "FileVar"		      : "discharge"
                                 },
             "DamV"				: {
               "FileName"          : "damv.observed.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/archive/$RUN/$yyyy/$mm/$dd/$HH/obs/point/$MODE/dam_volume/",
+              "FilePath"          : "$TARGET_DATA_RESULTS/$yyyy/$mm/$dd/$HH/obs/point/dam_volume/",
               "FileVar"		      : "damv"
                                 },
             "DamL"				: {
               "FileName"          : "daml.observed.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/archive/$RUN/$yyyy/$mm/$dd/$HH/obs/point/$MODE/dam_level/",
+              "FilePath"          : "$TARGET_DATA_RESULTS/$yyyy/$mm/$dd/$HH/obs/point/dam_level/",
               "FileVar"		      : "daml"
                                 }
                               }

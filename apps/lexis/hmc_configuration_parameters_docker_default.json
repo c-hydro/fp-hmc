@@ -30,8 +30,8 @@
       "RunModelCLine": "$UC $UH $CT $CF $DOMAIN $CPI $KSATRATIO $WTABLEHBR $SLOPEMAX"
     },
     "Run_ConfigFile": {
-      "FileData": "hmc_configuration_data_marche_local.json",
-      "FileLog": "hmc_logging_marche_local.txt"
+      "FileData": "hmc_configuration_data.json",
+      "FileLog": "hmc_logging.txt"
     },
     "Run_Path": {
       "PathTemp": "/run/$RUN/$MODE/temp/",
