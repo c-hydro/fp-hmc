@@ -59,32 +59,32 @@
           "VarName"         : {
             "Rain"            : {
               "FileName"          : "ws.db.$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/observation/ws/$yyyy/$mm/$dd/",
+              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/ws/$yyyy/$mm/$dd/",
               "FileVar"		      : "Rain"
                                 },
             "AirTemperature"  : {
               "FileName"          : "ws.db.$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/observation/ws/$yyyy/$mm/$dd/",
+              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/ws/$yyyy/$mm/$dd/",
               "FileVar"		      : "AirTemperature"
                                 },
             "Wind"            : {
               "FileName"          : "ws.db.$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/observation/ws/$yyyy/$mm/$dd/",
+              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/ws/$yyyy/$mm/$dd/",
               "FileVar"		      : "Wind"
                                 },
             "RelHumidity"       : {
               "FileName"          : "ws.db.$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/observation/ws/$yyyy/$mm/$dd/",
+              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/ws/$yyyy/$mm/$dd/",
               "FileVar"		      : "RelHumidity"
                                 },
             "IncRadiation"		: {
               "FileName"          : "ws.db.$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/observation/ws/$yyyy/$mm/$dd/",
+              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/ws/$yyyy/$mm/$dd/",
               "FileVar"		      : "IncRadiation"
                                 },
             "AirPressure"		: {
               "FileName"          : "ws.db.$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/observation/ws/$yyyy/$mm/$dd/",
+              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/ws/$yyyy/$mm/$dd/",
               "FileVar"		      : "AirPressure"
                                 }
                               }
@@ -145,17 +145,17 @@
           "VarName"           : {
             "Discharge"			: {
               "FileName"          : "rs.db.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/observation/rs/$yyyy/$mm/$dd/",
+              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/rs/$yyyy/$mm/$dd/",
               "FileVar"		      : "discharge"
                                 },
             "DamV"				: {
               "FileName"          : "damv.db.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/observation/dp/$yyyy/$mm/$dd/",
+              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/dp/$yyyy/$mm/$dd/",
               "FileVar"		      : "damv"
                                 },
             "DamL"				: {
               "FileName"          : "daml.db.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/observation/dp/$yyyy/$mm/$dd/",
+              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/dp/$yyyy/$mm/$dd/",
               "FileVar"		      : "daml"
                                 }
                             }
@@ -178,12 +178,12 @@
           "VarName"           : {
             "DamQ"				: {
               "FileName"          : "hmc.forcing-ts.plant_$NAME_PLANT.txt",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/observation/turbinate/$yyyy/$mm/$dd/",
+              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/turbinate/$yyyy/$mm/$dd/",
               "FileVar"		      : ""
                                 },
             "IntakeQ"			: {
               "FileName"          : "hmc.forcing-ts.plant_$NAME_PLANT.txt",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/observation/turbinate/$yyyy/$mm/$dd/",
+              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/turbinate/$yyyy/$mm/$dd/",
               "FileVar"		      : ""
                                 }
                               }
@@ -209,22 +209,22 @@
           "VarName"           : {
             "SnowHeight"		: {
               "FileName"          : "ws.db.$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/observation/ws/$yyyy/$mm/$dd/",
+              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/ws/$yyyy/$mm/$dd/",
               "FileVar"		      : "SnowLevel"
                                 },
             "SnowKernel"	    : {
               "FileName"          : "ws.db.$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/observation/ws/$yyyy/$mm/$dd/",
+              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/ws/$yyyy/$mm/$dd/",
               "FileVar"		      : "SnowKernel"
                                 },
             "SnowCoverArea"		: {
               "FileName"          : "MOD10A1.005_marche_$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/observation/modis/$yyyy/$mm/$dd/",
+              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/modis/$yyyy/$mm/$dd/",
               "FileVar"		      : "snow_cover_daily"
                                 },
             "SnowQualityArea"	: {
               "FileName"          : "MOD10A1.005_marche_$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/observation/modis/$yyyy/$mm/$dd/",
+              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/modis/$yyyy/$mm/$dd/",
               "FileVar"		      : "snow_spatial_qa_filter"
                                 }
                               }
