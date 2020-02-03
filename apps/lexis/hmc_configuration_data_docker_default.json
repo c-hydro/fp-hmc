@@ -250,7 +250,7 @@
           "VarName"           : {
             "ALL"				: {
               "FileName"          : "hmc.output-grid.$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "$TARGET_DATA_RESULTS/$yyyy/$mm/$dd/$HH/outcome/gridded/",
+              "FilePath"          : "$TARGET_DATA_ARCHIVE/$yyyy/$mm/$dd/$HH/outcome/gridded/",
               "FileVar"		      : "ALL"
                                 }
                               }
@@ -272,22 +272,22 @@
           "VarName"           : {
             "Discharge"	        : {
               "FileName"          : "hmc.discharge.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "$TARGET_DATA_RESULTS/$yyyy/$mm/$dd/$HH/outcome/point/discharge/",
+              "FilePath"          : "$TARGET_DATA_ARCHIVE/$yyyy/$mm/$dd/$HH/outcome/point/discharge/",
               "FileVar"		      : "discharge"
                                 },
             "DamV"				: {
               "FileName"          : "hmc.vdam.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "$TARGET_DATA_RESULTS/$yyyy/$mm/$dd/$HH/outcome/point/dam_volume/",
+              "FilePath"          : "$TARGET_DATA_ARCHIVE/$yyyy/$mm/$dd/$HH/outcome/point/dam_volume/",
               "FileVar"		      : "vdam"
                                 },
             "DamL"				: {
               "FileName"          : "hmc.ldam.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "$TARGET_DATA_RESULTS/$yyyy/$mm/$dd/$HH/outcome/point/dam_level/",
+              "FilePath"          : "$TARGET_DATA_ARCHIVE/$yyyy/$mm/$dd/$HH/outcome/point/dam_level/",
               "FileVar"		      : "ldam"
                                 },
             "VarAnalysis"		: {
               "FileName"          : "hmc.var-analysis.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "$TARGET_DATA_RESULTS/$yyyy/$mm/$dd/$HH/outcome/point/analysis/",
+              "FilePath"          : "$TARGET_DATA_ARCHIVE/$yyyy/$mm/$dd/$HH/outcome/point/analysis/",
               "FileVar"		      : "var-analysis"
                                 }
                               }
@@ -309,22 +309,22 @@
           "VarName"           : {
             "Discharge"			: {
               "FileName"          : "hmc.hydrograph.txt",
-              "FilePath"          : "$TARGET_DATA_RESULTS/$yyyy/$mm/$dd/$HH/outcome/time_series/",
+              "FilePath"          : "$TARGET_DATA_ARCHIVE/$yyyy/$mm/$dd/$HH/outcome/time_series/",
               "FileVar"		      : "hydrograph"
                                 },
             "DamV"				: {
               "FileName"          : "hmc.vdam.txt",
-              "FilePath"          : "$TARGET_DATA_RESULTS/$yyyy/$mm/$dd/$HH/outcome/time_series/",
+              "FilePath"          : "$TARGET_DATA_ARCHIVE/$yyyy/$mm/$dd/$HH/outcome/time_series/",
               "FileVar"		      : "vdam"
                                 },
             "DamL"				: {
               "FileName"          : "hmc.ldam.txt",
-              "FilePath"          : "$TARGET_DATA_RESULTS/$yyyy/$mm/$dd/$HH/outcome/time_series/",
+              "FilePath"          : "$TARGET_DATA_ARCHIVE/$yyyy/$mm/$dd/$HH/outcome/time_series/",
               "FileVar"		      : "ldam"
                                 },
             "VarAnalysis"		: {
               "FileName"          : "hmc.var-analysis.txt",
-              "FilePath"          : "$TARGET_DATA_RESULTS/$yyyy/$mm/$dd/$HH/outcome/time_series/",
+              "FilePath"          : "$TARGET_DATA_ARCHIVE/$yyyy/$mm/$dd/$HH/outcome/time_series/",
               "FileVar"		      : "var-analysis"
                                 }
                               }
@@ -338,7 +338,7 @@
           "VarName"           : {
             "Discharge"			: {
               "FileName"          : "hydrograph_$SECTION_$BASIN_$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "$TARGET_DATA_RESULTS/$yyyy/$mm/$dd/$HH/outcome/web_app/",
+              "FilePath"          : "$TARGET_DATA_ARCHIVE/$yyyy/$mm/$dd/$HH/outcome/web_app/",
               "FileVar"		      : "hydrograph"
                                 }
                               }
@@ -363,7 +363,7 @@
           "VarName"           : {
             "ALL"				: {
               "FileName"          : "hmc.state-grid.$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "$TARGET_DATA_RESULTS/$yyyy/$mm/$dd/$HH/state/gridded/",
+              "FilePath"          : "$TARGET_DATA_ARCHIVE/$yyyy/$mm/$dd/$HH/state/gridded/",
               "FileVar"		      : "ALL"
                                 }
                               }
@@ -385,7 +385,7 @@
           "VarName"           : {
             "ALL"				: {
               "FileName"          : "hmc.state-point.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "$TARGET_DATA_RESULTS/$yyyy/$mm/$dd/$HH/state/point/",
+              "FilePath"          : "$TARGET_DATA_ARCHIVE/$yyyy/$mm/$dd/$HH/state/point/",
               "FileVar"		      : "ALL"
                                 }
                               }
@@ -457,17 +457,17 @@
           "VarName"           : {
             "Discharge"			: {
               "FileName"          : "discharge.observed.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "$TARGET_DATA_RESULTS/$yyyy/$mm/$dd/$HH/obs/point/discharge/",
+              "FilePath"          : "$TARGET_DATA_ARCHIVE/$yyyy/$mm/$dd/$HH/obs/point/discharge/",
               "FileVar"		      : "discharge"
                                 },
             "DamV"				: {
               "FileName"          : "damv.observed.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "$TARGET_DATA_RESULTS/$yyyy/$mm/$dd/$HH/obs/point/dam_volume/",
+              "FilePath"          : "$TARGET_DATA_ARCHIVE/$yyyy/$mm/$dd/$HH/obs/point/dam_volume/",
               "FileVar"		      : "damv"
                                 },
             "DamL"				: {
               "FileName"          : "daml.observed.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "$TARGET_DATA_RESULTS/$yyyy/$mm/$dd/$HH/obs/point/dam_level/",
+              "FilePath"          : "$TARGET_DATA_ARCHIVE/$yyyy/$mm/$dd/$HH/obs/point/dam_level/",
               "FileVar"		      : "daml"
                                 }
                               }
