@@ -25,6 +25,7 @@ from hmc.driver.manager.drv_manager_debug import Exc
 oLogStream = logging.getLogger(sLoggerName)
 #######################################################################################
 
+
 # -------------------------------------------------------------------------------------
 # Method to write timeseries data in hydrapp format
 def writeTS_HydrApp(sFileName, sTimeNow, sTimeFrom, oDataModel, oDataObs=None, oFileSection=None, iTimeDelta=60,
@@ -34,13 +35,17 @@ def writeTS_HydrApp(sFileName, sTimeNow, sTimeFrom, oDataModel, oDataObs=None, o
 
 # -------------------------------------------------------------------------------------
 
+
 # -------------------------------------------------------------------------------------
 # Method to write timeseries data in dewetra format
-def writeTS_Dewetra(sFileName, sTimeNow, sTimeFrom, oDataModel, oDataObs=None, oFileSection=None, iTimeDelta=60,
-                    iEnsN=1, sRunType='deterministic'):
+def writeTS_DewApp(sFileName, sTimeNow, sTimeFrom, oDataModel, oDataObs=None, oFileSection=None, iTimeDelta=60,
+                    iEnsN=1, sRunType='deterministic', iStartCols=1, dNoData=-9999.0, dNotValidData=-9998.0):
 
     # Iterate over section
     for iSectionID, oSectionLine in enumerate(oFileSection):
+
+        # Get the right column according with the file format (in same case first column is the time step)
+        iSectionID = iSectionID + iStartCols
 
         # Create file section name
         oSectionTags = {'$SECTION': oSectionLine[2], '$BASIN': oSectionLine[3]}
@@ -50,25 +55,30 @@ def writeTS_Dewetra(sFileName, sTimeNow, sTimeFrom, oDataModel, oDataObs=None, o
         if exists(sFileNameSection):
             os.remove(sFileNameSection)
 
-        oDataWS = []
+        oDataWS_MOD = []
         for sDataTime, oDataStep in sorted(oDataModel.items()):
             dDataStep = oDataStep[iSectionID]
-            oDataWS.append(str(dDataStep))
+            if dDataStep is None:
+                dDataStep = dNotValidData
+            oDataWS_MOD.append(str(dDataStep))
 
+        oDataWS_OBS = []
         if oDataObs is None:
-            oDataObs = [-9999.0] * oDataWS.__len__()
+            oDataWS_OBS = [dNoData] * oDataWS_MOD.__len__()
+        else:
+            for sDataTime, dDataStep in sorted(oDataObs.items()):
+                if dDataStep is None:
+                    dDataStep = dNotValidData
+                oDataWS_OBS.append(str(dDataStep))
 
         # Save update information
-        oDewetraWS = {}
-
-        # Flag information
-        oDewetraWS['Line_01'] = 'Procedure=' + str(sRunType) + ' \n'
-        oDewetraWS['Line_02'] = 'DateMeteoModel=' + str(sTimeNow) + ' \n'
-        oDewetraWS['Line_03'] = 'DateStart=' + str(sTimeFrom) + ' \n'
-        oDewetraWS['Line_04'] = 'Temp.Resolution=' + str(iTimeDelta) + ' \n'
-        oDewetraWS['Line_05'] = 'SscenariosNumber=' + str(int(iEnsN)) + ' \n'
-        oDewetraWS['Line_06'] = (' '.join(map(str, oDataObs))) + ' \n'
-        oDewetraWS['Line_07'] = (' '.join(map(str, oDataWS))) + ' \n'
+        oDewetraWS = {'Line_01': 'Procedure=' + str(sRunType) + ' \n',
+                      'Line_02': 'DateMeteoModel=' + str(sTimeNow) + ' \n',
+                      'Line_03': 'DateStart=' + str(sTimeFrom) + ' \n',
+                      'Line_04': 'Temp.Resolution=' + str(iTimeDelta) + ' \n',
+                      'Line_05': 'SscenariosNumber=' + str(int(iEnsN)) + ' \n',
+                      'Line_06': (' '.join(map(str, oDataWS_OBS))) + ' \n',
+                      'Line_07': (' '.join(map(str, oDataWS_MOD))) + ' \n'}
 
         # Dictionary sorting
         oDewetraWSOrd = collections.OrderedDict(sorted(oDewetraWS.items()))
@@ -102,8 +112,13 @@ def writeTS_Default(sFileName, oFileData, sFileHeader=None):
 
     # Cycle(s) over step(s) and write Data
     for sTimeData, oVarData in sorted(oFileData.items()):
+
         # Data parser
-        oLineData = oVarData.tolist()
+        if isinstance(oVarData, list):
+            oLineData = oVarData
+        else:
+            oLineData = oVarData.tolist()
+
         oLineData.insert(0, sTimeData)
         sLineData = ' '.join(oLineData)
         # Save Data to file

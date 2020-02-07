@@ -94,13 +94,13 @@
 <li class="toctree-l4"><a class="reference internal" href="#data-forcing">Data Forcing</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#data-updating">Data Updating</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#data-outcome">Data Outcome</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#data-state">Data State</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#data-restart">Data Restart</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data-state-data-restart">Data State / Data Restart</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#model-execution">Model execution</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#wrapping-mode">Wrapping mode</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#standalone-mode">Standalone mode</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#debugging-mode">Debugging mode</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#profiling-mode">Profiling Mode</a></li>
@@ -1123,19 +1123,356 @@ information; the attributes available are reported below:</p>
 <h4>Data Outcome<a class="headerlink" href="#data-outcome" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
 <li>Gridded</li>
+</ul>
+<p>The outcome gridded files are in netCDF format; the outcome data are defined using the ARCHIVE key word. This
+definition is used to specify and manage the results of the model.</p>
+<p>Each variable, as seen in previous sections, is defined by a list of attributes in order to correctly parser the
+information; the attributes available are reported below:</p>
+<blockquote>
+<div><ul class="simple">
+<li>VarResolution: resolution time of the variable in seconds [example: 3600].</li>
+<li><dl class="first docutils">
+<dt>VarArrival: arrival time of the variable.</dt>
+<dd><ul class="first last">
+<li>Day: to define the variable arrival day [example: 0].</li>
+<li>Hour: to define the variable arrival hour [example: null].</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>VarOp: ancillary defined operations of the variable.</dt>
+<dd><ul class="first last">
+<li>Merging: to merge variable from different sources in a common dataset [example: null].</li>
+<li>Splitting: to split variable in different time steps [example: null].</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li>VarStep: step of the variable [example: 1].</li>
+<li><dl class="first docutils">
+<dt>VarDims: dimensions of the variable.</dt>
+<dd><ul class="first last">
+<li>X: dimension along X axis [example: “west_east”].</li>
+<li>Y: dimension along Y axis [example: “south_north”].</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>VarName: name of the variable.</dt>
+<dd><ul class="first last">
+<li>FileName: the name of the source file [example: “hmc.output-grid.$yyyy$mm$dd$HH$MM.nc.gz”]</li>
+<li>FilePath: the path of the source file [example: “$HOME/hmc-ws/run/$RUN/data/outcome/$MODE/gridded/$yyyy/$mm/$dd/”]</li>
+<li>FileVar: the name of the variable in the source file [example: “Discharge”]</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+<p>An example of the outcome gridded data structure is reported below.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="nt">&quot;Gridded&quot;</span>         <span class="p">:</span> <span class="p">{</span>
+  <span class="nt">&quot;FileName&quot;</span>    <span class="p">:</span> <span class="s2">&quot;hmc.output-grid.$yyyy$mm$dd$HH$MM.nc.gz&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;FilePath&quot;</span>    <span class="p">:</span> <span class="s2">&quot;$HOME/hmc-ws/run/$RUN/data/outcome/$MODE/gridded/$yyyy/$mm/$dd/&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;FileType&quot;</span>    <span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+  <span class="nt">&quot;FileTimeRes&quot;</span>       <span class="p">:</span> <span class="mi">3600</span><span class="p">,</span>
+  <span class="nt">&quot;FileVars&quot;</span>    <span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;ARCHIVE&quot;</span>     <span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;VarResolution&quot;</span>   <span class="p">:</span> <span class="mi">3600</span><span class="p">,</span>
+      <span class="nt">&quot;VarArrival&quot;</span>      <span class="p">:</span> <span class="p">{</span><span class="nt">&quot;Day&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nt">&quot;Hour&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">},</span>
+      <span class="nt">&quot;VarOp&quot;</span>           <span class="p">:</span> <span class="p">{</span><span class="nt">&quot;Merging&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span> <span class="nt">&quot;Splitting&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">},</span>
+      <span class="nt">&quot;VarStep&quot;</span>         <span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="nt">&quot;VarDims&quot;</span>         <span class="p">:</span> <span class="p">{</span><span class="nt">&quot;X&quot;</span><span class="p">:</span> <span class="s2">&quot;west_east&quot;</span><span class="p">,</span> <span class="nt">&quot;Y&quot;</span><span class="p">:</span> <span class="s2">&quot;south_north&quot;</span><span class="p">},</span>
+      <span class="nt">&quot;VarName&quot;</span>         <span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;ALL&quot;</span>                               <span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&quot;FileName&quot;</span>          <span class="p">:</span> <span class="s2">&quot;hmc.output-grid.$yyyy$mm$dd$HH$MM.nc.gz&quot;</span><span class="p">,</span>
+          <span class="nt">&quot;FilePath&quot;</span>          <span class="p">:</span> <span class="s2">&quot;$HOME/hmc-ws/data/archive/$RUN/$yyyy/$mm/$dd/$HH/outcome/gridded/$MODE/&quot;</span><span class="p">,</span>
+          <span class="nt">&quot;FileVar&quot;</span>           <span class="p">:</span> <span class="s2">&quot;ALL&quot;</span>
+                          <span class="p">}</span>
+                        <span class="p">}</span>
+                  <span class="p">}</span>
+                <span class="p">}</span>
+              <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt>In the gridded outcome files, the default configuration of outcome variables are reported below:</dt>
+<dd><ul class="first last simple">
+<li>Discharge: Discharge [m^3/s]</li>
+<li>Daily Accumulated Evapotranspiration: ETCum [mm]</li>
+<li>Sensible Heat: H [W/m^2]</li>
+<li>Latent Heat: LE [W/m^2]</li>
+<li>Land Surface Temperature: LST [K]</li>
+<li>Soil Moisture: SM [%]</li>
+<li>Total Soil Capacity: VTot [mm]</li>
+</ul>
+</dd>
+<dt>If the snow part is activated, the following variables are added in the outcome files:</dt>
+<dd><ul class="first last simple">
+<li>Snow Water Equivalent: SWE [mm]</li>
+<li>Snow Melting: MeltingS [mm]</li>
+<li>Snow Density: RhoS [kg/m^3]</li>
+<li>Snowfall: Snowfall [mm]</li>
+<li>Snow Albedo: AlbedoS [-]</li>
+<li>Snow Age: AgeS [steps]</li>
+<li>Daily Accumulated Snow Melting: MeltingSDayCum [mm]</li>
+</ul>
+</dd>
+</dl>
+<ul class="simple">
 <li>Point</li>
+</ul>
+<p>The outcome point files are in ASCII format; the outcome data are defined using the ARCHIVE key word. This
+definition is used to specify and manage the results of the model.</p>
+<p>Each variable, as seen in previous sections, is defined by a list of attributes in order to correctly parser the
+information; the attributes available are reported below:</p>
+<blockquote>
+<div><ul class="simple">
+<li>VarResolution: resolution time of the variable in seconds [example: 3600].</li>
+<li><dl class="first docutils">
+<dt>VarArrival: arrival time of the variable.</dt>
+<dd><ul class="first last">
+<li>Day: to define the variable arrival day [example: 0].</li>
+<li>Hour: to define the variable arrival hour [example: null].</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>VarOp: ancillary defined operations of the variable.</dt>
+<dd><ul class="first last">
+<li>Merging: to merge variable from different sources in a common dataset [example: null].</li>
+<li>Splitting: to split variable in different time steps [example: null].</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li>VarStep: step of the variable [example: 1].</li>
+<li><dl class="first docutils">
+<dt>VarDims: dimensions of the variable.</dt>
+<dd><ul class="first last">
+<li>T: dimension along t axis [example: “time”].</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>VarName: name of the variable.</dt>
+<dd><ul class="first last">
+<li>FileName: the name of the source file [example: “hmc.$VAR.$yyyy$mm$dd$HH$MM.txt”]</li>
+<li>FilePath: the path of the source file [example: “$HOME/hmc-ws/run/$RUN/data/outcome/$MODE/point/$yyyy/$mm/$dd/”]</li>
+<li>FileVar: the name of the variable in the source file [example: “DamV”]</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+<p>An example of the outcome point data structure is reported below.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="nt">&quot;Point&quot;</span>       <span class="p">:</span> <span class="p">{</span>
+  <span class="nt">&quot;FileName&quot;</span>    <span class="p">:</span> <span class="s2">&quot;hmc.$VAR.$yyyy$mm$dd$HH$MM.txt&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;FilePath&quot;</span>    <span class="p">:</span> <span class="s2">&quot;$HOME/hmc-ws/run/$RUN/data/outcome/$MODE/point/$yyyy/$mm/$dd/&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;FileType&quot;</span>    <span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+  <span class="nt">&quot;FileTimeRes&quot;</span> <span class="p">:</span> <span class="mi">3600</span><span class="p">,</span>
+  <span class="nt">&quot;FileVars&quot;</span>    <span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;ARCHIVE&quot;</span>     <span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;VarResolution&quot;</span>   <span class="p">:</span> <span class="mi">3600</span><span class="p">,</span>
+      <span class="nt">&quot;VarArrival&quot;</span>      <span class="p">:</span> <span class="p">{</span><span class="nt">&quot;Day&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nt">&quot;Hour&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">},</span>
+      <span class="nt">&quot;VarOp&quot;</span>           <span class="p">:</span> <span class="p">{</span><span class="nt">&quot;Merging&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span> <span class="nt">&quot;Splitting&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">},</span>
+      <span class="nt">&quot;VarStep&quot;</span>         <span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="nt">&quot;VarDims&quot;</span>         <span class="p">:</span> <span class="p">{</span><span class="nt">&quot;T&quot;</span><span class="p">:</span> <span class="s2">&quot;time&quot;</span><span class="p">},</span>
+      <span class="nt">&quot;VarName&quot;</span>         <span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Discharge&quot;</span>       <span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&quot;FileName&quot;</span>          <span class="p">:</span> <span class="s2">&quot;hmc.discharge.$yyyy$mm$dd$HH$MM.txt&quot;</span><span class="p">,</span>
+          <span class="nt">&quot;FilePath&quot;</span>          <span class="p">:</span> <span class="s2">&quot;$HOME/hmc-ws/data/archive/$RUN/$yyyy/$mm/$dd/$HH/outcome/point/$MODE/discharge/&quot;</span><span class="p">,</span>
+          <span class="nt">&quot;FileVar&quot;</span>           <span class="p">:</span> <span class="s2">&quot;discharge&quot;</span>
+                          <span class="p">},</span>
+        <span class="nt">&quot;DamV&quot;</span>            <span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&quot;FileName&quot;</span>          <span class="p">:</span> <span class="s2">&quot;hmc.vdam.$yyyy$mm$dd$HH$MM.txt&quot;</span><span class="p">,</span>
+          <span class="nt">&quot;FilePath&quot;</span>          <span class="p">:</span> <span class="s2">&quot;$HOME/hmc-ws/data/archive/$RUN/$yyyy/$mm/$dd/$HH/outcome/point/$MODE/dam_volume/&quot;</span><span class="p">,</span>
+          <span class="nt">&quot;FileVar&quot;</span>           <span class="p">:</span> <span class="s2">&quot;vdam&quot;</span>
+                          <span class="p">},</span>
+        <span class="nt">&quot;DamL&quot;</span>            <span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&quot;FileName&quot;</span>          <span class="p">:</span> <span class="s2">&quot;hmc.ldam.$yyyy$mm$dd$HH$MM.txt&quot;</span><span class="p">,</span>
+          <span class="nt">&quot;FilePath&quot;</span>          <span class="p">:</span> <span class="s2">&quot;$HOME/hmc-ws/data/archive/$RUN/$yyyy/$mm/$dd/$HH/outcome/point/$MODE/dam_level/&quot;</span><span class="p">,</span>
+          <span class="nt">&quot;FileVar&quot;</span>           <span class="p">:</span> <span class="s2">&quot;ldam&quot;</span>
+                          <span class="p">},</span>
+        <span class="nt">&quot;VarAnalysis&quot;</span>     <span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&quot;FileName&quot;</span>          <span class="p">:</span> <span class="s2">&quot;hmc.var-analysis.$yyyy$mm$dd$HH$MM.txt&quot;</span><span class="p">,</span>
+          <span class="nt">&quot;FilePath&quot;</span>          <span class="p">:</span> <span class="s2">&quot;$HOME/hmc-ws/data/archive/$RUN/$yyyy/$mm/$dd/$HH/outcome/point/$MODE/analysis/&quot;</span><span class="p">,</span>
+          <span class="nt">&quot;FileVar&quot;</span>           <span class="p">:</span> <span class="s2">&quot;var-analysis&quot;</span>
+                          <span class="p">}</span>
+                        <span class="p">}</span>
+                  <span class="p">}</span>
+                <span class="p">}</span>
+              <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt>The default variables saved by the model in point format are reported:</dt>
+<dd><ul class="first last simple">
+<li>Discharge: discharge [m^3/s]</li>
+</ul>
+</dd>
+<dt>In addition, if dams are included in the model configuration, the following variables are added:</dt>
+<dd><ul class="first last simple">
+<li>Dam volume: vdam [m^3];</li>
+<li>Dam Level: ldam [m].</li>
+</ul>
+</dd>
+</dl>
+<p>Moreover, a point analysis file, to control and check the run of the model, is saved,
+when the FlagDebug &gt; 0,  with information for some state variables:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Average variables: var-analysis.</li>
+</ul>
+</div></blockquote>
+<p>In the analysis file, the following fields are saved on three columns [average, max, min]:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>Rain [mm]</li>
+<li>AirTemperature [C]</li>
+<li>IncomingRadiation [W/m^2]</li>
+<li>Wind Speed [m/s]</li>
+<li>Relative Humidity [%]</li>
+<li>AirPressure [kPa]</li>
+<li>LAI [-]</li>
+<li>Albedo [0,1]</li>
+<li>Land Surface Temperature [K]</li>
+<li>Sensible Heat [W/m^2]</li>
+<li>Laten Heat [W/m^2]</li>
+<li>Evapotranspiration [mm]</li>
+<li>Intensity [mm]</li>
+<li>VTot [mm]</li>
+<li>Volume Retention [mm]</li>
+<li>Volume Subflow [mm]</li>
+<li>Volume Losses [mm]</li>
+<li>Volume Exfiltration [mm]</li>
+<li>Flow Deep [mm]</li>
+<li>Watertable [mm]</li>
+</ol>
+</div></blockquote>
+<ul class="simple">
 <li>Time Series</li>
 </ul>
-</div>
-<div class="section" id="data-state">
-<h4>Data State<a class="headerlink" href="#data-state" title="Permalink to this headline">¶</a></h4>
-<ul class="simple">
-<li>Gridded</li>
-<li>Point</li>
+<p>The outcome time-series files are in ASCII format; the outcome data are defined using the ARCHIVE key word. This
+definition is used to specify and manage the results of the model.</p>
+<p>Each variable, as seen in previous sections, is defined by a list of attributes in order to correctly parser the
+information; the attributes available are reported below:</p>
+<blockquote>
+<div><ul class="simple">
+<li>VarResolution: resolution time of the variable in seconds [example: 3600].</li>
+<li><dl class="first docutils">
+<dt>VarArrival: arrival time of the variable.</dt>
+<dd><ul class="first last">
+<li>Day: to define the variable arrival day [example: 0].</li>
+<li>Hour: to define the variable arrival hour [example: null].</li>
 </ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>VarOp: ancillary defined operations of the variable.</dt>
+<dd><ul class="first last">
+<li>Merging: to merge variable from different sources in a common dataset [example: null].</li>
+<li>Splitting: to split variable in different time steps [example: null].</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li>VarStep: step of the variable [example: 1].</li>
+<li><dl class="first docutils">
+<dt>VarDims: dimensions of the variable.</dt>
+<dd><ul class="first last">
+<li>T: dimension along t axis [example: “time”].</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>VarName: name of the variable.</dt>
+<dd><ul class="first last">
+<li>FileName: the name of the source file [example: “hmc.$VAR.txt”]</li>
+<li>FilePath: the path of the source file [example: “$HOME/hmc-ws/run/$RUN/data/outcome/time-series/$MODE/”]</li>
+<li>FileVar: the name of the variable in the source file [example: “hydrograph”]</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+<p>An example of the outcome time-series data structure is reported below.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="nt">&quot;TimeSeries&quot;</span>  <span class="p">:</span> <span class="p">{</span>
+  <span class="nt">&quot;FileName&quot;</span>    <span class="p">:</span> <span class="s2">&quot;hmc.$VAR.txt&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;FilePath&quot;</span>    <span class="p">:</span> <span class="s2">&quot;$HOME/hmc-ws/run/$RUN/data/outcome/$MODE/timeseries/&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;FileType&quot;</span>    <span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+  <span class="nt">&quot;FileTimeRes&quot;</span>       <span class="p">:</span> <span class="mi">3600</span><span class="p">,</span>
+  <span class="nt">&quot;FileVars&quot;</span>    <span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;ARCHIVE&quot;</span>   <span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;VarResolution&quot;</span>   <span class="p">:</span> <span class="mi">3600</span><span class="p">,</span>
+        <span class="nt">&quot;VarArrival&quot;</span>      <span class="p">:</span> <span class="p">{</span><span class="nt">&quot;Day&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nt">&quot;Hour&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">},</span>
+        <span class="nt">&quot;VarOp&quot;</span>           <span class="p">:</span> <span class="p">{</span><span class="nt">&quot;Merging&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span> <span class="nt">&quot;Splitting&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">},</span>
+        <span class="nt">&quot;VarStep&quot;</span>         <span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;VarDims&quot;</span>         <span class="p">:</span> <span class="p">{</span><span class="nt">&quot;T&quot;</span><span class="p">:</span> <span class="s2">&quot;time&quot;</span><span class="p">},</span>
+        <span class="nt">&quot;VarName&quot;</span>         <span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&quot;Discharge&quot;</span>       <span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;FileName&quot;</span>          <span class="p">:</span> <span class="s2">&quot;hmc.hydrograph.txt&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;FilePath&quot;</span>          <span class="p">:</span> <span class="s2">&quot;$HOME/hmc-ws/data/archive/$RUN/$yyyy/$mm/$dd/$HH/outcome/timeseries/$MODE/&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;FileVar&quot;</span>           <span class="p">:</span> <span class="s2">&quot;hydrograph&quot;</span>
+                            <span class="p">},</span>
+          <span class="nt">&quot;DamV&quot;</span>            <span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;FileName&quot;</span>          <span class="p">:</span> <span class="s2">&quot;hmc.vdam.txt&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;FilePath&quot;</span>          <span class="p">:</span> <span class="s2">&quot;$HOME/hmc-ws/data/archive/$RUN/$yyyy/$mm/$dd/$HH/outcome/timeseries/$MODE/&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;FileVar&quot;</span>           <span class="p">:</span> <span class="s2">&quot;vdam&quot;</span>
+                            <span class="p">},</span>
+          <span class="nt">&quot;DamL&quot;</span>                                  <span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;FileName&quot;</span>          <span class="p">:</span> <span class="s2">&quot;hmc.ldam.txt&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;FilePath&quot;</span>          <span class="p">:</span> <span class="s2">&quot;$HOME/hmc-ws/data/archive/$RUN/$yyyy/$mm/$dd/$HH/outcome/timeseries/$MODE/&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;FileVar&quot;</span>                 <span class="p">:</span> <span class="s2">&quot;ldam&quot;</span>
+                            <span class="p">},</span>
+          <span class="nt">&quot;VarAnalysis&quot;</span>                 <span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;FileName&quot;</span>          <span class="p">:</span> <span class="s2">&quot;hmc.var-analysis.txt&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;FilePath&quot;</span>          <span class="p">:</span> <span class="s2">&quot;$HOME/hmc-ws/data/archive/$RUN/$yyyy/$mm/$dd/$HH/outcome/timeseries/$MODE/&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;FileVar&quot;</span>                 <span class="p">:</span> <span class="s2">&quot;var-analysis&quot;</span>
+                            <span class="p">}</span>
+                          <span class="p">}</span>
+                  <span class="p">}</span>
+                <span class="p">}</span>
+              <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
 </div>
-<div class="section" id="data-restart">
-<h4>Data Restart<a class="headerlink" href="#data-restart" title="Permalink to this headline">¶</a></h4>
+<dl class="docutils">
+<dt>The default variables saved by the model in time-series format are reported:</dt>
+<dd><ul class="first last simple">
+<li>Discharge: discharge [m^3/s]</li>
+</ul>
+</dd>
+<dt>In addition, if dams are included in the model configuration, the following variables are added:</dt>
+<dd><ul class="first last simple">
+<li>Dam volume: vdam [m^3];</li>
+<li>Dam Level: ldam [m].</li>
+</ul>
+</dd>
+</dl>
+<p>Moreover, a time-series analysis file, to control and check the run of the model, is saved,
+when the FlagDebug &gt; 0, with information for some state variables:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Average variables: var-analysis.</li>
+</ul>
+</div></blockquote>
+<p>The time-series variables saved in the outcome file are the same as reported in the outcome point files.</p>
+</div>
+<div class="section" id="data-state-data-restart">
+<h4>Data State / Data Restart<a class="headerlink" href="#data-state-data-restart" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
 <li>Gridded</li>
 <li>Point</li>
@@ -1145,12 +1482,163 @@ information; the attributes available are reported below:</p>
 </div>
 <div class="section" id="model-execution">
 <h2>Model execution<a class="headerlink" href="#model-execution" title="Permalink to this headline">¶</a></h2>
+<p>The Hydrological Model Continuum can be run in different configurations according with the use and
+the applications for which it is designed for. It is possible to configure model using the hmc python3 package or in stand-alone version;
+using the stand-alone version, the model can be easily integrated in different frameworks ensuring the dependencies
+of zlib, hdf5 and netCDF4 libraries. Usually, the model is distributed with a configure file to compile the source
+codes in a generic Linux Debian/Ubuntu system and to select different configuration flags.
+Generally, to properly build the model, the users have to follow the following steps:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>build the model dependencies compiling zlib, hdf5 and netCDF4 libraries;</li>
+<li>build the model codes against the libraries previouly installed</li>
+</ol>
+</div></blockquote>
+<div class="section" id="wrapping-mode">
+<h3>Wrapping mode<a class="headerlink" href="#wrapping-mode" title="Permalink to this headline">¶</a></h3>
+<p>As said in the previous paragraph, the Hydrological Model Continuum can be configured using the hmc python3 package; it is the
+generic packege to use the model and in the previous sections all parameters and datasets are fully explained for avoiding
+mismatches and failures in setting parameters or preparing datasets.</p>
+<p>The application for running the model is stored in the Apps folder in the main root of the package as reported in the
+following package tree:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>hmc-master
+├── apps
+│   ├── **HMC_Model_Run_Manager.py**
+│   ├── configuration_run_app_1.json
+│   ├── configuration_run_app_2.json
+│   ├── configuration_data_app_1.json
+│   ├── configuration_data_app_2.json
+│   └── ...
+├── bin
+├── docs
+├── hmc
+├── AUTHORS.rst
+├── CHANGELOG.rst
+├── LICENSE.rst
+└── README.rst
+</pre></div>
+</div>
+<p>As said at the beginning of this documentation, a generic execution of the model is performed using the following line in a terminal:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>&gt;&gt; python3 HMC_Model_RUN_Manager.py -settings_file configuration.json -time <span class="s2">&quot;yyyymmddHHMM&quot;</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="standalone-mode">
 <h3>Standalone mode<a class="headerlink" href="#standalone-mode" title="Permalink to this headline">¶</a></h3>
-<p>here</p>
+<p>The Hydrological Model Continuum can be run in a stand-alone version too; the users have to be properly filled the namelist of the model
+and using the command-line to launch the following instructions to set the libraries:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>&gt;&gt; <span class="nb">export</span> <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="si">${</span><span class="nv">LD_LIBRARY_PATH</span><span class="si">}</span>:/path_to_netcdf_folder/lib/
+&gt;&gt; <span class="nb">ulimit</span> -s unlimited
+</pre></div>
+</div>
+<p><strong>EXECUTION TYPE 1:</strong>
+The executable of the model can ben launch using a list of seven parameters according with the following notation:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>&gt;&gt; ./HMC_Model_V2_DomainName.x <span class="o">[</span>parameters: uc, uh, ct, cf, domain, cpi, rf, vmax, slopemax<span class="o">]</span>
+</pre></div>
+</div>
+<p>An filled example of the previous command-line, is reported:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>&gt;&gt; ./HMC_Model_V2_DomainName.x <span class="m">30</span> <span class="m">3</span> <span class="m">0</span>.6 <span class="m">0</span>.015 DomainName <span class="m">0</span>.3 <span class="m">500</span> <span class="m">1</span> <span class="m">70</span>
+</pre></div>
+</div>
+<p><strong>EXECUTION TYPE 2:</strong>
+It is possible to run the Hydrological Model Continuum using a command-line in which only the model namelist is passed:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>&gt;&gt; ./HMC_Model_V2_DomainName.x domainname.info.txt
+</pre></div>
+</div>
+<p>This approach is generally preferred because the number of argument is fixed and never vary in different configuration
+and applications; in fact, all the changes in the model (e.g. flags, datasets, parameters) will be managed using the namelist file.</p>
 </div>
 <div class="section" id="debugging-mode">
 <h3>Debugging mode<a class="headerlink" href="#debugging-mode" title="Permalink to this headline">¶</a></h3>
+<p>The users could be interested in debugging codes to have a deeper knowledge of the Hydrological Model Continuum; usually, for
+doing this task, the common advice is used a IDE (e.g, CodeBlock, VS Code, Apache Netbeans) in order to easily analyze codes and memory
+usage. In this part, the configuration of a debug workspace in Apache NetBeans IDE will be presented.</p>
+<p>First of all, the package for C, C++ and Fortran programming languages have to be installed in Apache NetBeans; to complete this
+step, the users have to install the package related with C/C++ language. Particuarly, following these instructions:</p>
+<blockquote>
+<div><ol class="loweralpha simple">
+<li>Tools –&gt; Plugins –&gt; Settings –&gt; Tick “NetBeans 8.2 Plugin Portal” –&gt; Close</li>
+</ol>
+</div></blockquote>
+<p>and Reboot the Apache NetBeans IDE.
+Next step, users should create a New Project following these instructions:</p>
+<blockquote>
+<div><ol class="loweralpha simple" start="2">
+<li>File –&gt; New Project –&gt; Category :: Sample :: C/C++ –&gt; Project :: Hello World Fortran Application –&gt; Next –&gt; Choose Name –&gt; Close</li>
+</ol>
+</div></blockquote>
+<p>After creating a folder project, users have to import all source code in the project folder; Using the left menu where the name of projects
+are visible, right click on selected project:</p>
+<blockquote>
+<div><ol class="loweralpha simple" start="3">
+<li>Source Files –&gt; Add existing items …</li>
+</ol>
+</div></blockquote>
+<p>performing this action, a form to select all file will be opened. Finally, all source files will be available into source file folder
+of the selected project.
+Next steps cover the configuration of the dependencies in the project. Particularly, the main task is linking the NetCDF library against
+the project.
+For configuring the NetCDF4 in Apache NetBeans IDE, the users have to add in:</p>
+<blockquote>
+<div><ol class="loweralpha" start="4">
+<li><p class="first">Project –&gt; Properties –&gt; Linker –&gt; Libraries</p>
+<p>in /path_to_netcdf/ find the following files
+netcdff.a and netcdff.so
+and note “double f” for fortran libraries</p>
+</li>
+<li><p class="first">Project –&gt; Properties –&gt; Linker –&gt; Additional Options</p>
+<blockquote>
+<div><p>-I/path_to_netcdf/include/
+-L/path_to_netcdf/lib/
+-lnetcdff -lnetcdf</p>
+</div></blockquote>
+</li>
+<li><p class="first">Project –&gt; Properties –&gt; Fortran Compiler –&gt; Additional Options</p>
+<blockquote>
+<div><p>-I/path_to_netcdf/include/
+-L/path_to_netcdf/lib/
+-lnetcdff -lnetcdf</p>
+</div></blockquote>
+</li>
+<li><p class="first">Project –&gt; Properties –&gt; Fortran Compiler –&gt; Additional Options</p>
+<blockquote>
+<div><p>gfortran: -cpp -DLIB_NC
+ifort: -fpp -DLIB_NC</p>
+</div></blockquote>
+</li>
+</ol>
+<p>h) Project –&gt; Properties –&gt; Run –&gt; Environment –&gt; NewValue
+i)</p>
+<blockquote>
+<div>Name: LD_LIBRARY_PATH
+Value: $LD_LIBRARY_PATH:/path_to_necdf/lib/</div></blockquote>
+</div></blockquote>
+<p>Once the NetCDF4 are linked, it will be possible to compile each source file using the F9 key.
+After doing all these steps, the users have to set the debug command to run Hydrological Model Continuum
+using, for instance, a namelist file of a study case:</p>
+<blockquote>
+<div><p>i) Debug –&gt; Debug Command
+ii)</p>
+<blockquote>
+<div>“${OUTPUT_PATH}” domain.info.txt</div></blockquote>
+</div></blockquote>
+<p>!
+! 1) SET NETCDF LIBRARY CONFIGURATION:
+! Add in: Project –&gt; Properties –&gt; Linker –&gt; Libraries
+!
+! Add in: Project –&gt; Properties –&gt; Linker –&gt; Additional Options:
+!   -I/home/fabio/Documents/Working_Area/Code_Development/Library/netcdf-4.1.2_shared/include/
+!   -L/home/fabio/Documents/Working_Area/Code_Development/Library/netcdf-4.1.2_shared/lib/
+!   -lnetcdff -lnetcdf
+! Add in: Project –&gt; Properties –&gt; Fortran Compiler –&gt; Additional Options:
+!   -I/home/fabio/Documents/Working_Area/Code_Development/Library/netcdf-4.1.2_shared/include/
+!   -L/home/fabio/Documents/Working_Area/Code_Development/Library/netcdf-4.1.2_shared/lib/
+!   -lnetcdff -lnetcdf
+! Add in: Project –&gt; Properties –&gt; Fortran Compiler –&gt; Additional Options:
+!   gfortran: -cpp -DLIB_NC
+!   ifort: -fpp -DLIB_NC
+! Add in: Project –&gt; Properties –&gt; Run –&gt; Environment –&gt; NewValue
+!   LD_LIBRARY_PATH $LD_LIBRARY_PATH:/home/fabio/Documents/Working_Area/Code_Development/Library/netcdf-4.1.2_shared/lib/</p>
 <p>here</p>
 </div>
 <div class="section" id="profiling-mode">

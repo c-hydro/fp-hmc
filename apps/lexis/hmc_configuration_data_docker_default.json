@@ -329,7 +329,7 @@
                                 }
                               }
                         },
-        "HYDRAPP"		: {
+        "DEWETRA"		: {
           "VarResolution"     : 3600,
           "VarArrival"     	  : {"Day": 0, "Hour": null},
           "VarOp"             : {"Merging": null, "Splitting": null},

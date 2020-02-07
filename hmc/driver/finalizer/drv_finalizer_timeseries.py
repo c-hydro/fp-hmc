@@ -3,8 +3,8 @@ Class Features
 
 Name:          drv_finalizer_timeseries
 Author(s):     Fabio Delogu (fabio.delogu@cimafoundation.org)
-Date:          '20180521'
-Version:       '2.0.7'
+Date:          '20200207'
+Version:       '2.0.8'
 """
 
 #######################################################################################
@@ -23,7 +23,7 @@ from hmc.default.lib_default_datadynamic import oDataDynamic as oDataDynamic_Def
 from hmc.default.lib_default_time import oDataTime as oDataTime_Default
 
 from hmc.data_dynamic.lib_datadynamic_results import getFilePoint_1D, getFilePoint_2D
-from hmc.data_dynamic.lib_datadynamic_timeseries import writeTS_Default, writeTS_Dewetra, writeTS_HydrApp
+from hmc.data_dynamic.lib_datadynamic_timeseries import writeTS_Default, writeTS_DewApp, writeTS_HydrApp
 
 from hmc.utils.lib_utils_op_string import defineString
 from hmc.utils.lib_utils_op_dict import getDictValue
@@ -45,6 +45,7 @@ oDataFormat = {'Obs': {'Discharge': ['ID', 'Data'],
                        'DamV': ['ID', 'Data', 'Ref'],
                        'DamL': ['ID', 'Data', 'Ref']}}
 # -------------------------------------------------------------------------------------
+
 
 # -------------------------------------------------------------------------------------
 # Class FinalizerTimeSeries
@@ -267,6 +268,7 @@ class HMC_Finalizer_TimeSeries:
         oVarAllocateTS = getDictValue(oDataAllocate, ['FileVars', 'ARCHIVE'], 0)
         oVarOutcomeTS = getDictValue(oDataOutcome, ['FileVars', 'ARCHIVE', 'VarName'], 0)
         oVarHydrAppTS = getDictValue(oDataOutcome, ['FileVars', 'HYDRAPP', 'VarName'], 0)
+        oVarDewAppTS = getDictValue(oDataOutcome, ['FileVars', 'DEWETRA', 'VarName'], 0)
 
         # Create Data timeseries dictionary
         oDataWorkspaceTS = {'TimeSeries': oDataWorkspace}
@@ -281,15 +283,23 @@ class HMC_Finalizer_TimeSeries:
             for sVarNameTS in oVarAllocateTS.keys():
 
                 # -------------------------------------------------------------------------------------
+                # Info variable end
+                oLogStream.info(' ----> Save Variable ' + sVarNameTS + ' TimeSeries ... ')
+
                 # Get variable attributes
-                if sVarNameTS in oVarOutcomeTS:
+                if (oVarOutcomeTS is not None) and (sVarNameTS in oVarOutcomeTS):
                     oVarOutcomeTS_ATTRS = oVarOutcomeTS[sVarNameTS]
                 else:
                     oVarOutcomeTS_ATTRS = None
-                if sVarNameTS in oVarHydrAppTS:
-                    oVarHydrAppTS_ATTRS = oVarOutcomeTS[sVarNameTS]
+                if (oVarHydrAppTS is not None) and (sVarNameTS in oVarHydrAppTS):
+                    oVarHydrAppTS_ATTRS = oVarHydrAppTS[sVarNameTS]
                 else:
                     oVarHydrAppTS_ATTRS = None
+
+                if (oVarDewAppTS is not None) and (sVarNameTS in oVarDewAppTS):
+                    oVarDewAppTS_ATTRS = oVarDewAppTS[sVarNameTS]
+                else:
+                    oVarDewAppTS_ATTRS = None
                 # -------------------------------------------------------------------------------------
 
                 # -------------------------------------------------------------------------------------
@@ -298,7 +308,6 @@ class HMC_Finalizer_TimeSeries:
                     oVarDataTS_MOD = getDictValue(oVarDataTS['Outcome'], [sVarNameTS], 0)
                 else:
                     oVarDataTS_MOD = None
-
                 if sVarNameTS in oVarDataTS['Obs']:
                     oVarDataTS_OBS = getDictValue(oVarDataTS['Obs'], [sVarNameTS], 0)
                 else:
@@ -342,23 +351,46 @@ class HMC_Finalizer_TimeSeries:
                     sFilePathTS = defineString(deepcopy(oVarHydrAppTS_ATTRS['FilePath']), oTagsTS)
                     sFileNameTS = defineString(deepcopy(oVarHydrAppTS_ATTRS['FileName']), oTagsTS)
 
-                    sFileHydrappTS = join(sFilePathTS, sFileNameTS)
+                    sFileHydrAppTS = join(sFilePathTS, sFileNameTS)
 
                     # Create destination folder
-                    createFolder(split(sFileHydrappTS)[0])
+                    createFolder(split(sFileHydrAppTS)[0])
                 else:
-                    sFileHydrappTS = None
+                    sFileHydrAppTS = None
+
+                # Define filename dewetra
+                if oVarDewAppTS_ATTRS:
+                    oDynamicTagsTS = updateRunTags({'Year': sTimeNow[0:4],
+                                                    'Month': sTimeNow[4:6], 'Day': sTimeNow[6:8],
+                                                    'Hour': sTimeNow[8:10], 'Minute': sTimeNow[10:12],
+                                                    'RunMode': sRunMode, 'VarName': oVarDewAppTS_ATTRS['FileVar']},
+                                                   deepcopy(oDynamicTags_Default))
+                    oTagsTS = mergeRunTags(oDynamicTagsTS, self.oDataTags)
+
+                    sFilePathTS = defineString(deepcopy(oVarDewAppTS_ATTRS['FilePath']), oTagsTS)
+                    sFileNameTS = defineString(deepcopy(oVarDewAppTS_ATTRS['FileName']), oTagsTS)
+
+                    sFileDewAppTS = join(sFilePathTS, sFileNameTS)
+
+                    # Create destination folder
+                    createFolder(split(sFileDewAppTS)[0])
+                else:
+                    sFileDewAppTS = None
                 # -------------------------------------------------------------------------------------
 
                 # -------------------------------------------------------------------------------------
                 # Save time-series
-                if sVarNameTS == 'Section':
+                if sVarNameTS == 'Discharge':
 
                     if sFileOutcomeTS:
                         writeTS_Default(sFileOutcomeTS, oVarDataTS_MOD, oVarHeaderTS)
-                    if sFileHydrappTS:
-                        writeTS_HydrApp(sFileHydrappTS, sTimeNow, sTimeFrom,
+
+                    if sFileHydrAppTS:
+                        writeTS_HydrApp(sFileHydrAppTS, sTimeNow, sTimeFrom,
                                         oVarDataTS_MOD, oVarDataTS_OBS, oSectionData, 60, iEnsN, sRunMode)
+                    if sFileDewAppTS:
+                        writeTS_DewApp(sFileDewAppTS, sTimeNow, sTimeFrom,
+                                       oVarDataTS_MOD, oVarDataTS_OBS, oSectionData, 60, iEnsN, sRunMode)
 
                 if sVarNameTS == 'DamV':
                     if sFileOutcomeTS:
@@ -371,11 +403,9 @@ class HMC_Finalizer_TimeSeries:
                         writeTS_Default(sFileOutcomeTS, oVarDataTS_MOD, oVarHeaderTS)
                 # -------------------------------------------------------------------------------------
 
-                print('ciao')
-
                 # -------------------------------------------------------------------------------------
                 # Info variable end
-                oLogStream.info(' ----> Save Variable ' + sDataKey_TS + ' TimeSeries ... OK')
+                oLogStream.info(' ----> Save Variable ' + sVarNameTS + ' TimeSeries ... OK')
                 # -------------------------------------------------------------------------------------
 
             # -------------------------------------------------------------------------------------

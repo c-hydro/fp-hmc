@@ -36,6 +36,7 @@ def randomString(sStringRoot='temporary', sStringSeparator='_', iMinRandom=0, iM
     return sRandomString
 # -------------------------------------------------------------------------------------
 
+
 # -------------------------------------------------------------------------------------
 # Method to define string
 def defineString(sString='', oDictTags=None):
@@ -50,8 +51,9 @@ def defineString(sString='', oDictTags=None):
                     sVarKey = oValue[0]
                     oVarValue = oValue[1]
                 elif isinstance(oValue, dict):          # dict values
-                    sVarKey = list(oValue.keys())[0]
-                    oVarValue = list(oValue.values())[0]
+                    if list(oValue.values())[0] is not None:
+                        sVarKey = list(oValue.keys())[0]
+                        oVarValue = list(oValue.values())[0]
                 else:                                   # scalar value
                     sVarKey = sKey
                     oVarValue = oValue

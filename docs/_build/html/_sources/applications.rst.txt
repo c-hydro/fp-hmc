@@ -780,38 +780,431 @@ Data Outcome
 
 * Gridded
 
+The outcome gridded files are in netCDF format; the outcome data are defined using the ARCHIVE key word. This 
+definition is used to specify and manage the results of the model.
+
+Each variable, as seen in previous sections, is defined by a list of attributes in order to correctly parser the 
+information; the attributes available are reported below:
+
+    - VarResolution: resolution time of the variable in seconds [example: 3600].
+    - VarArrival: arrival time of the variable.
+        - Day: to define the variable arrival day [example: 0].
+        - Hour: to define the variable arrival hour [example: null].
+    - VarOp: ancillary defined operations of the variable.
+        - Merging: to merge variable from different sources in a common dataset [example: null].
+        - Splitting: to split variable in different time steps [example: null].
+    - VarStep: step of the variable [example: 1].
+    - VarDims: dimensions of the variable.
+        - X: dimension along X axis [example: "west_east"].
+        - Y: dimension along Y axis [example: "south_north"].
+    - VarName: name of the variable.
+        - FileName: the name of the source file [example: "hmc.output-grid.$yyyy$mm$dd$HH$MM.nc.gz"]
+        - FilePath: the path of the source file [example: "$HOME/hmc-ws/run/$RUN/data/outcome/$MODE/gridded/$yyyy/$mm/$dd/"]
+        - FileVar: the name of the variable in the source file [example: "Discharge"]
+
+An example of the outcome gridded data structure is reported below.
+
+.. code-block:: json
+
+  {
+  "Gridded"	    : {
+    "FileName"    : "hmc.output-grid.$yyyy$mm$dd$HH$MM.nc.gz",	
+    "FilePath"	  : "$HOME/hmc-ws/run/$RUN/data/outcome/$MODE/gridded/$yyyy/$mm/$dd/",
+    "FileType"	  : 2,
+    "FileTimeRes"	: 3600, 
+    "FileVars"	  : {
+      "ARCHIVE"	    : {
+        "VarResolution"   : 3600,
+        "VarArrival"      : {"Day": 0, "Hour": null},
+        "VarOp"           : {"Merging": null, "Splitting": null},
+        "VarStep"         : 1,
+        "VarDims"         : {"X": "west_east", "Y": "south_north"},
+        "VarName"         : {
+          "ALL"				      : {
+            "FileName"          : "hmc.output-grid.$yyyy$mm$dd$HH$MM.nc.gz",
+            "FilePath"          : "$HOME/hmc-ws/data/archive/$RUN/$yyyy/$mm/$dd/$HH/outcome/gridded/$MODE/",
+            "FileVar"           : "ALL"
+                            }
+                          }
+                    }
+                  }
+                } 
+  }
+
+In the gridded outcome files, the default configuration of outcome variables are reported below:
+    - Discharge: Discharge [m^3/s]
+    - Daily Accumulated Evapotranspiration: ETCum [mm]
+    - Sensible Heat: H [W/m^2]
+    - Latent Heat: LE [W/m^2]
+    - Land Surface Temperature: LST [K]
+    - Soil Moisture: SM [%]
+    - Total Soil Capacity: VTot [mm]
+
+If the snow part is activated, the following variables are added in the outcome files:
+    - Snow Water Equivalent: SWE [mm]
+    - Snow Melting: MeltingS [mm]
+    - Snow Density: RhoS [kg/m^3]
+    - Snowfall: Snowfall [mm]
+    - Snow Albedo: AlbedoS [-]
+    - Snow Age: AgeS [steps]
+    - Daily Accumulated Snow Melting: MeltingSDayCum [mm]
+
 * Point
+
+The outcome point files are in ASCII format; the outcome data are defined using the ARCHIVE key word. This 
+definition is used to specify and manage the results of the model.
+
+Each variable, as seen in previous sections, is defined by a list of attributes in order to correctly parser the 
+information; the attributes available are reported below:
+
+    - VarResolution: resolution time of the variable in seconds [example: 3600].
+    - VarArrival: arrival time of the variable.
+        - Day: to define the variable arrival day [example: 0].
+        - Hour: to define the variable arrival hour [example: null].
+    - VarOp: ancillary defined operations of the variable.
+        - Merging: to merge variable from different sources in a common dataset [example: null].
+        - Splitting: to split variable in different time steps [example: null].
+    - VarStep: step of the variable [example: 1].
+    - VarDims: dimensions of the variable.
+        - T: dimension along t axis [example: "time"].
+    - VarName: name of the variable.
+        - FileName: the name of the source file [example: "hmc.$VAR.$yyyy$mm$dd$HH$MM.txt"]
+        - FilePath: the path of the source file [example: "$HOME/hmc-ws/run/$RUN/data/outcome/$MODE/point/$yyyy/$mm/$dd/"]
+        - FileVar: the name of the variable in the source file [example: "DamV"]
+
+An example of the outcome point data structure is reported below.
+
+.. code-block:: json
+
+  {
+  "Point"       : {
+    "FileName"    : "hmc.$VAR.$yyyy$mm$dd$HH$MM.txt",
+    "FilePath"    : "$HOME/hmc-ws/run/$RUN/data/outcome/$MODE/point/$yyyy/$mm/$dd/",
+    "FileType"    : 1,
+    "FileTimeRes" : 3600,
+    "FileVars"    : { 
+      "ARCHIVE"     : {
+        "VarResolution"   : 3600,
+        "VarArrival"      : {"Day": 0, "Hour": null},
+        "VarOp"           : {"Merging": null, "Splitting": null},
+        "VarStep"         : 1,
+        "VarDims"         : {"T": "time"},
+        "VarName"         : {
+          "Discharge"       : {
+            "FileName"          : "hmc.discharge.$yyyy$mm$dd$HH$MM.txt",
+            "FilePath"          : "$HOME/hmc-ws/data/archive/$RUN/$yyyy/$mm/$dd/$HH/outcome/point/$MODE/discharge/",
+            "FileVar"           : "discharge"
+                            },
+          "DamV"            : {
+            "FileName"          : "hmc.vdam.$yyyy$mm$dd$HH$MM.txt",
+            "FilePath"          : "$HOME/hmc-ws/data/archive/$RUN/$yyyy/$mm/$dd/$HH/outcome/point/$MODE/dam_volume/",
+            "FileVar"           : "vdam"
+                            },
+          "DamL"            : {
+            "FileName"          : "hmc.ldam.$yyyy$mm$dd$HH$MM.txt",
+            "FilePath"          : "$HOME/hmc-ws/data/archive/$RUN/$yyyy/$mm/$dd/$HH/outcome/point/$MODE/dam_level/",
+            "FileVar"           : "ldam"
+                            },
+          "VarAnalysis"     : {
+            "FileName"          : "hmc.var-analysis.$yyyy$mm$dd$HH$MM.txt",
+            "FilePath"          : "$HOME/hmc-ws/data/archive/$RUN/$yyyy/$mm/$dd/$HH/outcome/point/$MODE/analysis/",
+            "FileVar"           : "var-analysis"
+                            }
+                          }
+                    }
+                  }
+                }  
+  }
+
+The default variables saved by the model in point format are reported:
+    - Discharge: discharge [m^3/s]
+In addition, if dams are included in the model configuration, the following variables are added:
+    - Dam volume: vdam [m^3];
+    - Dam Level: ldam [m].
+
+Moreover, a point analysis file, to control and check the run of the model, is saved, 
+when the FlagDebug > 0,  with information for some state variables:
+    - Average variables: var-analysis.
+
+In the analysis file, the following fields are saved on three columns [average, max, min]: 
+
+  1. Rain [mm]
+  2. AirTemperature [C]
+  3. IncomingRadiation [W/m^2]
+  4. Wind Speed [m/s]
+  5. Relative Humidity [%]
+  6. AirPressure [kPa]
+  7. LAI [-]
+  8. Albedo [0,1]
+  9. Land Surface Temperature [K]
+  10. Sensible Heat [W/m^2]
+  11. Laten Heat [W/m^2]
+  12. Evapotranspiration [mm]
+  13. Intensity [mm]
+  14. VTot [mm]
+  15. Volume Retention [mm] 
+  16. Volume Subflow [mm]
+  17. Volume Losses [mm]
+  18. Volume Exfiltration [mm]
+  19. Flow Deep [mm]
+  20. Watertable [mm]
 
 * Time Series
 
-Data State
-..........
+The outcome time-series files are in ASCII format; the outcome data are defined using the ARCHIVE key word. This 
+definition is used to specify and manage the results of the model.
+
+Each variable, as seen in previous sections, is defined by a list of attributes in order to correctly parser the 
+information; the attributes available are reported below:
+
+    - VarResolution: resolution time of the variable in seconds [example: 3600].
+    - VarArrival: arrival time of the variable.
+        - Day: to define the variable arrival day [example: 0].
+        - Hour: to define the variable arrival hour [example: null].
+    - VarOp: ancillary defined operations of the variable.
+        - Merging: to merge variable from different sources in a common dataset [example: null].
+        - Splitting: to split variable in different time steps [example: null].
+    - VarStep: step of the variable [example: 1].
+    - VarDims: dimensions of the variable.
+        - T: dimension along t axis [example: "time"].
+    - VarName: name of the variable.
+        - FileName: the name of the source file [example: "hmc.$VAR.txt"]
+        - FilePath: the path of the source file [example: "$HOME/hmc-ws/run/$RUN/data/outcome/time-series/$MODE/"]
+        - FileVar: the name of the variable in the source file [example: "hydrograph"]
+
+An example of the outcome time-series data structure is reported below.
+
+.. code-block:: json
+
+  {
+  "TimeSeries"  : {
+    "FileName"    : "hmc.$VAR.txt",
+    "FilePath"    : "$HOME/hmc-ws/run/$RUN/data/outcome/$MODE/timeseries/",
+    "FileType"	  : 1,
+    "FileTimeRes"	: 3600,
+    "FileVars"	  : {
+        "ARCHIVE"   : {
+          "VarResolution"   : 3600,
+          "VarArrival"      : {"Day": 0, "Hour": null},
+          "VarOp"           : {"Merging": null, "Splitting": null},
+          "VarStep"         : 1,
+          "VarDims"         : {"T": "time"},
+          "VarName"         : {
+            "Discharge"       : {
+              "FileName"          : "hmc.hydrograph.txt",
+              "FilePath"          : "$HOME/hmc-ws/data/archive/$RUN/$yyyy/$mm/$dd/$HH/outcome/timeseries/$MODE/",
+              "FileVar"           : "hydrograph"
+                              },
+            "DamV"            : {
+              "FileName"          : "hmc.vdam.txt",
+              "FilePath"          : "$HOME/hmc-ws/data/archive/$RUN/$yyyy/$mm/$dd/$HH/outcome/timeseries/$MODE/",
+              "FileVar"           : "vdam"
+                              },
+            "DamL"				    : {
+              "FileName"          : "hmc.ldam.txt",
+              "FilePath"          : "$HOME/hmc-ws/data/archive/$RUN/$yyyy/$mm/$dd/$HH/outcome/timeseries/$MODE/",
+              "FileVar"		        : "ldam"
+                              },
+            "VarAnalysis"		  : {
+              "FileName"          : "hmc.var-analysis.txt",
+              "FilePath"          : "$HOME/hmc-ws/data/archive/$RUN/$yyyy/$mm/$dd/$HH/outcome/timeseries/$MODE/",
+              "FileVar"		        : "var-analysis"
+                              }
+                            }
+                    }
+                  }
+                } 
+  }
+
+The default variables saved by the model in time-series format are reported:
+    - Discharge: discharge [m^3/s]
+In addition, if dams are included in the model configuration, the following variables are added:
+    - Dam volume: vdam [m^3];
+    - Dam Level: ldam [m].
+
+Moreover, a time-series analysis file, to control and check the run of the model, is saved, 
+when the FlagDebug > 0, with information for some state variables:
+    - Average variables: var-analysis.
+The time-series variables saved in the outcome file are the same as reported in the outcome point files.
+
+Data State / Data Restart
+.........................
 
 * Gridded
 
 * Point
 
-Data Restart
-............
-
-* Gridded
-
-* Point
 
 Model execution
 ***************
 
+The Hydrological Model Continuum can be run in different configurations according with the use and
+the applications for which it is designed for. It is possible to configure model using the hmc python3 package or in stand-alone version;
+using the stand-alone version, the model can be easily integrated in different frameworks ensuring the dependencies
+of zlib, hdf5 and netCDF4 libraries. Usually, the model is distributed with a configure file to compile the source 
+codes in a generic Linux Debian/Ubuntu system and to select different configuration flags.
+Generally, to properly build the model, the users have to follow the following steps:
+  1. build the model dependencies compiling zlib, hdf5 and netCDF4 libraries;
+  2. build the model codes against the libraries previouly installed
+
+Wrapping mode
+-------------
+
+As said in the previous paragraph, the Hydrological Model Continuum can be configured using the hmc python3 package; it is the 
+generic packege to use the model and in the previous sections all parameters and datasets are fully explained for avoiding 
+mismatches and failures in setting parameters or preparing datasets.
+
+The application for running the model is stored in the Apps folder in the main root of the package as reported in the 
+following package tree:
+
+::
+
+    hmc-master
+    ├── apps
+    │   ├── **HMC_Model_Run_Manager.py**
+    │   ├── configuration_run_app_1.json
+    │   ├── configuration_run_app_2.json
+    │   ├── configuration_data_app_1.json
+    │   ├── configuration_data_app_2.json
+    │   └── ...
+    ├── bin
+    ├── docs
+    ├── hmc
+    ├── AUTHORS.rst
+    ├── CHANGELOG.rst
+    ├── LICENSE.rst
+    └── README.rst
+
+As said at the beginning of this documentation, a generic execution of the model is performed using the following line in a terminal:
+
+.. code-block:: bash
+
+  >> python3 HMC_Model_RUN_Manager.py -settings_file configuration.json -time "yyyymmddHHMM"
+
+
 Standalone mode
 ---------------
 
-here
+The Hydrological Model Continuum can be run in a stand-alone version too; the users have to be properly filled the namelist of the model
+and using the command-line to launch the following instructions to set the libraries:
+
+.. code-block:: bash
+  
+  >> export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/path_to_netcdf_folder/lib/
+  >> ulimit -s unlimited
+
+**EXECUTION TYPE 1:**
+The executable of the model can ben launch using a list of seven parameters according with the following notation:
+
+.. code-block:: bash
+
+  >> ./HMC_Model_V2_DomainName.x [parameters: uc, uh, ct, cf, domain, cpi, rf, vmax, slopemax]  
+
+An filled example of the previous command-line, is reported:
+
+.. code-block:: bash
+
+  >> ./HMC_Model_V2_DomainName.x 30 3 0.6 0.015 DomainName 0.3 500 1 70
+
+**EXECUTION TYPE 2:**
+It is possible to run the Hydrological Model Continuum using a command-line in which only the model namelist is passed:
+
+.. code-block:: bash
+
+  >> ./HMC_Model_V2_DomainName.x domainname.info.txt
+
+This approach is generally preferred because the number of argument is fixed and never vary in different configuration 
+and applications; in fact, all the changes in the model (e.g. flags, datasets, parameters) will be managed using the namelist file.
 
 Debugging mode
 --------------
+
+The users could be interested in debugging codes to have a deeper knowledge of the Hydrological Model Continuum; usually, for
+doing this task, the common advice is used a IDE (e.g, CodeBlock, VS Code, Apache Netbeans) in order to easily analyze codes and memory
+usage. In this part, the configuration of a debug workspace in Apache NetBeans IDE will be presented.
+
+First of all, the package for C, C++ and Fortran programming languages have to be installed in Apache NetBeans; to complete this
+step, the users have to install the package related with C/C++ language. Particuarly, following these instructions:
+
+  a) Tools --> Plugins --> Settings --> Tick "NetBeans 8.2 Plugin Portal" --> Close 
+
+and Reboot the Apache NetBeans IDE.
+Next step, users should create a New Project following these instructions: 
+
+  b) File --> New Project --> Category :: Sample :: C/C++ --> Project :: Hello World Fortran Application --> Next --> Choose Name --> Close
+
+After creating a folder project, users have to import all source code in the project folder; Using the left menu where the name of projects
+are visible, right click on selected project:
+
+  c) Source Files --> Add existing items ...
+
+performing this action, a form to select all file will be opened. Finally, all source files will be available into source file folder
+of the selected project. 
+Next steps cover the configuration of the dependencies in the project. Particularly, the main task is linking the NetCDF library against
+the project.
+For configuring the NetCDF4 in Apache NetBeans IDE, the users have to add in:
+
+  d) Project --> Properties --> Linker --> Libraries
+     
+     in /path_to_netcdf/ find the following files
+     netcdff.a and netcdff.so 
+     and note "double f" for fortran libraries
+
+  e) Project --> Properties --> Linker --> Additional Options
+     
+      -I/path_to_netcdf/include/ 
+      -L/path_to_netcdf/lib/ 
+      -lnetcdff -lnetcdf   
+
+  f) Project --> Properties --> Fortran Compiler --> Additional Options
+
+      -I/path_to_netcdf/include/ 
+      -L/path_to_netcdf/lib/ 
+      -lnetcdff -lnetcdf  
+
+  g) Project --> Properties --> Fortran Compiler --> Additional Options
+  
+      gfortran: -cpp -DLIB_NC
+      ifort: -fpp -DLIB_NC  
+
+  h) Project --> Properties --> Run --> Environment --> NewValue
+  i) 
+      Name: LD_LIBRARY_PATH 
+      Value: $LD_LIBRARY_PATH:/path_to_necdf/lib/
+
+Once the NetCDF4 are linked, it will be possible to compile each source file using the F9 key.
+After doing all these steps, the users have to set the debug command to run Hydrological Model Continuum 
+using, for instance, a namelist file of a study case:  
+  
+  i) Debug --> Debug Command 
+  ii) 
+      "${OUTPUT_PATH}" domain.info.txt
+
+
+
+!
+! 1) SET NETCDF LIBRARY CONFIGURATION:
+! Add in: Project --> Properties --> Linker --> Libraries
+!   
+! Add in: Project --> Properties --> Linker --> Additional Options:
+!   -I/home/fabio/Documents/Working_Area/Code_Development/Library/netcdf-4.1.2_shared/include/ 
+!   -L/home/fabio/Documents/Working_Area/Code_Development/Library/netcdf-4.1.2_shared/lib/ 
+!   -lnetcdff -lnetcdf   
+! Add in: Project --> Properties --> Fortran Compiler --> Additional Options:
+!   -I/home/fabio/Documents/Working_Area/Code_Development/Library/netcdf-4.1.2_shared/include/ 
+!   -L/home/fabio/Documents/Working_Area/Code_Development/Library/netcdf-4.1.2_shared/lib/ 
+!   -lnetcdff -lnetcdf  
+! Add in: Project --> Properties --> Fortran Compiler --> Additional Options:
+!   gfortran: -cpp -DLIB_NC
+!   ifort: -fpp -DLIB_NC            
+! Add in: Project --> Properties --> Run --> Environment --> NewValue
+!   LD_LIBRARY_PATH $LD_LIBRARY_PATH:/home/fabio/Documents/Working_Area/Code_Development/Library/netcdf-4.1.2_shared/lib/
 
 here
 
 Profiling Mode
 --------------
+
+
 
 here

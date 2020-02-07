@@ -2,6 +2,12 @@
 Changelog
 =========
 
+Version 1.8.5 (20200207)
+========================
+
+- Fix bugs in managing time-series
+- Fix bugs in writing time-series
+
 Version 1.8.4 (20200120)
 ========================
 
