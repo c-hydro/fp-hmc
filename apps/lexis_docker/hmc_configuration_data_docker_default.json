@@ -4,7 +4,7 @@
     "__comment": " --- DataLand configuration [TAGS: $DOMAIN, $VAR, $RUN] --- ",
     "Gridded"     : {
       "FileName"    : "$DOMAIN.$VAR.txt",
-      "FilePath"    : "$TARGET_DATA_STATIC/land/",
+      "FilePath"    : "/home/fp/fp_mount/datasets_hmc/static_land/",
       "FileType"    : 1,
       "FileTimeRes" : null,
       "FileVars"    : {
@@ -30,7 +30,7 @@
     },
     "Point": {
       "FileName"    : "$DOMAIN.info_$VAR.txt",
-      "FilePath"    : "$TARGET_DATA_STATIC/point/",
+      "FilePath"    : "/home/fp/fp_mount/datasets_hmc/static_point/",
       "FileType"    : 1,
       "FileTimeRes" : null,
       "FileVars"    : {
@@ -58,33 +58,33 @@
           "VarDims"         : {"X": "west_east", "Y": "south_north"},
           "VarName"         : {
             "Rain"            : {
-              "FileName"          : "ws.db.$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/ws/$yyyy/$mm/$dd/",
+              "FileName"          : "wrf_1h_$yyyy$mm$dd$HH$MM_marche.nc.gz",
+              "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_source/",
               "FileVar"		      : "Rain"
                                 },
             "AirTemperature"  : {
-              "FileName"          : "ws.db.$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/ws/$yyyy/$mm/$dd/",
+              "FileName"          : "wrf_1h_$yyyy$mm$dd$HH$MM_marche.nc.gz",
+              "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_source/",
               "FileVar"		      : "AirTemperature"
                                 },
             "Wind"            : {
-              "FileName"          : "ws.db.$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/ws/$yyyy/$mm/$dd/",
+              "FileName"          : "wrf_1h_$yyyy$mm$dd$HH$MM_marche.nc.gz",
+              "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_source/",
               "FileVar"		      : "Wind"
                                 },
             "RelHumidity"       : {
-              "FileName"          : "ws.db.$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/ws/$yyyy/$mm/$dd/",
+              "FileName"          : "wrf_1h_$yyyy$mm$dd$HH$MM_marche.nc.gz",
+              "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_source/",
               "FileVar"		      : "RelHumidity"
                                 },
             "IncRadiation"		: {
-              "FileName"          : "ws.db.$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/ws/$yyyy/$mm/$dd/",
+              "FileName"          : "wrf_1h_$yyyy$mm$dd$HH$MM_marche.nc.gz",
+              "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_source/",
               "FileVar"		      : "IncRadiation"
                                 },
             "AirPressure"		: {
-              "FileName"          : "ws.db.$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/ws/$yyyy/$mm/$dd/",
+              "FileName"          : "wrf_1h_$yyyy$mm$dd$HH$MM_marche.nc.gz",
+              "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_source/",
               "FileVar"		      : "AirPressure"
                                 }
                               }
@@ -98,32 +98,32 @@
           "VarName"           : {
             "Rain"				: {
               "FileName"          : "nwp.wrf.$yyyy$mm$dd0000.nc.gz",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_FOR/nwp/wrf/$yyyy/$mm/$dd/$RFarm_ID/",
+              "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_source/",
               "FileVar"		      : "Rain"
                                 },
             "AirTemperature"	: {
               "FileName"          : "nwp.wrf.$yyyy$mm$dd0000.nc.gz",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_FOR/nwp/wrf/$yyyy/$mm/$dd/",
+              "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_source/",
               "FileVar"		      : "AirTemperature"
                                 },
             "Wind"				: {
               "FileName"          : "nwp.wrf.$yyyy$mm$dd0000.nc.gz",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_FOR/nwp/wrf/$yyyy/$mm/$dd/",
+              "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_source/",
               "FileVar"		      : "Wind"
                                 },
             "RelHumidity"		: {
               "FileName"          : "nwp.wrf.$yyyy$mm$dd0000.nc.gz",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_FOR/nwp/wrf/$yyyy/$mm/$dd/",
+              "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_source/",
               "FileVar"		      : "RelHumidity"
                                 },
             "IncRadiation"		: {
               "FileName"          : "nwp.wrf.$yyyy$mm$dd0000.nc.gz",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_FOR/nwp/wrf/$yyyy/$mm/$dd/",
+              "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_source/",
               "FileVar"		      : "IncRadiation"
                                 },
             "AirPressure"		: {
               "FileName"          : "nwp.wrf.$yyyy$mm$dd0000.nc.gz",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_FOR/nwp/wrf/$yyyy/$mm/$dd/",
+              "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_source/",
               "FileVar"		      : "AirPressure"
                                 }
                               }
@@ -145,17 +145,17 @@
           "VarName"           : {
             "Discharge"			: {
               "FileName"          : "rs.db.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/rs/$yyyy/$mm/$dd/",
+              "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_source/",
               "FileVar"		      : "discharge"
                                 },
             "DamV"				: {
               "FileName"          : "damv.db.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/dp/$yyyy/$mm/$dd/",
+              "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_source/",
               "FileVar"		      : "damv"
                                 },
             "DamL"				: {
               "FileName"          : "daml.db.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/dp/$yyyy/$mm/$dd/",
+              "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_source/",
               "FileVar"		      : "daml"
                                 }
                             }
@@ -178,12 +178,12 @@
           "VarName"           : {
             "DamQ"				: {
               "FileName"          : "hmc.forcing-ts.plant_$NAME_PLANT.txt",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/turbinate/$yyyy/$mm/$dd/",
+              "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_source/",
               "FileVar"		      : ""
                                 },
             "IntakeQ"			: {
               "FileName"          : "hmc.forcing-ts.plant_$NAME_PLANT.txt",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/turbinate/$yyyy/$mm/$dd/",
+              "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_source/",
               "FileVar"		      : ""
                                 }
                               }
@@ -209,22 +209,22 @@
           "VarName"           : {
             "SnowHeight"		: {
               "FileName"          : "ws.db.$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/ws/$yyyy/$mm/$dd/",
+              "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_source/",
               "FileVar"		      : "SnowLevel"
                                 },
             "SnowKernel"	    : {
               "FileName"          : "ws.db.$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/ws/$yyyy/$mm/$dd/",
+              "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_source/",
               "FileVar"		      : "SnowKernel"
                                 },
             "SnowCoverArea"		: {
               "FileName"          : "MOD10A1.005_marche_$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/modis/$yyyy/$mm/$dd/",
+              "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_source/",
               "FileVar"		      : "snow_cover_daily"
                                 },
             "SnowQualityArea"	: {
               "FileName"          : "MOD10A1.005_marche_$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/modis/$yyyy/$mm/$dd/",
+              "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_source/",
               "FileVar"		      : "snow_spatial_qa_filter"
                                 }
                               }
@@ -250,7 +250,7 @@
           "VarName"           : {
             "ALL"				: {
               "FileName"          : "hmc.output-grid.$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "$TARGET_DATA_ARCHIVE/$yyyy/$mm/$dd/$HH/outcome/gridded/",
+              "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_archive/$yyyy/$mm/$dd/$HH/outcome/gridded/",
               "FileVar"		      : "ALL"
                                 }
                               }
@@ -272,22 +272,22 @@
           "VarName"           : {
             "Discharge"	        : {
               "FileName"          : "hmc.discharge.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "$TARGET_DATA_ARCHIVE/$yyyy/$mm/$dd/$HH/outcome/point/discharge/",
+              "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_archive/$yyyy/$mm/$dd/$HH/outcome/point/discharge/",
               "FileVar"		      : "discharge"
                                 },
             "DamV"				: {
               "FileName"          : "hmc.vdam.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "$TARGET_DATA_ARCHIVE/$yyyy/$mm/$dd/$HH/outcome/point/dam_volume/",
+              "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_archive/$yyyy/$mm/$dd/$HH/outcome/point/dam_volume/",
               "FileVar"		      : "vdam"
                                 },
             "DamL"				: {
               "FileName"          : "hmc.ldam.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "$TARGET_DATA_ARCHIVE/$yyyy/$mm/$dd/$HH/outcome/point/dam_level/",
+              "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_archive/$yyyy/$mm/$dd/$HH/outcome/point/dam_level/",
               "FileVar"		      : "ldam"
                                 },
             "VarAnalysis"		: {
               "FileName"          : "hmc.var-analysis.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "$TARGET_DATA_ARCHIVE/$yyyy/$mm/$dd/$HH/outcome/point/analysis/",
+              "FilePath"          : "/home/fp/fp_mount/datasets_hmc/data_archive/$yyyy/$mm/$dd/$HH/outcome/point/analysis/",
               "FileVar"		      : "var-analysis"
                                 }
                               }
@@ -309,22 +309,22 @@
           "VarName"           : {
             "Discharge"			: {
               "FileName"          : "hmc.hydrograph.txt",
-              "FilePath"          : "$TARGET_DATA_ARCHIVE/$yyyy/$mm/$dd/$HH/outcome/time_series/",
+              "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_archive/$yyyy/$mm/$dd/$HH/outcome/time_series/",
               "FileVar"		      : "hydrograph"
                                 },
             "DamV"				: {
               "FileName"          : "hmc.vdam.txt",
-              "FilePath"          : "$TARGET_DATA_ARCHIVE/$yyyy/$mm/$dd/$HH/outcome/time_series/",
+              "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_archive/$yyyy/$mm/$dd/$HH/outcome/time_series/",
               "FileVar"		      : "vdam"
                                 },
             "DamL"				: {
               "FileName"          : "hmc.ldam.txt",
-              "FilePath"          : "$TARGET_DATA_ARCHIVE/$yyyy/$mm/$dd/$HH/outcome/time_series/",
+              "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_archive/$yyyy/$mm/$dd/$HH/outcome/time_series/",
               "FileVar"		      : "ldam"
                                 },
             "VarAnalysis"		: {
               "FileName"          : "hmc.var-analysis.txt",
-              "FilePath"          : "$TARGET_DATA_ARCHIVE/$yyyy/$mm/$dd/$HH/outcome/time_series/",
+              "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_archive/$yyyy/$mm/$dd/$HH/outcome/time_series/",
               "FileVar"		      : "var-analysis"
                                 }
                               }
@@ -338,7 +338,7 @@
           "VarName"           : {
             "Discharge"			: {
               "FileName"          : "hydrograph_$SECTION_$BASIN_$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "$TARGET_DATA_ARCHIVE/$yyyy/$mm/$dd/$HH/outcome/web_app/",
+              "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_archive/$yyyy/$mm/$dd/$HH/outcome/web_app/",
               "FileVar"		      : "hydrograph"
                                 }
                               }
@@ -363,7 +363,7 @@
           "VarName"           : {
             "ALL"				: {
               "FileName"          : "hmc.state-grid.$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "$TARGET_DATA_ARCHIVE/$yyyy/$mm/$dd/$HH/state/gridded/",
+              "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_archive/$yyyy/$mm/$dd/$HH/state/gridded/",
               "FileVar"		      : "ALL"
                                 }
                               }
@@ -385,7 +385,7 @@
           "VarName"           : {
             "ALL"				: {
               "FileName"          : "hmc.state-point.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "$TARGET_DATA_ARCHIVE/$yyyy/$mm/$dd/$HH/state/point/",
+              "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_archive/$yyyy/$mm/$dd/$HH/state/point/",
               "FileVar"		      : "ALL"
                                 }
                               }
@@ -410,7 +410,7 @@
           "VarName"           : {
             "ALL"				: {
               "FileName"          : "hmc.state-grid.$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "$TARGET_DATA_RESTART/$yyyy/$mm/$dd/",
+              "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_restart/$yyyy/$mm/$dd/",
               "FileVar"		      : "ALL"
                                 }
                               }
@@ -432,7 +432,7 @@
           "VarName"           : {
             "ALL"				: {
               "FileName"          : "hmc.state-point.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "$TARGET_DATA_RESTART/$yyyy/$mm/$dd/",
+              "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_restart/$yyyy/$mm/$dd/",
               "FileVar"		      : "ALL"
                                 }
                               }
@@ -457,17 +457,17 @@
           "VarName"           : {
             "Discharge"			: {
               "FileName"          : "discharge.observed.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "$TARGET_DATA_ARCHIVE/$yyyy/$mm/$dd/$HH/obs/point/discharge/",
+              "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_archive/$yyyy/$mm/$dd/$HH/obs/point/discharge/",
               "FileVar"		      : "discharge"
                                 },
             "DamV"				: {
               "FileName"          : "damv.observed.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "$TARGET_DATA_ARCHIVE/$yyyy/$mm/$dd/$HH/obs/point/dam_volume/",
+              "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_archive/$yyyy/$mm/$dd/$HH/obs/point/dam_volume/",
               "FileVar"		      : "damv"
                                 },
             "DamL"				: {
               "FileName"          : "daml.observed.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "$TARGET_DATA_ARCHIVE/$yyyy/$mm/$dd/$HH/obs/point/dam_level/",
+              "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_archive/$yyyy/$mm/$dd/$HH/obs/point/dam_level/",
               "FileVar"		      : "daml"
                                 }
                               }

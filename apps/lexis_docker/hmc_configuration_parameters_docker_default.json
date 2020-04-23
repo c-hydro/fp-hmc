@@ -45,7 +45,7 @@
       "TimeStepObs": null,
       "TimeStepFor": null,
       "TimeStepCheck": 4,
-      "TimeRestart": {"RestartStep": 24, "RestartHH": "00"},
+      "TimeRestart": {"RestartStep": 0, "RestartHH": "00"},
       "TimeWorldRef": {"RefType": "gmt", "RefLoad": 0, "RefSave": 0},
       "TimeTcMax": -9999
     },

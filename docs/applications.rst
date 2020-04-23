@@ -773,7 +773,18 @@ Data Updating
 
 * Gridded
 
-* Point
+        !------------------------------------------------------------------------------------------
+        ! Updating data (optional):                                                              
+        !   a2dVarSnowCAL       : snow cover area [-2,3] 
+        !   a2dVarSnowQAL       : snow cover quality [0,1] 
+        !   a2dVarSnowMaskL     : snow mask [0,1] 
+        !   
+        !   a2dVarSMStarL       : soil moisture value [0, 1]
+        !   a2dVarSMGainL       : soil moisture gain [0, 1]
+        !   a2dVarSnowHeightF   : snow height [cm]                                                    
+        !   a2dVarSnowKernelF   : snow kernel [0,1]  
+        !------------------------------------------------------------------------------------------
+
 
 Data Outcome
 ............
@@ -1032,8 +1043,42 @@ Data State / Data Restart
 
 * Gridded
 
+The Hydrological Model Continuum saves, using the temporal resolution set in the namelist, the following gridded variables:
+
+    - Total volume [mm]
+    - Retention volume [mm] 
+    - Hydro level [-]
+    - Routing [-]
+    - Flow deep and exfilration [-]
+    - Water table level [m]
+    - Land surface temperature [K]
+    - Air temperature marked [K]
+    - Air temperaure last 24 hours [K]
+    - Water sources [m^3/s]
+
+If the snow part is activated, in addition the variables related to the snow physics will be saved:
+
+    - Snow water equivalent [mm] 
+    - Snow density [kg/m^3]
+    - Snow albedo [-]
+    - Snow age [day]
+    - Air temperature last day [C]
+    - Air temperature last 5 day(s) [C]
+
 * Point
 
+The Hydrological Model Continuum saves, using the temporal resolution set in the namelist, the following point variables:
+		
+		- Dam(s)
+			- matrix coordinates of dams [-]
+			- codes of dams [-]
+			- dams volume max [m^3]
+			- dams volume [m^3]
+		- Lake(s)				
+      - matrix coordinates of lakes [-]
+			- codes of lakes [-]
+			- lakes volume min\ [m^3]
+			- lakes volume [m^3]        
 
 Model execution
 ***************
@@ -1044,6 +1089,7 @@ using the stand-alone version, the model can be easily integrated in different f
 of zlib, hdf5 and netCDF4 libraries. Usually, the model is distributed with a configure file to compile the source 
 codes in a generic Linux Debian/Ubuntu system and to select different configuration flags.
 Generally, to properly build the model, the users have to follow the following steps:
+
   1. build the model dependencies compiling zlib, hdf5 and netCDF4 libraries;
   2. build the model codes against the libraries previouly installed
 
@@ -1126,17 +1172,17 @@ usage. In this part, the configuration of a debug workspace in Apache NetBeans I
 First of all, the package for C, C++ and Fortran programming languages have to be installed in Apache NetBeans; to complete this
 step, the users have to install the package related with C/C++ language. Particuarly, following these instructions:
 
-  a) Tools --> Plugins --> Settings --> Tick "NetBeans 8.2 Plugin Portal" --> Close 
+  1) Tools --> Plugins --> Settings --> Tick "NetBeans 8.2 Plugin Portal" --> Close 
 
 and Reboot the Apache NetBeans IDE.
 Next step, users should create a New Project following these instructions: 
 
-  b) File --> New Project --> Category :: Sample :: C/C++ --> Project :: Hello World Fortran Application --> Next --> Choose Name --> Close
+  2) File --> New Project --> Category :: Sample :: C/C++ --> Project :: Hello World Fortran Application --> Next --> Choose Name --> Close
 
 After creating a folder project, users have to import all source code in the project folder; Using the left menu where the name of projects
 are visible, right click on selected project:
 
-  c) Source Files --> Add existing items ...
+  3) Source Files --> Add existing items ...
 
 performing this action, a form to select all file will be opened. Finally, all source files will be available into source file folder
 of the selected project. 
@@ -1144,31 +1190,31 @@ Next steps cover the configuration of the dependencies in the project. Particula
 the project.
 For configuring the NetCDF4 in Apache NetBeans IDE, the users have to add in:
 
-  d) Project --> Properties --> Linker --> Libraries
+  4) Project --> Properties --> Linker --> Libraries
      
      in /path_to_netcdf/ find the following files
      netcdff.a and netcdff.so 
      and note "double f" for fortran libraries
 
-  e) Project --> Properties --> Linker --> Additional Options
+  5) Project --> Properties --> Linker --> Additional Options
      
       -I/path_to_netcdf/include/ 
       -L/path_to_netcdf/lib/ 
       -lnetcdff -lnetcdf   
 
-  f) Project --> Properties --> Fortran Compiler --> Additional Options
+  6) Project --> Properties --> Fortran Compiler --> Additional Options
 
       -I/path_to_netcdf/include/ 
       -L/path_to_netcdf/lib/ 
       -lnetcdff -lnetcdf  
 
-  g) Project --> Properties --> Fortran Compiler --> Additional Options
+  7) Project --> Properties --> Fortran Compiler --> Additional Options
   
       gfortran: -cpp -DLIB_NC
       ifort: -fpp -DLIB_NC  
 
-  h) Project --> Properties --> Run --> Environment --> NewValue
-  i) 
+  8) Project --> Properties --> Run --> Environment --> NewValue
+  
       Name: LD_LIBRARY_PATH 
       Value: $LD_LIBRARY_PATH:/path_to_necdf/lib/
 
@@ -1176,35 +1222,42 @@ Once the NetCDF4 are linked, it will be possible to compile each source file usi
 After doing all these steps, the users have to set the debug command to run Hydrological Model Continuum 
 using, for instance, a namelist file of a study case:  
   
-  i) Debug --> Debug Command 
-  ii) 
-      "${OUTPUT_PATH}" domain.info.txt
+  9) Debug --> Debug Command 
+  	
+  		"${OUTPUT_PATH}" domainname.info.txt
 
-
-
-!
-! 1) SET NETCDF LIBRARY CONFIGURATION:
-! Add in: Project --> Properties --> Linker --> Libraries
-!   
-! Add in: Project --> Properties --> Linker --> Additional Options:
-!   -I/home/fabio/Documents/Working_Area/Code_Development/Library/netcdf-4.1.2_shared/include/ 
-!   -L/home/fabio/Documents/Working_Area/Code_Development/Library/netcdf-4.1.2_shared/lib/ 
-!   -lnetcdff -lnetcdf   
-! Add in: Project --> Properties --> Fortran Compiler --> Additional Options:
-!   -I/home/fabio/Documents/Working_Area/Code_Development/Library/netcdf-4.1.2_shared/include/ 
-!   -L/home/fabio/Documents/Working_Area/Code_Development/Library/netcdf-4.1.2_shared/lib/ 
-!   -lnetcdff -lnetcdf  
-! Add in: Project --> Properties --> Fortran Compiler --> Additional Options:
-!   gfortran: -cpp -DLIB_NC
-!   ifort: -fpp -DLIB_NC            
-! Add in: Project --> Properties --> Run --> Environment --> NewValue
-!   LD_LIBRARY_PATH $LD_LIBRARY_PATH:/home/fabio/Documents/Working_Area/Code_Development/Library/netcdf-4.1.2_shared/lib/
-
-here
+After setting the environment and all needed options for running the model, the users will are able to get a 
+deeper information using the options to execute code in a debugging mode using breakpoints and all the features
+available in **gdb** debugging library. 
 
 Profiling Mode
 --------------
 
+Another option for the users is the profiling of the model using the **gprof** command. This tool provides a 
+detailed postmortem analysis of program timing at the subprogram level, including how many times a subprogram was 
+called, who called it, whom it called, and how much time was spent in the routine and by the routines it called.
+
+To enable gprof profiling, the users have to compile and link the program with the -pg option; in the configure
+program is a section for compiling the model in profiling model.
+
+.. code-block:: bash
+
+  >> ./HMC_Model_V2_DomainName.x domainname.info.txt
+
+The simulation must complete normally for gprof to obtain meaningful timing information. At program termination, 
+the file **gmon.out** is automatically written in the working directory. This file contains the profiling data 
+that will be interpreted by gprof. 
+To obtain a ascii file for all information, the following command have to be execute 
+./$name_exec 30 3 0.6 0.015 marche 0.3 500 1 70 
+
+.. code-block:: bash
+
+  >> gprof HMC_Model_V2_DomainName.x gmon.out > hmc_model_analysis.txt
+
+Alternatively, a python script to plot a scheme of model flow is provided in the hmc package:
+
+.. code-block:: bash
+
+  >> gprof HMC_Model_V2_DomainName.x | ./gprof2dot.py | dot -Tpng -o hmc_model_analysis.png
 
 
-here
