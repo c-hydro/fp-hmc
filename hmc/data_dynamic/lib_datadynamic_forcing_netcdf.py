@@ -878,6 +878,7 @@ def saveForcingGridded_NC(sDataTime, sFileName,
     # -------------------------------------------------------------------------------------
     # Open netCDF file in write/append mode according with availability of selected file
     oDrv_IO = selectFileDriver(sFileNameVar, sZipExt)
+    print(join(oDrv_IO.sFilePath, oDrv_IO.sFileName))
     oFile = oDrv_IO.oFileLibrary.openFile(join(oDrv_IO.sFilePath, oDrv_IO.sFileName), oDrv_IO.sFileMode)
     # -------------------------------------------------------------------------------------
 
