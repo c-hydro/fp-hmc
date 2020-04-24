@@ -58,32 +58,32 @@
           "VarDims"         : {"X": "west_east", "Y": "south_north"},
           "VarName"         : {
             "Rain"            : {
-              "FileName"          : "wrf_1h_$yyyy$mm$dd$HH$MM_marche.nc.gz",
+              "FileName"          : "ws.db.$yyyy$mm$dd$HH$MM.nc.gz",
               "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_source/",
               "FileVar"		      : "Rain"
                                 },
             "AirTemperature"  : {
-              "FileName"          : "wrf_1h_$yyyy$mm$dd$HH$MM_marche.nc.gz",
+              "FileName"          : "ws.db.$yyyy$mm$dd$HH$MM.nc.gz",
               "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_source/",
               "FileVar"		      : "AirTemperature"
                                 },
             "Wind"            : {
-              "FileName"          : "wrf_1h_$yyyy$mm$dd$HH$MM_marche.nc.gz",
+              "FileName"          : "ws.db.$yyyy$mm$dd$HH$MM.nc.gz",
               "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_source/",
               "FileVar"		      : "WindSpeed"
                                 },
             "RelHumidity"       : {
-              "FileName"          : "wrf_1h_$yyyy$mm$dd$HH$MM_marche.nc.gz",
+              "FileName"          : "ws.db.$yyyy$mm$dd$HH$MM.nc.gz",
               "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_source/",
               "FileVar"		      : "RelativeHumidity"
                                 },
             "IncRadiation"		: {
-              "FileName"          : "wrf_1h_$yyyy$mm$dd$HH$MM_marche.nc.gz",
+              "FileName"          : "ws.db.$yyyy$mm$dd$HH$MM.nc.gz",
               "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_source/",
               "FileVar"		      : "IncomingRadiation"
                                 },
             "AirPressure"		: {
-              "FileName"          : "wrf_1h_$yyyy$mm$dd$HH$MM_marche.nc.gz",
+              "FileName"          : "ws.db.$yyyy$mm$dd$HH$MM.nc.gz",
               "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_source/",
               "FileVar"		      : "AirPressure"
                                 }
@@ -97,32 +97,32 @@
           "VarDims"           : {"X": "west_east", "Y": "south_north", "time" :"time"},
           "VarName"           : {
             "Rain"				: {
-              "FileName"          : "nwp.wrf.$yyyy$mm$dd0000.nc.gz",
+              "FileName"          : "wrf_$yyyy$mm$dd0000_marche.nc.gz",
               "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_source/",
               "FileVar"		      : "Rain"
                                 },
             "AirTemperature"	: {
-              "FileName"          : "nwp.wrf.$yyyy$mm$dd0000.nc.gz",
+              "FileName"          : "wrf_$yyyy$mm$dd0000_marche.nc.gz",
               "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_source/",
               "FileVar"		      : "AirTemperature"
                                 },
             "Wind"				: {
-              "FileName"          : "nwp.wrf.$yyyy$mm$dd0000.nc.gz",
+              "FileName"          : "wrf_$yyyy$mm$dd0000_marche.nc.gz",
               "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_source/",
               "FileVar"		      : "WindSpeed"
                                 },
             "RelHumidity"		: {
-              "FileName"          : "nwp.wrf.$yyyy$mm$dd0000.nc.gz",
+              "FileName"          : "wrf_$yyyy$mm$dd0000_marche.nc.gz",
               "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_source/",
               "FileVar"		      : "RelativeHumidity"
                                 },
             "IncRadiation"		: {
-              "FileName"          : "nwp.wrf.$yyyy$mm$dd0000.nc.gz",
+              "FileName"          : "wrf_$yyyy$mm$dd0000_marche.nc.gz",
               "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_source/",
               "FileVar"		      : "IncomingRadiation"
                                 },
             "AirPressure"		: {
-              "FileName"          : "nwp.wrf.$yyyy$mm$dd0000.nc.gz",
+              "FileName"          : "wrf_$yyyy$mm$dd0000_marche.nc.gz",
               "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_source/",
               "FileVar"		      : "AirPressure"
                                 }
