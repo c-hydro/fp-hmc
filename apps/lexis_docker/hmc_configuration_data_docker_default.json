@@ -70,17 +70,17 @@
             "Wind"            : {
               "FileName"          : "ws.db.$yyyy$mm$dd$HH$MM.nc.gz",
               "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_source/",
-              "FileVar"		      : "WindSpeed"
+              "FileVar"		      : "Wind"
                                 },
             "RelHumidity"       : {
               "FileName"          : "ws.db.$yyyy$mm$dd$HH$MM.nc.gz",
               "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_source/",
-              "FileVar"		      : "RelativeHumidity"
+              "FileVar"		      : "RelHumidity"
                                 },
             "IncRadiation"		: {
               "FileName"          : "ws.db.$yyyy$mm$dd$HH$MM.nc.gz",
               "FilePath"          : "/home/fp/fp_mount/datasets_hmc/dynamic_source/",
-              "FileVar"		      : "IncomingRadiation"
+              "FileVar"		      : "IncRadiation"
                                 },
             "AirPressure"		: {
               "FileName"          : "ws.db.$yyyy$mm$dd$HH$MM.nc.gz",
