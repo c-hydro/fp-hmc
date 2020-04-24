@@ -30,21 +30,21 @@
       "RunModelCLine": "$UC $UH $CT $CF $DOMAIN $CPI $KSATRATIO $WTABLEHBR $SLOPEMAX"
     },
     "Run_ConfigFile": {
-      "FileData": "hmc_configuration_data.json",
+      "FileData": "/home/fabio/Desktop/PyCharm_Workspace/hmc-master/apps/lexis_generic/hmc_configuration_data_lexis_generic.json",
       "FileLog": "hmc_logging.txt"
     },
     "Run_Path": {
-      "PathTemp": "/run/$RUN/$MODE/temp/",
-      "PathCache": "/run/$RUN/$MODE/cache/",
-      "PathExec": "/run/$RUN/$MODE/exec/",
-      "PathLibrary": "/library/"
+      "PathTemp": "/home/fp/fp_run/temp/",
+      "PathCache": "/home/fp/fp_run/cache/",
+      "PathExec": "/home/fp/fp_run/exec/",
+      "PathLibrary": "/home/fp/fp_run/library/"
     },
     "Time_Params": {
       "TimeNow": null,
       "TimeDelta": 3600,
-      "TimeStepObs": null,
-      "TimeStepFor": null,
-      "TimeStepCheck": 1,
+      "TimeStepObs": 10,
+      "TimeStepFor": 24,
+      "TimeStepCheck": 0,
       "TimeRestart": {"RestartStep": 0, "RestartHH": "00"},
       "TimeWorldRef": {"RefType": "gmt", "RefLoad": 0, "RefSave": 0},
       "TimeTcMax": -9999
