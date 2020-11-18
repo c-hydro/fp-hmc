@@ -3,8 +3,8 @@
   "DataLand"    : {
     "__comment": " --- DataLand configuration [TAGS: $DOMAIN, $VAR, $RUN] --- ",
     "Gridded"     : {
-      "FileName"    : "$DOMAIN.$VAR.txt",
-      "FilePath"    : "$TARGET_DATA_STATIC/land/",
+      "FileName"    : null,
+      "FilePath"    : null,
       "FileType"    : 1,
       "FileTimeRes" : null,
       "FileVars"    : {
@@ -29,8 +29,8 @@
       }
     },
     "Point": {
-      "FileName"    : "$DOMAIN.info_$VAR.txt",
-      "FilePath"    : "$TARGET_DATA_STATIC/point/",
+      "FileName"    : null,
+      "FilePath"    : null,
       "FileType"    : 1,
       "FileTimeRes" : null,
       "FileVars"    : {
@@ -46,7 +46,7 @@
     "__comment": " --- DataForcing configuration [TAGS: $yyyy, $mm, $dd, $HH, %MM, %RUN, $VAR, $MODE] --- ",
     "Gridded"     : {
       "FileName"    : "hmc.forcing-grid.$yyyy$mm$dd$HH$MM.nc",
-      "FilePath"    : "/home/fp/fp_run/data/forcing/gridded/$yyyy/$mm/$dd/",
+      "FilePath"    : null,
       "FileType"    : 2,
       "FileTimeRes" : 3600,
       "FileVars"    : {
@@ -58,33 +58,33 @@
           "VarDims"         : {"X": "west_east", "Y": "south_north"},
           "VarName"         : {
             "Rain"            : {
-              "FileName"          : "ws.db.$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/ws/$yyyy/$mm/$dd/",
+              "FileName"          : null,
+              "FilePath"          : null,
               "FileVar"		      : "Rain"
                                 },
             "AirTemperature"  : {
-              "FileName"          : "ws.db.$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/ws/$yyyy/$mm/$dd/",
+              "FileName"          : null,
+              "FilePath"          : null,
               "FileVar"		      : "AirTemperature"
                                 },
             "Wind"            : {
-              "FileName"          : "ws.db.$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/ws/$yyyy/$mm/$dd/",
+              "FileName"          : null,
+              "FilePath"          : null,
               "FileVar"		      : "Wind"
                                 },
             "RelHumidity"       : {
-              "FileName"          : "ws.db.$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/ws/$yyyy/$mm/$dd/",
+              "FileName"          : null,
+              "FilePath"          : null,
               "FileVar"		      : "RelHumidity"
                                 },
             "IncRadiation"		: {
-              "FileName"          : "ws.db.$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/ws/$yyyy/$mm/$dd/",
+              "FileName"          : null,
+              "FilePath"          : null,
               "FileVar"		      : "IncRadiation"
                                 },
             "AirPressure"		: {
-              "FileName"          : "ws.db.$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/ws/$yyyy/$mm/$dd/",
+              "FileName"          : null,
+              "FilePath"          : null,
               "FileVar"		      : "AirPressure"
                                 }
                               }
@@ -97,33 +97,33 @@
           "VarDims"           : {"X": "west_east", "Y": "south_north", "time" :"time"},
           "VarName"           : {
             "Rain"				: {
-              "FileName"          : "nwp.wrf.$yyyy$mm$dd0000.nc.gz",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_FOR/nwp/wrf/$yyyy/$mm/$dd/$RFarm_ID/",
+              "FileName"          : null,
+              "FilePath"          : null,
               "FileVar"		      : "Rain"
                                 },
             "AirTemperature"	: {
-              "FileName"          : "nwp.wrf.$yyyy$mm$dd0000.nc.gz",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_FOR/nwp/wrf/$yyyy/$mm/$dd/",
+              "FileName"          : null,
+              "FilePath"          : null,
               "FileVar"		      : "AirTemperature"
                                 },
             "Wind"				: {
-              "FileName"          : "nwp.wrf.$yyyy$mm$dd0000.nc.gz",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_FOR/nwp/wrf/$yyyy/$mm/$dd/",
+              "FileName"          : null,
+              "FilePath"          : null,
               "FileVar"		      : "Wind"
                                 },
             "RelHumidity"		: {
-              "FileName"          : "nwp.wrf.$yyyy$mm$dd0000.nc.gz",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_FOR/nwp/wrf/$yyyy/$mm/$dd/",
+              "FileName"          : null,
+              "FilePath"          : null,
               "FileVar"		      : "RelHumidity"
                                 },
             "IncRadiation"		: {
-              "FileName"          : "nwp.wrf.$yyyy$mm$dd0000.nc.gz",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_FOR/nwp/wrf/$yyyy/$mm/$dd/",
+              "FileName"          : null,
+              "FilePath"          : null,
               "FileVar"		      : "IncRadiation"
                                 },
             "AirPressure"		: {
-              "FileName"          : "nwp.wrf.$yyyy$mm$dd0000.nc.gz",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_FOR/nwp/wrf/$yyyy/$mm/$dd/",
+              "FileName"          : null,
+              "FilePath"          : null,
               "FileVar"		      : "AirPressure"
                                 }
                               }
@@ -132,7 +132,7 @@
     },
     "Point"       : {
       "FileName"    : "hmc.$VAR.$yyyy$mm$dd$HH$MM.txt",
-      "FilePath"	: "/home/fp/fp_run/data/forcing/point/$yyyy/$mm/$dd/",
+      "FilePath"	: null,
       "FileType"	: 1,		
       "FileTimeRes"	: 3600, 	
       "FileVars"	: {
@@ -144,18 +144,18 @@
           "VarDims"           : {"T": "time"},
           "VarName"           : {
             "Discharge"			: {
-              "FileName"          : "rs.db.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/rs/$yyyy/$mm/$dd/",
+              "FileName"          : null,
+              "FilePath"          : null,
               "FileVar"		      : "discharge"
                                 },
             "DamV"				: {
-              "FileName"          : "damv.db.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/dp/$yyyy/$mm/$dd/",
+              "FileName"          : null,
+              "FilePath"          : null,
               "FileVar"		      : "damv"
                                 },
             "DamL"				: {
-              "FileName"          : "daml.db.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/dp/$yyyy/$mm/$dd/",
+              "FileName"          : null,
+              "FilePath"          : null,
               "FileVar"		      : "daml"
                                 }
                             }
@@ -165,7 +165,7 @@
     },
     "TimeSeries"  : {
       "FileName"    : "hmc.forcing-ts.plant_$NAME_PLANT.txt",
-      "FilePath"	: "/home/fp/fp_run/data/forcing/timeseries/",
+      "FilePath"	: null,
       "FileType"	: 1,		
       "FileTimeRes" : 3600, 	
       "FileVars"	: {
@@ -177,13 +177,13 @@
           "VarDims"           : {"T": "time"},
           "VarName"           : {
             "DamQ"				: {
-              "FileName"          : "hmc.forcing-ts.plant_$NAME_PLANT.txt",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/turbinate/$yyyy/$mm/$dd/",
+              "FileName"          : null,
+              "FilePath"          : null,
               "FileVar"		      : ""
                                 },
             "IntakeQ"			: {
-              "FileName"          : "hmc.forcing-ts.plant_$NAME_PLANT.txt",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/turbinate/$yyyy/$mm/$dd/",
+              "FileName"          : null,
+              "FilePath"          : null,
               "FileVar"		      : ""
                                 }
                               }
@@ -196,7 +196,7 @@
     "__comment": " --- DataUpdating configuration [TAGS: $yyyy, $mm, $dd, $HH, %RUN, $VAR, $MODE] --- ",
     "Gridded"	  : {
       "FileName"    : "hmc.forcing-grid.$yyyy$mm$dd$HH$MM.nc",
-      "FilePath"	: "/home/fp/fp_run/data/forcing/gridded/$yyyy/$mm/$dd/",
+      "FilePath"	: null,
       "FileType"	: 2,
       "FileTimeRes"	: 3600,
       "FileVars"	: {
@@ -208,23 +208,23 @@
           "VarDims"           : {"X": "west_east", "Y": "south_north"},
           "VarName"           : {
             "SnowHeight"		: {
-              "FileName"          : "ws.db.$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/ws/$yyyy/$mm/$dd/",
+              "FileName"          : null,
+              "FilePath"          : null,
               "FileVar"		      : "SnowLevel"
                                 },
             "SnowKernel"	    : {
-              "FileName"          : "ws.db.$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/ws/$yyyy/$mm/$dd/",
+              "FileName"          : null,
+              "FilePath"          : null,
               "FileVar"		      : "SnowKernel"
                                 },
             "SnowCoverArea"		: {
-              "FileName"          : "MOD10A1.005_marche_$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/modis/$yyyy/$mm/$dd/",
+              "FileName"          : null,
+              "FilePath"          : null,
               "FileVar"		      : "snow_cover_daily"
                                 },
             "SnowQualityArea"	: {
-              "FileName"          : "MOD10A1.005_marche_$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "$TARGET_DATA_DYNAMIC_OBS/modis/$yyyy/$mm/$dd/",
+              "FileName"          : null,
+              "FilePath"          : null,
               "FileVar"		      : "snow_spatial_qa_filter"
                                 }
                               }
@@ -237,7 +237,7 @@
     "__comment": " --- DataOutcome configuration [TAGS: $yyyy, $mm, $dd, $HH, %RUN, $VAR, $MODE, $SECTION, $BASIN] --- ",
     "Gridded"	  : {
       "FileName"    : "hmc.output-grid.$yyyy$mm$dd$HH$MM.nc.gz",	
-      "FilePath"	: "/home/fp/fp_run/data/outcome/gridded/$yyyy/$mm/$dd/",
+      "FilePath"	: null,
       "FileType"	: 2,
       "FileTimeRes"	: 3600, 
       "FileVars"	: {
@@ -249,8 +249,8 @@
           "VarDims"           : {"X": "west_east", "Y": "south_north"},
           "VarName"           : {
             "ALL"				: {
-              "FileName"          : "hmc.output-grid.$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "$TARGET_DATA_ARCHIVE/$yyyy/$mm/$dd/$HH/outcome/gridded/",
+              "FileName"          : null,
+              "FilePath"          : null,
               "FileVar"		      : "ALL"
                                 }
                               }
@@ -259,7 +259,7 @@
     },
     "Point"		  : {
       "FileName"    : "hmc.$VAR.$yyyy$mm$dd$HH$MM.txt",
-      "FilePath"	: "/home/fp/fp_run/data/outcome/point/$yyyy/$mm/$dd/",
+      "FilePath"	: null,
       "FileType"	: 1,
       "FileTimeRes" : 3600,
       "FileVars"	: {
@@ -271,23 +271,23 @@
           "VarDims"           : {"T": "time"},
           "VarName"           : {
             "Discharge"	        : {
-              "FileName"          : "hmc.discharge.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "$TARGET_DATA_ARCHIVE/$yyyy/$mm/$dd/$HH/outcome/point/discharge/",
+              "FileName"          : null,
+              "FilePath"          : null,
               "FileVar"		      : "discharge"
                                 },
             "DamV"				: {
-              "FileName"          : "hmc.vdam.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "$TARGET_DATA_ARCHIVE/$yyyy/$mm/$dd/$HH/outcome/point/dam_volume/",
+              "FileName"          : null,
+              "FilePath"          : null,
               "FileVar"		      : "vdam"
                                 },
             "DamL"				: {
-              "FileName"          : "hmc.ldam.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "$TARGET_DATA_ARCHIVE/$yyyy/$mm/$dd/$HH/outcome/point/dam_level/",
+              "FileName"          : null,
+              "FilePath"          : null,
               "FileVar"		      : "ldam"
                                 },
             "VarAnalysis"		: {
-              "FileName"          : "hmc.var-analysis.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "$TARGET_DATA_ARCHIVE/$yyyy/$mm/$dd/$HH/outcome/point/analysis/",
+              "FileName"          : null,
+              "FilePath"          : null,
               "FileVar"		      : "var-analysis"
                                 }
                               }
@@ -296,7 +296,7 @@
     },
     "TimeSeries"  : {
       "FileName"    : "hmc.$VAR.txt",
-      "FilePath"    : "/home/fp/fp_run/data/outcome/time_series/",
+      "FilePath"    : null,
       "FileType"	: 1,
       "FileTimeRes"	: 3600,
       "FileVars"	: {
@@ -308,23 +308,23 @@
           "VarDims"           : {"T": "time"},
           "VarName"           : {
             "Discharge"			: {
-              "FileName"          : "hmc.hydrograph.txt",
-              "FilePath"          : "$TARGET_DATA_ARCHIVE/$yyyy/$mm/$dd/$HH/outcome/time_series/",
+              "FileName"          : null,
+              "FilePath"          : null,
               "FileVar"		      : "hydrograph"
                                 },
             "DamV"				: {
-              "FileName"          : "hmc.vdam.txt",
-              "FilePath"          : "$TARGET_DATA_ARCHIVE/$yyyy/$mm/$dd/$HH/outcome/time_series/",
+              "FileName"          : null,
+              "FilePath"          : null,
               "FileVar"		      : "vdam"
                                 },
             "DamL"				: {
-              "FileName"          : "hmc.ldam.txt",
-              "FilePath"          : "$TARGET_DATA_ARCHIVE/$yyyy/$mm/$dd/$HH/outcome/time_series/",
+              "FileName"          : null,
+              "FilePath"          : null,
               "FileVar"		      : "ldam"
                                 },
             "VarAnalysis"		: {
-              "FileName"          : "hmc.var-analysis.txt",
-              "FilePath"          : "$TARGET_DATA_ARCHIVE/$yyyy/$mm/$dd/$HH/outcome/time_series/",
+              "FileName"          : null,
+              "FilePath"          : null,
               "FileVar"		      : "var-analysis"
                                 }
                               }
@@ -337,8 +337,8 @@
           "VarDims"           : {"T": "time"},
           "VarName"           : {
             "Discharge"			: {
-              "FileName"          : "hydrograph_$SECTION_$BASIN_$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "$TARGET_DATA_ARCHIVE/$yyyy/$mm/$dd/$HH/outcome/web_app/",
+              "FileName"          : null,
+              "FilePath"          : null,
               "FileVar"		      : "hydrograph"
                                 }
                               }
@@ -350,7 +350,7 @@
     "__comment": " --- DataState configuration [TAGS: $yyyy, $mm, $dd, $HH, %RUN, $VAR, $MODE] --- ",
     "Gridded"	  : {
       "FileName":   "hmc.state-grid.$yyyy$mm$dd$HH$MM.nc.gz",
-      "FilePath" 	: "/home/fp/fp_run/data/state/gridded/$yyyy/$mm/$dd/",
+      "FilePath" 	: null,
       "FileType"	: 2,
       "FileTimeRes" : 86400,
       "FileVars"	: {
@@ -362,8 +362,8 @@
           "VarDims"           : {"X": "west_east", "Y": "south_north"},
           "VarName"           : {
             "ALL"				: {
-              "FileName"          : "hmc.state-grid.$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "$TARGET_DATA_ARCHIVE/$yyyy/$mm/$dd/$HH/state/gridded/",
+              "FileName"          : null,
+              "FilePath"          : null,
               "FileVar"		      : "ALL"
                                 }
                               }
@@ -372,7 +372,7 @@
     },
 	"Point"		  : {
       "FileName"    : "hmc.state-point.$yyyy$mm$dd$HH$MM.txt",
-      "FilePath"	: "/home/fp/fp_run/data/state/point/$yyyy/$mm/$dd/",
+      "FilePath"	: null,
       "FileType"	: 1,
       "FileTimeRes"	: 86400,
       "FileVars"	: {
@@ -384,8 +384,8 @@
           "VarDims"           : {"T": "time"},
           "VarName"           : {
             "ALL"				: {
-              "FileName"          : "hmc.state-point.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "$TARGET_DATA_ARCHIVE/$yyyy/$mm/$dd/$HH/state/point/",
+              "FileName"          : null,
+              "FilePath"          : null,
               "FileVar"		      : "ALL"
                                 }
                               }
@@ -397,7 +397,7 @@
     "__comment": " --- DataRestart configuration [TAGS: $yyyy, $mm, $dd, $HH, %RUN, $VAR, $MODE] --- ",
     "Gridded"	  : {
       "FileName" 	: "hmc.state-grid.$yyyy$mm$dd$HH$MM.nc.gz",
-      "FilePath"	: "/home/fp/fp_run/data/restart/",
+      "FilePath"	: null,
       "FileType"	: 2,
       "FileTimeRes" : 86400,
       "FileVars"	: {
@@ -409,8 +409,8 @@
           "VarDims"           : {"X": "west_east", "Y": "south_north"},
           "VarName"           : {
             "ALL"				: {
-              "FileName"          : "hmc.state-grid.$yyyy$mm$dd$HH$MM.nc.gz",
-              "FilePath"          : "$TARGET_DATA_RESTART/$yyyy/$mm/$dd/",
+              "FileName"          : null,
+              "FilePath"          : null,
               "FileVar"		      : "ALL"
                                 }
                               }
@@ -419,7 +419,7 @@
     },
     "Point"	      : {
       "FileName"    : "hmc.state-point.$yyyy$mm$dd$HH$MM.txt",
-      "FilePath"	: "/home/fp/fp_run/data/restart/",
+      "FilePath"	: null,
       "FileType"	: 1,
       "FileTimeRes" : 86400,
       "FileVars"	: {
@@ -431,8 +431,8 @@
           "VarDims"           : {"T": "time"},
           "VarName"           : {
             "ALL"				: {
-              "FileName"          : "hmc.state-point.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "$TARGET_DATA_RESTART/$yyyy/$mm/$dd/",
+              "FileName"          : null,
+              "FilePath"          : null,
               "FileVar"		      : "ALL"
                                 }
                               }
@@ -444,7 +444,7 @@
     "__comment": " --- DataObs configuration [TAGS: $yyyy, $mm, $dd, $HH, %RUN, $VAR, $MODE] --- ",
     "Point"       : {
       "FileName"    : "hmc.$VAR.$yyyy$mm$dd$HH$MM.txt",
-      "FilePath"	: "/home/fp/fp_run/data/forcing/point/$yyyy/$mm/$dd/",
+      "FilePath"	: null,
       "FileType"	: 1,
       "FileTimeRes"	: 3600,
       "FileVars"	: {
@@ -456,18 +456,18 @@
           "VarDims"           : {"T": "time"},
           "VarName"           : {
             "Discharge"			: {
-              "FileName"          : "discharge.observed.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "$TARGET_DATA_ARCHIVE/$yyyy/$mm/$dd/$HH/obs/point/discharge/",
+              "FileName"          : null,
+              "FilePath"          : null,
               "FileVar"		      : "discharge"
                                 },
             "DamV"				: {
-              "FileName"          : "damv.observed.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "$TARGET_DATA_ARCHIVE/$yyyy/$mm/$dd/$HH/obs/point/dam_volume/",
+              "FileName"          : null,
+              "FilePath"          : null,
               "FileVar"		      : "damv"
                                 },
             "DamL"				: {
-              "FileName"          : "daml.observed.$yyyy$mm$dd$HH$MM.txt",
-              "FilePath"          : "$TARGET_DATA_ARCHIVE/$yyyy/$mm/$dd/$HH/obs/point/dam_level/",
+              "FileName"          : null,
+              "FilePath"          : null,
               "FileVar"		      : "daml"
                                 }
                               }
