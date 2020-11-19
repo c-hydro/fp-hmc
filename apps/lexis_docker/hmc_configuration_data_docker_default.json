@@ -65,7 +65,7 @@
             "AirTemperature"  : {
               "FileName"          : null,
               "FilePath"          : null,
-              "FileVar"		      : "AirTemperature"
+              "FileVar"		      : "Air_Temperature"
                                 },
             "Wind"            : {
               "FileName"          : null,
@@ -75,12 +75,12 @@
             "RelHumidity"       : {
               "FileName"          : null,
               "FilePath"          : null,
-              "FileVar"		      : "RelHumidity"
+              "FileVar"		      : "Relative_Humidity"
                                 },
             "IncRadiation"		: {
               "FileName"          : null,
               "FilePath"          : null,
-              "FileVar"		      : "IncRadiation"
+              "FileVar"		      : "Incoming_Radiation"
                                 },
             "AirPressure"		: {
               "FileName"          : null,
@@ -109,17 +109,17 @@
             "Wind"				: {
               "FileName"          : null,
               "FilePath"          : null,
-              "FileVar"		      : "Wind"
+              "FileVar"		      : "WindSpeed"
                                 },
             "RelHumidity"		: {
               "FileName"          : null,
               "FilePath"          : null,
-              "FileVar"		      : "RelHumidity"
+              "FileVar"		      : "RelativeHumidity"
                                 },
             "IncRadiation"		: {
               "FileName"          : null,
               "FilePath"          : null,
-              "FileVar"		      : "IncRadiation"
+              "FileVar"		      : "IncomingRadiation"
                                 },
             "AirPressure"		: {
               "FileName"          : null,

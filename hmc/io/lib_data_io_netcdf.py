@@ -192,7 +192,7 @@ def get2DVar(oFileData, sVarName, bSetAutoMask=True):
 
 # ----------------------------------------------------------------------------
 # Method to get 3d variable (using variable name and t-slice if defined)
-def get3DVar(oFileData, sVarName, iVarTSlice=None, bSetAutoMask=True):
+def get3DVar(oFileData, sVarName, iVarTSlice=None, bSetAutoMask=True, iVarTPos=2):
 
     if not bSetAutoMask:
         Exc.getExc(' =====> WARNING: auto_mask is set to false! (lib_data_io_netcdf)', 2, 1)
@@ -213,7 +213,12 @@ def get3DVar(oFileData, sVarName, iVarTSlice=None, bSetAutoMask=True):
             # plt.show()
 
     else:
-        oVarName_OUT = np.transpose(np.rot90(a3dVarName_IN[iVarTSlice, :, :], -1))
+        if iVarTPos == 0:
+            oVarName_OUT = np.transpose(np.rot90(a3dVarName_IN[iVarTSlice, :, :], -1))
+        elif iVarTPos == 2:
+            oVarName_OUT = np.transpose(np.rot90(a3dVarName_IN[:, :, iVarTSlice], -1))
+        else:
+            Exc.getExc(' =====> ERROR: in reading 3d variable; bad time position (lib_data_io_netcdf)', 1, 1)
 
     return oVarName_OUT
 # ----------------------------------------------------------------------------
