@@ -2,8 +2,9 @@
   "__comment": " ### HMC configuration file - Static and dynamic data settings ###",
   "Flags": {
     "__comment": " --- Flags configuration --- ",
-    "cleaning_ancillary_static": true,
+    "cleaning_ancillary_static": false,
     "cleaning_ancillary_dynamic_source": true,
+    "cleaning_ancillary_execution": false,
     "cleaning_ancillary_dynamic_outcome": true
   },
   "DataSummary" : {
@@ -17,7 +18,7 @@
       "hmc_file_list"        : {
         "ALL"		      : {
           "var_file_name"   : "hmc.collections.{dset_datetime_summary}.nc",
-          "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/archive/{run_name}/{dset_sub_path_summary}/outcome/collections/{run_mode}",
+          "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_summary}/outcome/collections/{run_mode}",
           "var_file_dset"	: "ALL",
           "var_file_format"	: "netcdf",
           "var_file_limits"	: null,
@@ -34,7 +35,7 @@
       "hmc_file_list"        : {
         "Discharge"		  : {
           "var_file_name"   : "hydrograph_{string_var_name_summary_section}_{string_var_name_summary_basin}_{dset_datetime_summary}.json",
-          "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/archive/{run_name}/{dset_sub_path_summary}/outcome/collections/{run_mode}/",
+          "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_summary}/outcome/collections/{run_mode}/",
           "var_file_dset"	: "Discharge",
           "var_file_format"	: "json_time_series",
           "var_file_limits"	: [0, null],
@@ -47,22 +48,26 @@
     "__comment": " --- DataAncillary configuration --- ",
     "static": {
       "hmc_file_name": "hmc.static.workspace",
-      "hmc_file_folder": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/run/{run_name}/{run_mode}/ancillary/{dset_sub_path_ancillary}"
+      "hmc_file_folder": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/run/{run_name}/{run_mode}/ancillary/{dset_sub_path_ancillary}"
     },
     "dynamic_source": {
       "hmc_file_name": "hmc.dynamic_source.{dset_datetime_ancillary}.workspace",
-      "hmc_file_folder": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/run/{run_name}/{run_mode}/ancillary/{dset_sub_path_ancillary}"
+      "hmc_file_folder": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/run/{run_name}/{run_mode}/ancillary/{dset_sub_path_ancillary}"
+    },
+    "execution": {
+      "hmc_file_name": "hmc.execution.{dset_datetime_ancillary}.workspace",
+      "hmc_file_folder": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/run/{run_name}/{run_mode}/ancillary/{dset_sub_path_ancillary}"
     },
     "dynamic_outcome": {
       "hmc_file_name": "hmc.dynamic_outcome.{dset_datetime_ancillary}.workspace",
-      "hmc_file_folder": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/run/{run_name}/{run_mode}/ancillary/{dset_sub_path_ancillary}"
+      "hmc_file_folder": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/run/{run_name}/{run_mode}/ancillary/{dset_sub_path_ancillary}"
     }
   },
   "DataGeo"    : {
     "__comment": " --- DataGeo configuration --- ",
     "Gridded"     : {
       "hmc_file_name"     : "{run_domain}.{dset_var_name_geo}.txt" ,
-      "hmc_file_folder"   : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/{run_domain}/static/gridded/",
+      "hmc_file_folder"   : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/data/data_static/gridded/",
       "hmc_file_format"   : "ascii_grid",
       "hmc_file_frequency": null,
       "hmc_file_variable" : {
@@ -92,12 +97,13 @@
         "Min_Stomata_Resistance"  : {"var_name": "RSmin",             "check": true,   "mandatory": false },
         "Vegetation_Height"       : {"var_name": "Hveg",              "check": true,   "mandatory": false },
         "Coeff_Resistance_Canopy" : {"var_name": "Gd",                "check": true,   "mandatory": false },
-        "Bare_Soil"               : {"var_name": "BareSoil",          "check": true,   "mandatory": false }
+        "Bare_Soil"               : {"var_name": "BareSoil",          "check": true,   "mandatory": false },
+        "Watertable_Volume_Max"   : {"var_name": "wt_max",            "check": true,   "mandatory": false }
       }
     },
     "Point": {
       "hmc_file_name"     : "{run_domain}.info_{dset_var_name_geo}.txt",
-      "hmc_file_folder"   : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/{run_domain}/static/point/",
+      "hmc_file_folder"   : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/data/data_static/point/",
       "hmc_file_format"   : "ascii_point",
       "hmc_file_frequency": null,
       "hmc_file_variable" : {
@@ -113,7 +119,7 @@
     "__comment": " --- DataForcing configuration --- ",
     "Gridded"     : {
       "hmc_file_name"     : "hmc.forcing-grid.{dset_datetime_hmc}.nc.gz",
-      "hmc_file_folder"   : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/run/{run_name}/{run_mode}/forcing/gridded/{dset_sub_path_hmc}",
+      "hmc_file_folder"   : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/run/{run_name}/{run_mode}/forcing/gridded/{dset_sub_path_hmc}",
       "hmc_file_format"   : "netcdf",
       "hmc_file_frequency": "H",
       "hmc_file_variable" : {
@@ -125,48 +131,48 @@
           "var_dims"        : {"X": "west_east", "Y": "south_north"},
           "var_list"         : {
             "Rain"            : {
-              "var_file_name"   : "ws.db.{dset_datetime_forcing_obs}.nc.gz",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/marche/dynamic/outcome/observation/ws/{dset_sub_path_forcing_obs}",
+              "var_file_name"   : "hmc.forcing-grid.{dset_datetime_forcing_obs}.nc.gz",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/data/data_dynamic/forcing/{dset_sub_path_forcing_obs}",
               "var_file_dset"	: "Rain",
               "var_file_format"	: "netcdf",
               "var_file_limits"	: [0, null],
               "var_file_units"  : "mm"
             },
             "AirTemperature"  : {
-              "var_file_name"   : "ws.db.{dset_datetime_forcing_obs}.nc.gz",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/marche/dynamic/outcome/observation/ws/{dset_sub_path_forcing_obs}",
-              "var_file_dset"	: "AirTemperature",
+              "var_file_name"   : "hmc.forcing-grid.{dset_datetime_forcing_obs}.nc.gz",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/data/data_dynamic/forcing/{dset_sub_path_forcing_obs}",
+              "var_file_dset"	: "Air_Temperature",
               "var_file_format"	: "netcdf",
               "var_file_limits"	: [-20, 40],
               "var_file_units"  : "C"
             },
             "Wind"            : {
-              "var_file_name"   : "ws.db.{dset_datetime_forcing_obs}.nc.gz",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/marche/dynamic/outcome/observation/ws/{dset_sub_path_forcing_obs}",
+              "var_file_name"   : "hmc.forcing-grid.{dset_datetime_forcing_obs}.nc.gz",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/data/data_dynamic/forcing/{dset_sub_path_forcing_obs}",
               "var_file_dset"	: "Wind",
               "var_file_format"	: "netcdf",
               "var_file_limits"	: [0, 10],
               "var_file_units"  : "m/s"
             },
             "RelHumidity"     : {
-              "var_file_name"   : "ws.db.{dset_datetime_forcing_obs}.nc.gz",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/marche/dynamic/outcome/observation/ws/{dset_sub_path_forcing_obs}",
-              "var_file_dset"   : "RelHumidity",
+              "var_file_name"   : "hmc.forcing-grid.{dset_datetime_forcing_obs}.nc.gz",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/data/data_dynamic/forcing/{dset_sub_path_forcing_obs}",
+              "var_file_dset"   : "Relative_Humidity",
               "var_file_format"	: "netcdf",
               "var_file_limits"	: [0, 100],
               "var_file_units"  : "%"
             },
             "IncRadiation"	  : {
-              "var_file_name"   : "ws.db.{dset_datetime_forcing_obs}.nc.gz",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/marche/dynamic/outcome/observation/ws/{dset_sub_path_forcing_obs}",
-              "var_file_dset"	: "IncRadiation",
+              "var_file_name"   : "hmc.forcing-grid.{dset_datetime_forcing_obs}.nc.gz",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/data/data_dynamic/forcing/{dset_sub_path_forcing_obs}",
+              "var_file_dset"	: "Incoming_Radiation",
               "var_file_format"	: "netcdf",
               "var_file_limits"	: [-100, 1200],
               "var_file_units"  : "W^2/m"
             },
             "AirPressure"	  : {
-              "var_file_name"   : "ws.db.{dset_datetime_forcing_obs}.nc.gz",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/marche/dynamic/outcome/observation/ws/{dset_sub_path_forcing_obs}",
+              "var_file_name"   : "hmc.forcing-grid.{dset_datetime_forcing_obs}.nc.gz",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/data/data_dynamic/forcing/{dset_sub_path_forcing_obs}",
               "var_file_dset"	: "AirPressure",
               "var_file_format"	: "netcdf",
               "var_file_limits"	: [1010.0, 1020.0],
@@ -182,48 +188,48 @@
           "var_dims"        : {"X": "west_east", "Y": "south_north", "time" :"time"},
           "var_list"        : {
             "Rain"            : {
-              "var_file_name"   : "nwp.lami.{dset_datetime_forcing_for}.nc.gz",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/{run_domain}/dynamic/outcome/rfarm/lami-i7/{dset_sub_path_forcing_for}/{run_var}",
+              "var_file_name"   : null,
+              "var_file_folder" : null,
               "var_file_dset"	: "Rain",
               "var_file_format"	: "netcdf",
               "var_file_limits"	: [0, null],
               "var_file_units"  : "mm"
             },
             "AirTemperature"  : {
-              "var_file_name"   : "nwp.lami.{dset_datetime_forcing_for}.nc.gz",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/{run_domain}/dynamic/outcome/nwp/lami-i7/{dset_sub_path_forcing_for}",
+              "var_file_name"   : null,
+              "var_file_folder" : null,
               "var_file_dset"	: "AirTemperature",
               "var_file_format"	: "netcdf",
               "var_file_limits"	: [-20, 40],
               "var_file_units"  : "C"
             },
             "Wind"			  : {
-              "var_file_name"   : "nwp.lami.{dset_datetime_forcing_for}.nc.gz",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/{run_domain}/dynamic/outcome/nwp/lami-i7/{dset_sub_path_forcing_for}",
+              "var_file_name"   : null,
+              "var_file_folder" : null,
               "var_file_dset"	: "Wind",
               "var_file_format"	: "netcdf",
               "var_file_limits"	: [0, 10],
               "var_file_units"  : "m/s"
             },
             "RelHumidity"	  : {
-              "var_file_name"   : "nwp.lami.{dset_datetime_forcing_for}.nc.gz",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/{run_domain}/dynamic/outcome/nwp/lami-i7/{dset_sub_path_forcing_for}",
+              "var_file_name"   : null,
+              "var_file_folder" : null,
               "var_file_dset"	: "RelHumidity",
               "var_file_format"	: "netcdf",
               "var_file_limits"	: [0, 100],
               "var_file_units"  : "%"
             },
             "IncRadiation"	  : {
-              "var_file_name"   : "nwp.lami.{dset_datetime_forcing_for}.nc.gz",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/{run_domain}/dynamic/outcome/nwp/lami-i7/{dset_sub_path_forcing_for}",
+              "var_file_name"   : null,
+              "var_file_folder" : null,
               "var_file_dset"	: "IncRadiation",
               "var_file_format"	: "netcdf",
               "var_file_limits"	: [-100, 1200],
               "var_file_units"  : "W^2/m"
             },
             "AirPressure"	  : {
-              "var_file_name"   : "nwp.lami.{dset_datetime_forcing_for}.nc.gz",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/{run_domain}/dynamic/outcome/nwp/lami-i7/{dset_sub_path_forcing_for}",
+              "var_file_name"   : null,
+              "var_file_folder" : null,
               "var_file_dset"	: "AirPressure",
               "var_file_format"	: "netcdf",
               "var_file_limits"	: [1010.0, 1020.0],
@@ -235,7 +241,7 @@
     },
     "Point"       : {
       "hmc_file_name"     : "hmc.{dset_var_name_forcing_point}.{dset_datetime_hmc}.txt",
-      "hmc_file_folder"   : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/run/{run_name}/{run_mode}/forcing/point/{dset_sub_path_hmc}",
+      "hmc_file_folder"   : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/run/{run_name}/{run_mode}/forcing/point/{dset_sub_path_hmc}",
       "hmc_file_format"   : "ascii",
       "hmc_file_frequency": "H",
       "hmc_file_variable" : {
@@ -248,23 +254,23 @@
           "var_list"        : {
             "Discharge"		  : {
               "var_file_name"   : "rs.db.{dset_datetime_forcing_obs}.txt",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/marche/dynamic/outcome/observation/rs/{dset_sub_path_forcing_obs}",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/data/data_dynamic/forcing/{dset_sub_path_forcing_obs}",
               "var_file_dset"	: "discharge",
               "var_file_format"	: "ascii_point",
               "var_file_limits"	: [0, null],
               "var_file_units"  : "m/s"
             },
             "DamV"            : {
-              "var_file_name"   : "damv.db.{dset_datetime_forcing_obs}.txt",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/marche/dynamic/outcome/observation/dp/{dset_sub_path_forcing_obs}",
+              "var_file_name"   : null,
+              "var_file_folder" : null,
               "var_file_dset"	: "damv",
               "var_file_format"	: "ascii_point",
               "var_file_limits"	: [0, null],
               "var_file_units"  : "m^3"
             },
             "DamL"			  : {
-              "var_file_name"   : "daml.db.{dset_datetime_forcing_obs}.txt",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/marche/dynamic/outcome/observation/dp/{dset_sub_path_forcing_obs}",
+              "var_file_name"   : null,
+              "var_file_folder" : null,
               "var_file_dset"	: "daml",
               "var_file_format"	: "ascii_point",
               "var_file_limits"	: [0, null],
@@ -277,7 +283,7 @@
     },
     "TimeSeries"  : {
       "hmc_file_name"     : "hmc.forcing-ts.plant_{dset_var_name_forcing_ts_plant}.txt",
-      "hmc_file_folder"	  : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/run/{run_name}/{run_mode}/forcing/timeseries/",
+      "hmc_file_folder"	  : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/run/{run_name}/{run_mode}/forcing/timeseries/",
       "hmc_file_format"	  : "ascii",
       "hmc_file_frequency": "H",
       "hmc_file_variable" : {
@@ -289,16 +295,16 @@
           "var_dims"        : {"T": "time"},
           "var_list"        : {
             "DamQ"			  : {
-              "var_file_name"   : "hmc.forcing-ts.plant_{dset_var_name_forcing_ts_plant}.txt",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/marche/dynamic/outcome/observation/turbinate/{dset_sub_path_forcing_obs}",
+              "var_file_name"   : null,
+              "var_file_folder" : null,
               "var_file_dset"	: "",
               "var_file_format"	: "ascii_time_series",
               "var_file_limits"	: [0, null],
               "var_file_units"  : "m^3/s"
             },
             "IntakeQ"		  : {
-              "var_file_name"   : "hmc.forcing-ts.plant_{dset_var_name_forcing_ts_plant}.txt",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/marche/dynamic/outcome/observation/turbinate/{dset_sub_path_forcing_obs}",
+              "var_file_name"   : null,
+              "var_file_folder" : null,
               "var_file_dset"	: "",
               "var_file_format"	: "ascii_time_series",
               "var_file_limits"	: [0, null],
@@ -314,7 +320,7 @@
     "__comment": " --- DataUpdating configuration --- ",
     "Gridded"	  : {
       "hmc_file_name"     : "hmc.forcing-grid.{dset_datetime_hmc}.nc.gz",
-      "hmc_file_folder"	  : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/run/{run_name}/{run_mode}/forcing/gridded/{dset_sub_path_hmc}",
+      "hmc_file_folder"	  : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/run/{run_name}/{run_mode}/forcing/gridded/{dset_sub_path_hmc}",
       "hmc_file_format"	  : "netcdf",
       "hmc_file_frequency": "H",
       "hmc_file_variable" : {
@@ -327,8 +333,8 @@
           "var_list"        : {
             "SnowHeight"	  : {
               "__comment": "snow height datasets by observed measurements [example: ws.db.{dset_datetime_forcing_obs}.nc.gz]",
-              "var_file_name"   : "ws.db.{dset_datetime_forcing_obs}.nc.gz",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/dynamic/outcome/observation/ws/{dset_sub_path_forcing_obs}",
+              "var_file_name"   : "hmc.forcing.{dset_datetime_forcing_obs}.nc.gz",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/data/data_dynamic/forcing/{dset_sub_path_forcing_obs}",
               "var_file_dset"	: "SnowLevel",
               "var_file_format"	: "netcdf",
               "var_file_limits"	: [0, null],
@@ -337,7 +343,7 @@
             "SnowKernel"      : {
               "__comment": "snow kernel datasets by observed measurements [example: ws.db.{dset_datetime_forcing_obs}.nc.gz]",
               "var_file_name"   : "ws.db.{dset_datetime_forcing_obs}.nc.gz",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/dynamic/outcome/observation/ws/{dset_sub_path_forcing_obs}",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/data/data_dynamic/forcing/{dset_sub_path_forcing_obs}",
               "var_file_dset"	: "SnowKernel",
               "var_file_format"	: "netcdf",
               "var_file_limits"	: [0, 1],
@@ -346,7 +352,7 @@
             "SnowCoverArea"	  : {
               "__comment": "snow cover datasets [example: MOD10A1.005_marche_{dset_datetime_forcing_obs}.nc.gz]",
               "var_file_name"   : "MOD10A1.005_marche_{dset_datetime_forcing_obs}.nc.gz",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/dynamic/outcome/observation/modis/{dset_sub_path_forcing_obs}",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/data/data_dynamic/forcing/{dset_sub_path_forcing_obs}",
               "var_file_dset"	: "snow_cover_daily",
               "var_file_format"	: "netcdf",
               "var_file_limits"	: [0, 4],
@@ -355,7 +361,7 @@
             "SnowQualityArea" : {
               "__comment": "snow quality datasets [example: MOD10A1.005_marche_{dset_datetime_forcing_obs}.nc.gz]",
               "var_file_name"   : "MOD10A1.005_marche_{dset_datetime_forcing_obs}.nc.gz",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/dynamic/outcome/observation/modis/{dset_sub_path_forcing_obs}",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/data/data_dynamic/forcing/{dset_sub_path_forcing_obs}",
               "var_file_dset"	: "snow_spatial_qa_filter",
               "var_file_format"	: "netcdf",
               "var_file_limits"	: [null, null],
@@ -371,7 +377,7 @@
     "__comment": " --- DataOutcome configuration --- ",
     "Gridded"	  : {
       "hmc_file_name"     : "hmc.output-grid.{dset_datetime_hmc}.nc.gz",
-      "hmc_file_folder"	  : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/run/{run_name}/{run_mode}/outcome/gridded/{dset_sub_path_hmc}",
+      "hmc_file_folder"	  : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/run/{run_name}/{run_mode}/outcome/gridded/{dset_sub_path_hmc}",
       "hmc_file_format"	  : "netcdf",
       "hmc_file_frequency": "H",
       "hmc_file_variable" : {
@@ -384,7 +390,7 @@
           "var_list"        : {
             "ALL"			  : {
               "var_file_name"   : "hmc.output-grid.{dset_datetime_outcome}.nc.gz",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/archive/{run_name}/{dset_sub_path_outcome}/outcome/gridded/{run_mode}/",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_outcome}/outcome/gridded/{run_mode}/",
               "var_file_dset"	: "ALL",
               "var_file_format"	: "netcdf",
               "var_file_limits"	: [null, null],
@@ -396,7 +402,7 @@
     },
     "Point"		  : {
       "hmc_file_name"     : "hmc.{dset_var_name_outcome_point}.{dset_datetime_hmc}.txt",
-      "hmc_file_folder"	  : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/run/{run_name}/{run_mode}/outcome/point/{dset_sub_path_hmc}",
+      "hmc_file_folder"	  : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/run/{run_name}/{run_mode}/outcome/point/{dset_sub_path_hmc}",
       "hmc_file_format"	  : "ascii_point",
       "hmc_file_frequency": "H",
       "hmc_file_variable" : {
@@ -409,7 +415,7 @@
           "var_list"        : {
             "Discharge"	      : {
               "var_file_name"   : "hmc.{dset_var_name_outcome_point}.{dset_datetime_outcome}.txt",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/archive/{run_name}/{dset_sub_path_outcome}/outcome/point/{run_mode}/discharge/",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_outcome}/outcome/point/{run_mode}/discharge/",
               "var_file_dset"	: "discharge",
               "var_file_format"	: "ascii_point",
               "var_file_limits"	: [0, null],
@@ -417,7 +423,7 @@
             },
             "DamV"			  : {
               "var_file_name"   : "hmc.{dset_var_name_outcome_point}.{dset_datetime_outcome}.txt",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/archive/{run_name}/{dset_sub_path_outcome}/outcome/point/{run_mode}/dam_volume/",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_outcome}/outcome/point/{run_mode}/dam_volume/",
               "var_file_dset"	: "vdam",
               "var_file_format"	: "ascii_point",
               "var_file_limits"	: [0, null],
@@ -425,7 +431,7 @@
             },
             "DamL"	          : {
               "var_file_name"   : "hmc.{dset_var_name_outcome_point}.{dset_datetime_outcome}.txt",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/archive/{run_name}/{dset_sub_path_outcome}/outcome/point/{run_mode}/dam_level/",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_outcome}/outcome/point/{run_mode}/dam_level/",
               "var_file_dset"	: "ldam",
               "var_file_format"	: "ascii_point",
               "var_file_limits"	: [0, null],
@@ -433,7 +439,7 @@
             },
             "VarAnalysis"	  : {
               "var_file_name"   : "hmc.{dset_var_name_outcome_point}.{dset_datetime_outcome}.txt",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/archive/{run_name}/{dset_sub_path_outcome}/outcome/point/{run_mode}/analysis/",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_outcome}/outcome/point/{run_mode}/analysis/",
               "var_file_dset"	: "var-analysis",
               "var_file_format"	: "ascii_point",
               "var_file_limits"	: [null, null],
@@ -445,7 +451,7 @@
     },
     "TimeSeries"  : {
       "hmc_file_name"     : "hmc.{dset_var_name_outcome_ts}.txt",
-      "hmc_file_folder"   : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/run/{run_name}/{run_mode}/outcome/timeseries/",
+      "hmc_file_folder"   : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/run/{run_name}/{run_mode}/outcome/timeseries/",
       "hmc_file_format"	  : "ascii_time_series",
       "hmc_file_frequency": "H",
       "hmc_file_variable" : {
@@ -458,7 +464,7 @@
           "var_list"        : {
             "Discharge"		  : {
               "var_file_name"   : "hmc.hydrograph.txt",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/archive/{run_name}/{dset_sub_path_outcome}/outcome/timeseries/{run_mode}/",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_outcome}/outcome/timeseries/{run_mode}/",
               "var_file_dset"	: "hydrograph",
               "var_file_format"	: "ascii_time_series",
               "var_file_limits"	: [0, null],
@@ -466,7 +472,7 @@
             },
             "DamV"		      : {
               "var_file_name"   : "hmc.vdam.txt",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/archive/{run_name}/{dset_sub_path_outcome}/outcome/timeseries/{run_mode}/",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_outcome}/outcome/timeseries/{run_mode}/",
               "var_file_dset"	: "vdam",
               "var_file_format"	: "ascii_time_series",
               "var_file_limits"	: [0, null],
@@ -474,7 +480,7 @@
             },
             "DamL"			  : {
               "var_file_name"   : "hmc.ldam.txt",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/archive/{run_name}/{dset_sub_path_outcome}/outcome/timeseries/{run_mode}/",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_outcome}/outcome/timeseries/{run_mode}/",
               "var_file_dset"	: "ldam",
               "var_file_format"	: "ascii_time_series",
               "var_file_limits"	: [0, null],
@@ -482,7 +488,7 @@
             },
             "VarAnalysis"	  : {
               "var_file_name"   : "hmc.var-analysis.txt",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/archive/{run_name}/{dset_sub_path_outcome}/outcome/timeseries/{run_mode}/",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_outcome}/outcome/timeseries/{run_mode}/",
               "var_file_dset"	: "var-analysis",
               "var_file_format"	: "ascii_time_series",
               "var_file_limits"	: [null, null],
@@ -497,7 +503,7 @@
     "__comment": " --- DataState configuration [TAGS: $yyyy, $mm, $dd, $HH, %RUN, $VAR, $MODE] --- ",
     "Gridded"	  : {
       "hmc_file_name"     : "hmc.state-grid.{dset_datetime_hmc}.nc.gz",
-      "hmc_file_folder"   : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/run/{run_name}/{run_mode}/state/gridded/{dset_sub_path_hmc}",
+      "hmc_file_folder"   : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/run/{run_name}/{run_mode}/state/gridded/{dset_sub_path_hmc}",
       "hmc_file_format"	  : "netcdf",
       "hmc_file_frequency": "D",
       "hmc_file_variable" : {
@@ -510,7 +516,7 @@
           "var_list"        : {
             "ALL"			  : {
               "var_file_name"   : "hmc.state-grid.{dset_datetime_state}.nc.gz",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/archive/{run_name}/{dset_sub_path_state}/state/gridded/{run_mode}/",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_state}/state/gridded/{run_mode}/",
               "var_file_dset"	: "ALL",
               "var_file_format"	: "netcdf",
               "var_file_limits"	: [null, null],
@@ -522,7 +528,7 @@
     },
 	"Point"		  : {
       "hmc_file_name"     : "hmc.state-point.{dset_datetime_hmc}.txt",
-      "hmc_file_folder"	  : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/run/{run_name}/{run_mode}/state/point/{dset_sub_path_hmc}",
+      "hmc_file_folder"	  : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/run/{run_name}/{run_mode}/state/point/{dset_sub_path_hmc}",
       "hmc_file_format"	  : "ascii_point",
       "hmc_file_frequency": "D",
       "hmc_file_variable" : {
@@ -535,7 +541,7 @@
           "var_list"        : {
             "ALL"			  : {
               "var_file_name"   : "hmc.state-point.{dset_datetime_state}.txt",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/archive/{run_name}/{dset_sub_path_state}/state/point/{run_mode}/",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_state}/state/point/{run_mode}/",
               "var_file_dset"	: "ALL",
               "var_file_format"	: "ascii_point",
               "var_file_limits"	: [null, null],
@@ -550,7 +556,7 @@
     "__comment": " --- DataRestart configuration --- ",
     "Gridded"	  : {
       "hmc_file_name" 	  : "hmc.state-grid.{dset_datetime_hmc}.nc.gz",
-      "hmc_file_folder"	  : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/run/{run_name}/{run_mode}/restart/",
+      "hmc_file_folder"	  : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/run/{run_name}/{run_mode}/restart/",
       "hmc_file_format"	  : "netcdf",
       "hmc_file_frequency": "D",
       "hmc_file_variable" : {
@@ -563,7 +569,7 @@
           "var_list"        : {
             "ALL"			  : {
               "var_file_name"   : "hmc.state-grid.{dset_datetime_restart}.nc.gz",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/{run_domain}/restart/{dset_sub_path_restart}/",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/data_dynamic/restart/{dset_sub_path_restart}/",
               "var_file_dset"	: "ALL",
               "var_file_format"	: "netcdf",
               "var_file_limits"	: [null, null],
@@ -575,7 +581,7 @@
     },
     "Point"	      : {
       "hmc_file_name"     : "hmc.state-point.{dset_datetime_hmc}.txt",
-      "hmc_file_folder"	  : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/run/{run_name}/{run_mode}/restart/",
+      "hmc_file_folder"	  : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/run/{run_name}/{run_mode}/restart/",
       "hmc_file_format"	  : "ascii_point",
       "hmc_file_frequency": "D",
       "hmc_file_variable" : {
@@ -588,7 +594,7 @@
           "var_list"        : {
             "ALL"			  : {
               "var_file_name"   : "hmc.state-point.{dset_datetime_restart}.txt",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/{run_domain}/restart/{dset_sub_path_restart}/",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/data_dynamic/restart/{dset_sub_path_restart}/",
               "var_file_dset"	: "ALL",
               "var_file_format"	: "ascii_point",
               "var_file_limits"	: [null, null],
@@ -603,7 +609,7 @@
     "__comment": " --- DataObs configuration --- ",
     "Point"       : {
       "hmc_file_name"     : "hmc.{dset_var_name_point}.{dset_datetime_hmc}.txt",
-      "hmc_file_folder"	  : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/run/{run_name}/{run_mode}/obs/{dset_sub_path_hmc}",
+      "hmc_file_folder"	  : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/run/{run_name}/{run_mode}/obs/{dset_sub_path_hmc}",
       "hmc_file_format"	  : "ascii_point",
       "hmc_file_frequency": "H",
       "hmc_file_variable" : {
@@ -616,7 +622,7 @@
           "var_list"        : {
             "Discharge"		  : {
               "var_file_name"   : "discharge.observed.{dset_datetime_obs}.txt",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/archive/{run_name}/{dset_sub_path_obs}/obs/point/{run_mode}/discharge/",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_obs}/obs/point/{run_mode}/discharge/",
               "var_file_dset"	: "discharge",
               "var_file_format"	: "ascii_point",
               "var_file_limits"	: [0, null],
@@ -624,7 +630,7 @@
             },
             "DamV"			  : {
               "var_file_name"   : "damv.observed.{dset_datetime_obs}.txt",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/archive/{run_name}/{dset_sub_path_obs}/obs/point/{run_mode}/dam_volume/",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_obs}/obs/point/{run_mode}/dam_volume/",
               "var_file_dset"	: "damv",
               "var_file_format"	: "ascii_point",
               "var_file_limits"	: [0, null],
@@ -632,7 +638,7 @@
             },
             "DamL"			  : {
               "var_file_name"   : "daml.observed.{dset_datetime_obs}.txt",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/data/archive/{run_name}/{dset_sub_path_obs}/obs/point/{run_mode}/dam_level/",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_obs}/obs/point/{run_mode}/dam_level/",
               "var_file_dset"	: "daml",
               "var_file_format"	: "ascii_point",
               "var_file_limits"	: [0, null],

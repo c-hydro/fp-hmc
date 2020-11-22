@@ -115,40 +115,45 @@ def read_data(file_name_list, var_name=None, var_time_start=None, var_time_end=N
 
     # Open datasets
     if file_check:
+
         if file_n == 1:
 
-            try:
-                dst_tmp = xr.open_dataset(file_name_list[0])
-            except BaseException as base_exp:
-                log_stream.warning(' ===> Exception ' + str(base_exp) + ' occurred in reading netcdf file list')
-                dst_tmp = xr.open_dataset(file_name_step, decode_times=False)
+            if os.path.exists(file_name_list[0]):
+                try:
+                    dst_tmp = xr.open_dataset(file_name_list[0])
+                except BaseException as base_exp:
+                    log_stream.warning(' ===> Exception ' + str(base_exp) + ' occurred in reading netcdf file list')
+                    dst_tmp = xr.open_dataset(file_name_step, decode_times=False)
 
-                file_group_match = re.search('\d{4}\d{2}\d{2}\d{2}\d{2}', os.path.split(file_name_step)[1])
-                file_time_match = file_group_match.group()
-                file_timestamp_match = pd.Timestamp(file_time_match)
-                file_datetimeindex_match = pd.DatetimeIndex([file_timestamp_match])
+                    file_group_match = re.search('\d{4}\d{2}\d{2}\d{2}\d{2}', os.path.split(file_name_step)[1])
+                    file_time_match = file_group_match.group()
+                    file_timestamp_match = pd.Timestamp(file_time_match)
+                    file_datetimeindex_match = pd.DatetimeIndex([file_timestamp_match])
 
-                log_stream.warning(
-                    ' ===> Automatic datetime detection for filename ' + os.path.split(file_name_step)[1]
-                    + ' return the following filetime: ' + str(file_timestamp_match))
+                    log_stream.warning(
+                        ' ===> Automatic datetime detection for filename ' + os.path.split(file_name_step)[1]
+                        + ' return the following filetime: ' + str(file_timestamp_match))
 
-                if 'time' in list(dst_tmp.dims):
-                    dst_tmp = dst_tmp.squeeze(dim_name_time)
+                    if 'time' in list(dst_tmp.dims):
+                        dst_tmp = dst_tmp.squeeze(dim_name_time)
 
-                dst_tmp['time'] = file_datetimeindex_match
-                dst_tmp = dst_tmp.set_coords('time')
-                dst_tmp = dst_tmp.expand_dims('time')
+                    dst_tmp['time'] = file_datetimeindex_match
+                    dst_tmp = dst_tmp.set_coords('time')
+                    dst_tmp = dst_tmp.expand_dims('time')
 
-            if var_name == 'ALL':
-                var_list = list(dst_tmp.data_vars)
-                dst = dst_tmp
-            elif var_name in list(dst_tmp.data_vars):
-                var_list = [var_name]
-                dst = dst_tmp[var_list]
+                if var_name == 'ALL':
+                    var_list = list(dst_tmp.data_vars)
+                    dst = dst_tmp
+                elif var_name in list(dst_tmp.data_vars):
+                    var_list = [var_name]
+                    dst = dst_tmp[var_list]
+                else:
+                    log_stream.warning(' ===> Variable ' + var_name + ' not available in loaded datasets!')
+                    var_list = None
+                    dst = None
+
             else:
-                log_stream.warning(' ===> Variable ' + var_name + ' not available in loaded datasets!')
-                var_list = None
-                dst = None
+                log_stream.warning(' ===> File ' + file_name_list[0] + ' not available in loaded datasets!')
 
         elif file_n > 1:
 
@@ -163,18 +168,23 @@ def read_data(file_name_list, var_name=None, var_time_start=None, var_time_end=N
                 dst_tmp = None
                 for file_name_step, datetime_idx_step in zip(file_name_list, datetime_idx_select):
 
-                    dst_step = xr.open_dataset(file_name_step, decode_times=False)
+                    if os.path.exists(file_name_step):
 
-                    if 'time' in list(dst_step.dims):
-                        dst_step = dst_step.squeeze(dim_name_time)
+                        dst_step = xr.open_dataset(file_name_step, decode_times=False)
 
-                    dst_step['time'] = datetime_idx_step
-                    dst_step = dst_step.set_coords('time')
-                    dst_step = dst_step.expand_dims('time')
-                    if dst_tmp is None:
-                        dst_tmp = deepcopy(dst_step)
+                        if 'time' in list(dst_step.dims):
+                            dst_step = dst_step.squeeze(dim_name_time)
+
+                        dst_step['time'] = datetime_idx_step
+                        dst_step = dst_step.set_coords('time')
+                        dst_step = dst_step.expand_dims('time')
+                        if dst_tmp is None:
+                            dst_tmp = deepcopy(dst_step)
+                        else:
+                            dst_tmp = dst_tmp.combine_first(deepcopy(dst_step))
                     else:
-                        dst_tmp = dst_tmp.combine_first(deepcopy(dst_step))
+                        log_stream.warning(' ===> File ' + file_name_step + ' not available in loaded datasets!')
+                        # raise IOError('File not found') # da rivedere nel caso ci siano dati non continui (tipo updating)
 
             if var_name == 'ALL':
                 var_list = list(dst_tmp.data_vars)
@@ -207,6 +217,15 @@ def read_data(file_name_list, var_name=None, var_time_start=None, var_time_end=N
                     log_stream.error(' ===> Time indexes are not implemented for this case')
                     raise IOError(' ===> Case not implemented yet!')
 
+            if coord_name_geo_x not in dst_list_coords:
+                coord_name_geo_x_list = ['Longitude', 'longitude', 'lon', 'Lon', 'LON']
+                for coord_name_geo_x_tmp in coord_name_geo_x_list:
+                    if coord_name_geo_x_tmp in dst_list_coords:
+                        log_stream.warning(' ===> GeoX coord name used ' + coord_name_geo_x +
+                                           ' but found ' + coord_name_geo_x_tmp + ' in collected datasets')
+                        coord_name_geo_x = coord_name_geo_x_tmp
+                        break
+
             if coord_name_geo_x in dst_list_coords:
                 da_geo_x_tmp = dst[coord_name_geo_x]
                 if dim_name_time in list(da_geo_x_tmp.dims):
@@ -216,6 +235,16 @@ def read_data(file_name_list, var_name=None, var_time_start=None, var_time_end=N
             else:
                 log_stream.error(' ===> GeoX dimension name is not in the variables list of nc file')
                 raise IOError(' ===> Check the GeoX dimension!')
+
+            if coord_name_geo_y not in dst_list_coords:
+                coord_name_geo_y_list = ['Latitude', 'latitude', 'lat', 'Lat', 'LAT']
+                for coord_name_geo_y_tmp in coord_name_geo_y_list:
+                    if coord_name_geo_y_tmp in dst_list_coords:
+                        log_stream.warning(' ===> GeoY coord name used ' + coord_name_geo_y +
+                                           ' but found ' + coord_name_geo_y_tmp + ' in collected datasets')
+                        coord_name_geo_y = coord_name_geo_y_tmp
+                        break
+
             if coord_name_geo_y in dst_list_coords:
                 da_geo_y_tmp = dst[coord_name_geo_y]
                 if dim_name_time in list(da_geo_y_tmp.dims):
@@ -280,6 +309,12 @@ def read_data(file_name_list, var_name=None, var_time_start=None, var_time_end=N
                                 datetime_idx_select = pd.DatetimeIndex(datetime_tmp)
                                 var_data = np.flipud(var_tmp)
 
+                        elif var_tmp.ndim == 1:
+                            if var_name != 'times':
+                                log_stream.error(' ===> Variable ' + var_name + ' with 1 dimension')
+                                raise IOError(' ===> Variable are expected to have 2 or 3 dimensions')
+                            elif var_name == 'times':
+                                var_data = var_tmp
                         else:
                             log_stream.error(' ===> Variable dimensions not allowed yet')
                             raise IOError(' ===> Case not implemented')
@@ -291,7 +326,7 @@ def read_data(file_name_list, var_name=None, var_time_start=None, var_time_end=N
                                                       dim_name_time=dim_name_select,
                                                       dim_name_x=dim_name_geo_x, dim_name_y=dim_name_geo_y,
                                                       dims_order=[dim_name_geo_y, dim_name_geo_x, dim_name_select])
-                        elif var_data.shape.__len__()  == 3:
+                        elif var_data.shape.__len__() == 3:
                             da_tmp = create_darray_3d(var_data,
                                                       datetime_idx_select, values_geo_x, values_geo_y,
                                                       coord_name_time=coord_name_select,
@@ -300,15 +335,22 @@ def read_data(file_name_list, var_name=None, var_time_start=None, var_time_end=N
                                                       dim_name_x=dim_name_geo_x, dim_name_y=dim_name_geo_y,
                                                       dims_order=[dim_name_geo_y, dim_name_geo_x, dim_name_select])
 
+                        elif var_data.shape.__len__() == 1:
+                            if var_name != 'times':
+                                log_stream.error(' ===> Only variable times can be 1-dimension')
+                                raise IOError(' ===> Case not implemented')
+                            elif var_name == 'times':
+                                da_tmp = None
                         else:
                             log_stream.error(' ===> Variable dimensions in data array creation not allowed yet')
                             raise IOError(' ===> Case not implemented')
 
-                        if da_var is None:
-                            da_var = da_tmp.to_dataset(name=var_name)
-                        else:
-                            da_tmp = da_tmp.to_dataset(name=var_name)
-                            da_var = da_var.merge(da_tmp, join='right')
+                        if da_tmp is not None:
+                            if da_var is None:
+                                da_var = da_tmp.to_dataset(name=var_name)
+                            else:
+                                da_tmp = da_tmp.to_dataset(name=var_name)
+                                da_var = da_var.merge(da_tmp, join='right')
 
                 else:
                     values_geo_y = da_geo_y.values

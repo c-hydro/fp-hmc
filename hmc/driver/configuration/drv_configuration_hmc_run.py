@@ -159,7 +159,11 @@ class ModelRun:
                 run_exec_file_folder, run_exec_file_name = split_path(run_exec_file_path)
                 create_folder(run_exec_file_folder)
 
-                copy_file(run_library_file_path, run_exec_file_path)
+                if os.path.exists(run_library_file_path):
+                    copy_file(run_library_file_path, run_exec_file_path)
+                else:
+                    log_stream.error(' ===> Run executable ' + run_library_file_path + ' not found')
+                    raise RuntimeError('Run executable is unavailable. Exit.')
             except RuntimeError as run_error:
                 log_stream.error(' ===> Run executable is not set! ' + (str(run_error)))
                 raise RuntimeError('Run executable is corrupted. Exit.')
@@ -360,6 +364,7 @@ class ModelRun:
 
                 obj_location_def[tmpl_key][obj_key] = loc_merge
 
+                # Set executable path (add conditions)
                 if obj_key == self.tag_executable:
                     loc_folder = loc_list[0]
                     folder_name_raw = obj_value_raw[loc_folder]
@@ -379,9 +384,6 @@ class ModelRun:
 
                     obj_location_def[tmpl_key][self.tag_run_root_generic] = folder_run_root
                     obj_location_def[tmpl_key][self.tag_run_root_main] = folder_run_main
-
-                else:
-                    log_stream.warning(' ===> Run folder root not correctly defined. Check you execution!')
 
         for obj_loc_key, obj_loc_dict in obj_location_def.items():
             for obj_dict_key, obj_dict_value in obj_loc_dict.items():

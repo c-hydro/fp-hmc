@@ -2,6 +2,18 @@
 Changelog
 =========
 
+Version 3.1.3 (20201028)
+========================
+
+- Codes and package based on HMC Fortran codes version 3.1.3;
+- Fix bugs in managing the forcing gridded netcdf;
+- Fix bugs in managing the analysis time-series netcdf.
+
+Version 3.1.2 (20200819)
+========================
+
+- Codes and package based on HMC Fortran codes version 3.1.2
+
 Version 1.8.5 (20200207)
 ========================
 

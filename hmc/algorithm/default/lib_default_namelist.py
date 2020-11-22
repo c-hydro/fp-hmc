@@ -143,6 +143,7 @@ link_namelist_default = dict(
         'dSigma': 0.00000005576,
         'dBFMin': 0.1,
         'dBFMax': 0.9,
+        'dLSTDeltaMax': {'algorithm': ['HMC_Info', 'hmc_phys_parametrization', 'phys_lst_maximum_integration_delta']},
 
         'dZRef': 3.0,
         'dG': 9.81,
@@ -159,8 +160,8 @@ link_namelist_default = dict(
         'dPorS': 0.4,
         'dFqS': 0.5,
 
-        'dTV': 0.95,
-        'dDamSpillH': 0.4,
+        'dTV': {'algorithm': ['HMC_Info', 'hmc_phys_parametrization', 'phys_dam_initial_percentage_outflow']},
+        'dDamSpillH': {'algorithm': ['HMC_Info', 'hmc_phys_parametrization', 'phys_dam_initial_delta_spill']},
 
         'dSMGain': 0.45,
     },
@@ -173,9 +174,9 @@ link_namelist_default = dict(
     },
 
     HMC_Info={
-        'sReleaseVersion': "3.1.2",
+        'sReleaseVersion': "3.1.3",
         'sAuthorNames': "Delogu F., Silvestro F., Gabellani S., Basso V., Libertino A., Ercolani G.",
-        'sReleaseDate': "2020/07/23",
+        'sReleaseDate': "2020/10/28",
     },
 )
 # Namelist default
@@ -310,6 +311,7 @@ structure_namelist_default = dict(
         'dSigma': 0.00000005576,
         'dBFMin': 0.1,
         'dBFMax': 0.9,
+        'dLSTDeltaMax': 40,
 
         'dZRef': 3.0,
         'dG': 9.81,
@@ -340,9 +342,9 @@ structure_namelist_default = dict(
     },
 
     HMC_Info={
-        'sReleaseVersion': "3.1.2",
+        'sReleaseVersion': "3.1.3",
         'sAuthorNames': "Delogu F., Silvestro F., Gabellani S., Basso V., Libertino A., Ercolani G.",
-        'sReleaseDate': "2020/07/23",
+        'sReleaseDate': "2020/10/28",
     },
 )
 # -------------------------------------------------------------------------------------

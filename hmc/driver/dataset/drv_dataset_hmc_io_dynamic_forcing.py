@@ -803,6 +803,20 @@ class DSetManager:
                                 var_frame[self.coord_name_geo_x] = geo_x
                             if self.coord_name_geo_y not in list(var_frame.keys()):
                                 var_frame[self.coord_name_geo_y] = geo_y
+
+                            obj_var_name_list = list(obj_var.data_vars)
+                            if obj_var_name_list.__len__() == 1:
+                                obj_var_name = obj_var_name_list[0]
+                            else:
+                                log_stream.error(' ===> Expected a list of one variable element, got ' +
+                                                 str(obj_var_name_list.__len__()))
+                                raise NotImplementedError('Variables list not supported yet')
+
+                            if obj_var_name != var_name:
+                                obj_var = obj_var.rename_vars({obj_var_name: var_name})
+                                log_stream.warning(' ===> Switch variable name in dataset from "' +
+                                                   obj_var_name + '" to "' + var_name + '"')
+
                             if dset_source is None:
                                 dset_source = obj_var
                             else:

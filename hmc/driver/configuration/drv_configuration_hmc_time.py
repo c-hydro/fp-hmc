@@ -204,27 +204,32 @@ class ModelTime:
 
             time_tmp.loc[time_data['time_stamp_restart'], column_file_type] = 'RESTART'
             time_tmp.loc[datetime_obs_idx, column_file_type] = 'OBS'
-            time_tmp.loc[datetime_for_idx, column_file_type] = 'FOR'
+            if datetime_for_idx is not None:
+                time_tmp.loc[datetime_for_idx, column_file_type] = 'FOR'
 
             time_tmp.loc[time_data['time_stamp_restart'], column_file_pre_processing] = 'PRE_PROCESSING'
             time_tmp.loc[datetime_obs_idx, column_file_pre_processing] = 'PRE_PROCESSING'
-            time_tmp.loc[datetime_for_idx, column_file_pre_processing] = 'PRE_PROCESSING'
+            if datetime_for_idx is not None:
+                time_tmp.loc[datetime_for_idx, column_file_pre_processing] = 'PRE_PROCESSING'
 
             time_tmp.loc[time_data['time_stamp_restart'], column_exec_type] = 'NA'
             time_tmp.loc[datetime_obs_idx, column_exec_type] = 'SIM'
-            time_tmp.loc[datetime_for_idx, column_exec_type] = 'SIM'
+            if datetime_for_idx is not None:
+                time_tmp.loc[datetime_for_idx, column_exec_type] = 'SIM'
             time_tmp.loc[datetime_tc_idx, column_exec_type] = 'SIM'
 
             time_tmp.loc[time_data['time_stamp_restart'], column_file_post_processing] = 'NA'
             time_tmp.loc[datetime_obs_idx, column_file_post_processing] = 'POST_PROCESSING'
-            time_tmp.loc[datetime_for_idx, column_file_post_processing] = 'POST_PROCESSING'
+            if datetime_for_idx is not None:
+                time_tmp.loc[datetime_for_idx, column_file_post_processing] = 'POST_PROCESSING'
             time_tmp.loc[datetime_tc_idx, column_file_post_processing] = 'POST_PROCESSING'
 
             run_list = [time_data['time_run'].strftime(format=time_format_algorithm)]
             run_str = column_sep.join(run_list)
             time_tmp.loc[time_data['time_stamp_restart'], column_exec_eta] = 'NA'
             time_tmp.loc[datetime_obs_idx, column_exec_eta] = run_str
-            time_tmp.loc[datetime_for_idx, column_exec_eta] = run_str
+            if datetime_for_idx is not None:
+                time_tmp.loc[datetime_for_idx, column_exec_eta] = run_str
             time_tmp.loc[datetime_tc_idx, column_exec_eta] = run_str
 
             eta_list = [time_data['time_stamp_restart'].strftime(format=time_format_algorithm)]
@@ -236,12 +241,13 @@ class ModelTime:
                 eta_str = column_sep.join(eta_list)
                 time_tmp.loc[time_step, column_file_eta] = eta_str
 
-            for time_step, eta_step in zip(datetime_for_idx, datetime_for_eta):
-                eta_list = [eta_tmp.strftime(format=time_format_algorithm) for eta_tmp in eta_step]
-                eta_str = column_sep.join(eta_list)
-                time_tmp.loc[time_step, column_file_eta] = eta_str
+            if (datetime_for_idx is not None) and (datetime_for_eta is not None):
+                for time_step, eta_step in zip(datetime_for_idx, datetime_for_eta):
+                    eta_list = [eta_tmp.strftime(format=time_format_algorithm) for eta_tmp in eta_step]
+                    eta_str = column_sep.join(eta_list)
+                    time_tmp.loc[time_step, column_file_eta] = eta_str
 
-            if datetime_check_idx is not None:
+            if datetime_tc_idx is not None:
                 time_tmp.loc[datetime_tc_idx, column_file_type] = 'CORR'
 
             if datetime_check_idx is not None:
@@ -347,8 +353,11 @@ class ModelTime:
 
         time_start = time_observed_range[0]
 
-        time_forecast_range = pd.date_range(start=time_step_for, periods=time_forecast_period,
-                                            freq=time_forecast_frequency)
+        if time_forecast_period > 0:
+            time_forecast_range = pd.date_range(start=time_step_for, periods=time_forecast_period,
+                                                freq=time_forecast_frequency)
+        else:
+            time_forecast_range = None
 
         if time_observed_period > 0:
             if not time_observed_range.empty:
@@ -392,16 +401,19 @@ class ModelTime:
         eta_observed_list = eta_observed_range.tolist()
         eta_observed_ws = [[eta_step] for eta_step in eta_observed_list]
 
-        eta_forecast_range = pd.DatetimeIndex([time_forecast_range.floor(time_forecast_eta).unique()[-1]])
-        eta_forecast_to = eta_forecast_range
-        for i_step in range(1, self.eta_period + 1):
-            eta_forecast_from = pd.date_range(end=eta_forecast_to[0], periods=i_step + 1, freq=time_forecast_eta)
-            eta_forecast_tmp = pd.DatetimeIndex([eta_forecast_from[0]])
-            eta_forecast_range = eta_forecast_range.union(eta_forecast_tmp)
-            eta_forecast_range = eta_forecast_range.unique()
-        eta_forecast_range = eta_forecast_range.sort_values(ascending=False)
-        eta_forecast_list = eta_forecast_range.tolist()
-        eta_forecast_ws = [eta_forecast_list] * time_forecast_range.__len__()
+        if time_forecast_range is not None:
+            eta_forecast_range = pd.DatetimeIndex([time_forecast_range.floor(time_forecast_eta).unique()[-1]])
+            eta_forecast_to = eta_forecast_range
+            for i_step in range(1, self.eta_period + 1):
+                eta_forecast_from = pd.date_range(end=eta_forecast_to[0], periods=i_step + 1, freq=time_forecast_eta)
+                eta_forecast_tmp = pd.DatetimeIndex([eta_forecast_from[0]])
+                eta_forecast_range = eta_forecast_range.union(eta_forecast_tmp)
+                eta_forecast_range = eta_forecast_range.unique()
+            eta_forecast_range = eta_forecast_range.sort_values(ascending=False)
+            eta_forecast_list = eta_forecast_range.tolist()
+            eta_forecast_ws = [eta_forecast_list] * time_forecast_range.__len__()
+        else:
+            eta_forecast_ws = None
 
         time_obj = {}
         for run_tag_step in run_tag_list:

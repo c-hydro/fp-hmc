@@ -2,8 +2,8 @@
 """
 HYDROLOGICAL MODEL CONTINUUM - Run manager to set parameters and datasets of the hydrological model
 
-__date__ = '20200723'
-__version__ = '3.1.2'
+__date__ = '20201102'
+__version__ = '3.1.3'
 __author__ =
         'Fabio Delogu (fabio.delogu@cimafoundation.org',
         'Simone Gabellani (simone.gabellani@cimafoundation.org',
@@ -26,6 +26,7 @@ Parameters:
         Time of the simulation in YYYY-MM-DD HH:MM format
 
 Version(s):
+20201102 (3.1.3) --> Development of run manager application for version 3.1.3 of HMC models
 20200723 (3.1.2) --> Development of run manager application for version 3.1.2 of HMC models
 20200401 (3.0.0) --> Beta release of run manager application for 3th generation of HMC models
 """
@@ -92,7 +93,7 @@ def main(settings_algorithm=None, settings_datasets=None, settings_time=None):
     # -------------------------------------------------------------------------------------
     # Version and algorithm information
     project_name = 'HMC'
-    alg_version = '3.1.2'
+    alg_version = '3.1.3'
     alg_type = 'Model'
     alg_name = 'RUN MANAGER TOOL'
     # Time algorithm information
@@ -120,7 +121,7 @@ def main(settings_algorithm=None, settings_datasets=None, settings_time=None):
 
     # Configure algorithm
     time_series_collections, time_info_collections, \
-    run_info_collections, run_cline_collections = driver_hmc_initializer.configure_algorithm()
+        run_info_collections, run_cline_collections = driver_hmc_initializer.configure_algorithm()
 
     # Configure ancillary datasets
     ancillary_datasets_collections = driver_hmc_initializer.configure_ancillary_datasets(time_info_collections)
@@ -145,7 +146,8 @@ def main(settings_algorithm=None, settings_datasets=None, settings_time=None):
     # Configure model runner class
     driver_hmc_runner = ModelRunner(time_info=time_info_collections, run_info=run_info_collections,
                                     command_line_info=run_cline_collections,
-                                    obj_args=driver_hmc_initializer.obj_args)
+                                    obj_args=driver_hmc_initializer.obj_args,
+                                    obj_ancillary=driver_hmc_initializer.obj_ancillary)
     # Configure model execution
     driver_hmc_runner.configure_execution(ancillary_datasets_collections)
     # -------------------------------------------------------------------------------------

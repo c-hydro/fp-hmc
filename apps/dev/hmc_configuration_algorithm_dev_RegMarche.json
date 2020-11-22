@@ -11,8 +11,8 @@
     "authors": "Fabio Delogu",
     "email": "fabio.delogu@cimafoundation.org",
     "project": "HMC - Hydrological Model Continuum",
-    "version": "3.1.2",
-    "date": "20200723"
+    "version": "3.1.3",
+    "date": "20201102"
   },
   "Template": {
     "time": {
@@ -67,10 +67,11 @@
   "Run_Info": {
     "run_type": {
       "run_mp": true,
+      "run_cpu": 4,
       "run_domain": "marche",
       "run_name": "dev",
       "run_mode": {
-        "ens_active": true,
+        "ens_active": false,
         "ens_variable": {
           "var_name": "RFarm_ENS",
           "var_min": 1,
@@ -91,7 +92,7 @@
         "file_name": null
       },
       "library": {
-        "file_folder": "/home/fabio/fp_libs_system/hmc/",
+        "file_folder": "/home/fabio/fp_libs_system/hmc_v313/",
         "file_name": "HMC_Model_V3_$RUN.x",
         "dependencies": ["/home/fabio/fp_libs_system/nc4/lib/"]
       },
@@ -103,8 +104,8 @@
   },
   "Time_Info": {
     "time_run": null,
-    "time_forecast_period": 8,
-    "time_observed_period": 6,
+    "time_forecast_period": 0,
+    "time_observed_period": 24,
     "time_check_period": 4,
     "time_restart_period": 24,
     "time_forecast_frequency": "H",
@@ -147,7 +148,7 @@
       "flag_phys_release_mass": 1,
       "flag_phys_convolution_type": 1,
       "flag_phys_fracturation": 0,
-      "flag_phys_dynamic_vegetation": 1,
+      "flag_phys_dynamic_vegetation": 0,
       "flag_phys_flooding": 0,
       "flag_datasets_lai": 0,
       "flag_datasets_albedo": 0,
@@ -157,6 +158,11 @@
     "hmc_dt": {
       "dt_model": 3600,
       "dt_phys_convolution": 50
+    },
+    "hmc_phys_parametrization": {
+      "phys_lst_maximum_integration_delta": 40,
+      "phys_dam_initial_percentage_outflow" : 0.95,
+      "phys_dam_initial_delta_spill": 3
     },
     "hmc_datasets": {
       "dset_forcing_threshold": 95,

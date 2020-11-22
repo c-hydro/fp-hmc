@@ -197,6 +197,8 @@ class ModelCleaner:
     @staticmethod
     def set_tag_value(obj_data, tag_data):
         items_raw = get_dict_value(obj_data, tag_data, [])
+        if items_raw.__len__() == 0:
+            items_raw = [None]
         items_unique = list(set(items_raw))
         if items_unique.__len__() != 1:
             log_stream.warning(' ===> Tag definition is greater then one item. Could be error in cleaning tmp datasets')

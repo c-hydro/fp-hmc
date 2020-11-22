@@ -97,6 +97,8 @@ def read_state_point(file_name, file_time, var_name='state', file_time_start=Non
                     dframe_join = dframe_tmp.join(dframe_pnt, how='right')
                     dframe_join.name = var_name
                     dframe_summary[var_key] = dframe_join
+    else:
+        dframe_summary = None
 
     return dframe_summary
 # -------------------------------------------------------------------------------------

@@ -89,6 +89,11 @@ class DSetReader:
             self.file_dest_path = None
             self.file_unzip_op = None
 
+        if 'var_dset' in list(file_src_info.keys()):
+            self.file_src_name = file_src_info['var_dset']
+        else:
+            self.file_src_name = None
+
         if 'var_format' in list(file_src_info.keys()):
             self.file_src_format = file_src_info['var_format']
         elif 'var_format' in list(kwargs.keys()):
@@ -179,8 +184,17 @@ class DSetReader:
             log_stream.warning(' ===> Filename: ' + file_path)
             obj_var = None
 
-        # Info
-        log_stream.info(' ------> Variable ' + var_name + ' ... DONE')
+        # Check mandatory variable status
+        if obj_var is None:
+            if self.file_src_mandatory:
+                log_stream.error(' ===> File static ' + file_path + ' is mandatory! Execution exit.')
+                log_stream.info(' ------> Variable ' + var_name + ' ... FAILED')
+                raise IOError('File not found')
+            else:
+                log_stream.warning(' ===> File static ' + file_path + ' is ancillary! Execution continue.')
+                log_stream.info(' ------> Variable ' + var_name + ' ... SKIPPED')
+        else:
+            log_stream.info(' ------> Variable ' + var_name + ' ... DONE')
 
         return obj_var
 
@@ -210,19 +224,24 @@ class DSetReader:
                 log_stream.error(' ===> File dynamic type is not allowed! Check your datasets!')
                 raise IOError('File type not allowed')
 
+            if self.file_src_name is not None:
+                file_var_name = self.file_src_name
+            else:
+                file_var_name = var_name
+
             # Info
             log_stream.info(' ---------> TimePeriod ' + str(var_time_start) + ' :: ' + str(var_time_end) + ' ... ')
 
             if self.file_src_format == 'netcdf':
 
-                da_var, da_time, geo_x, geo_y = read_data_nc(file_path, var_name=var_name,
+                da_var, da_time, geo_x, geo_y = read_data_nc(file_path, var_name=file_var_name,
                                                              var_time_start=var_time_start, var_time_end=var_time_end)
 
                 if da_var is not None:
                     if var_name == 'ALL':
                         obj_var = da_var
                     else:
-                        obj_var = da_var.to_dataset(name=var_name)
+                        obj_var = da_var.to_dataset(name=file_var_name)
                 else:
                     obj_var = None
 

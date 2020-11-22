@@ -25,9 +25,20 @@ log_stream = logging.getLogger(logger_name)
 
 
 # -------------------------------------------------------------------------------------
+# Method to convert bytes string to character string
+def convert_bytes2string(obj_bytes):
+    if isinstance(obj_bytes, bytes):
+        obj_string = obj_bytes.decode()
+        obj_string = obj_string.rstrip("\n")
+    else:
+        obj_string = obj_bytes
+    return obj_string
+# -------------------------------------------------------------------------------------
+
+
+# -------------------------------------------------------------------------------------
 # Method to remove string part(s)
 def remove_string_parts(string_raw, deny_parts_list=None):
-
     if deny_parts_list is not None:
         for deny_part in deny_parts_list:
             if deny_part in string_raw:
