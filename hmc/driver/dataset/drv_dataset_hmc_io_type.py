@@ -17,9 +17,13 @@ import pandas as pd
 from hmc.algorithm.io.lib_data_io_nc import read_data as read_data_nc
 from hmc.algorithm.io.lib_data_io_ascii import read_data_point, read_data_time_series, read_state_point, \
     read_outcome_point, read_outcome_time_series
+from hmc.algorithm.io.lib_data_io_generic import store_file
 from hmc.algorithm.io.lib_data_geo_ascii import read_data_vector, read_data_grid
-from hmc.algorithm.io.lib_data_geo_ascii import read_data_point_dam, read_data_point_intake, read_data_point_section
+from hmc.algorithm.io.lib_data_geo_ascii import read_data_point_dam, read_data_point_intake, \
+    read_data_point_section, write_data_point_section
+from hmc.algorithm.io.lib_data_geo_shapefile import read_data_shapefile_section
 from hmc.algorithm.io.lib_data_zip_gzip import unzip_filename
+
 
 from hmc.algorithm.utils.lib_utils_zip import remove_zip_extension
 from hmc.algorithm.default.lib_default_args import logger_name, zip_extension
@@ -140,7 +144,7 @@ class DSetReader:
     def read_filename_static(self, var_name):
 
         # Info
-        log_stream.info(' ------> Variable ' + var_name + ' ... ')
+        log_stream.info(' ------> Read variable ' + var_name + ' ... ')
 
         if self.file_unzip_op:
             file_path = self.file_dest_path
@@ -172,15 +176,21 @@ class DSetReader:
                 elif var_name == 'Section':
                     obj_var = read_data_point_section(file_path)
                 else:
-                    log_stream.error(' ===> Point static variable is not valid')
+                    log_stream.error(' ===> Point static variable is not valid in reading method')
                     raise IOError('Point variable name is not allowed')
 
+            elif self.file_src_format == 'shapefile':
+                if var_name == 'Section':
+                    obj_var = read_data_shapefile_section(file_path)
+                else:
+                    log_stream.error(' ===> Shapefile static variable is not valid in reading method')
+                    raise IOError('Shapefile variable name is not allowed')
             else:
-                log_stream.error(' ===> File static type is not allowed! Check your datasets!')
+                log_stream.error(' ===> File static type is not allowed in reading method! Check your datasets!')
                 raise IOError('File type not allowed')
 
         else:
-            log_stream.warning(' ===> File static for variable ' + var_name + ' is not found!')
+            log_stream.warning(' ===> File static for variable ' + var_name + ' is not found in reading method!')
             log_stream.warning(' ===> Filename: ' + file_path)
             obj_var = None
 
@@ -188,13 +198,13 @@ class DSetReader:
         if obj_var is None:
             if self.file_src_mandatory:
                 log_stream.error(' ===> File static ' + file_path + ' is mandatory! Execution exit.')
-                log_stream.info(' ------> Variable ' + var_name + ' ... FAILED')
+                log_stream.info(' ------> Read variable ' + var_name + ' ... FAILED')
                 raise IOError('File not found')
             else:
                 log_stream.warning(' ===> File static ' + file_path + ' is ancillary! Execution continue.')
-                log_stream.info(' ------> Variable ' + var_name + ' ... SKIPPED')
+                log_stream.info(' ------> Read variable ' + var_name + ' ... SKIPPED')
         else:
-            log_stream.info(' ------> Variable ' + var_name + ' ... DONE')
+            log_stream.info(' ------> Read variable ' + var_name + ' ... DONE')
 
         return obj_var
 
@@ -389,5 +399,66 @@ class DSetReader:
 
         return obj_var, da_time, geo_x, geo_y
     # -------------------------------------------------------------------------------------
+
+# -------------------------------------------------------------------------------------
+
+
+# -------------------------------------------------------------------------------------
+# Class to write datasets
+class DSetWriter(DSetReader):
+
+    # -------------------------------------------------------------------------------------
+    # Method to initialize class
+    def __init__(self, file_dst_path, file_dst_info, file_dst_time, time_dst_info):
+        super(DSetWriter, self).__init__(file_dst_path, file_dst_info, file_dst_time, time_dst_info)
+    # -------------------------------------------------------------------------------------
+
+    # -------------------------------------------------------------------------------------
+    # Method to write filename for static datasets
+    def write_filename_static(self, var_name, var_data):
+
+        # Info
+        log_stream.info(' ------> Write variable ' + var_name + ' ... ')
+
+        file_path = self.file_src_path
+
+        if isinstance(file_path, list):
+            file_path = file_path[0]
+
+        if os.path.exists(file_path):
+            file_path_old = store_file(file_path, file_max=1)
+
+        if self.file_src_format == 'ascii_grid':
+
+            log_stream.error(' ===> ASCII grid format is not valid in writing method')
+            raise IOError('File format is not allowed')
+
+        elif self.file_src_format == 'ascii_point':
+
+            if var_name == 'Section':
+                write_data_point_section(file_path, var_data)
+                # Call method from super-class
+                obj_var = self.read_filename_static(var_name)
+            else:
+                log_stream.error(' ===> Point static variable is not valid in writing method')
+                raise IOError('Point variable name is not allowed')
+
+        else:
+            log_stream.error(' ===> File static type is not allowed in writing method! Check your datasets!')
+            raise IOError('File type not allowed')
+
+        # Check mandatory variable status
+        if obj_var is None:
+            if self.file_src_mandatory:
+                log_stream.error(' ===> File static ' + file_path + ' is mandatory! Execution exit.')
+                log_stream.info(' ------> Write variable ' + var_name + ' ... FAILED')
+                raise IOError('File not found')
+            else:
+                log_stream.warning(' ===> File static ' + file_path + ' is ancillary! Execution continue.')
+                log_stream.info(' ------> Write variable ' + var_name + ' ... SKIPPED')
+        else:
+            log_stream.info(' ------> Write variable ' + var_name + ' ... DONE')
+
+        return obj_var
 
 # -------------------------------------------------------------------------------------

@@ -48,8 +48,8 @@ class ModelBuilder:
             template_static=self.obj_args.obj_template_dset_static_ref,
             template_dynamic=self.obj_args.obj_template_dset_dynamic_ref)
 
-        self.flag_cleaning_static = self.obj_args.obj_datasets['Flags']['cleaning_ancillary_static']
-        self.flag_cleaning_dynamic_source = self.obj_args.obj_datasets['Flags']['cleaning_ancillary_dynamic_source']
+        self.flag_cleaning_static = self.obj_args.obj_datasets['Flags']['cleaning_ancillary_data_static']
+        self.flag_cleaning_dynamic_source = self.obj_args.obj_datasets['Flags']['cleaning_ancillary_data_dynamic_source']
 
         # -------------------------------------------------------------------------------------
 

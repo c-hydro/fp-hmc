@@ -51,7 +51,8 @@ class ModelFinalizer:
             template_static=self.obj_args.obj_template_dset_static_ref,
             template_outcome=self.obj_args.obj_template_dset_outcome_ref)
 
-        self.flag_cleaning_dynamic_outcome = self.obj_args.obj_datasets['Flags']['cleaning_ancillary_dynamic_outcome']
+        self.flag_cleaning_dynamic_outcome = self.obj_args.obj_datasets['Flags'][
+            'cleaning_ancillary_data_dynamic_outcome']
 
     # -------------------------------------------------------------------------------------
 

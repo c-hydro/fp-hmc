@@ -64,9 +64,13 @@ class ModelInitializer:
                                             template_static=self.obj_args.obj_template_dset_static_ref,
                                             template_dynamic=self.obj_args.obj_template_dset_dynamic_ref)
 
-        self.flag_cleaning_static = self.obj_args.obj_datasets['Flags']['cleaning_ancillary_static']
-        self.flag_cleaning_dynamic_source = self.obj_args.obj_datasets['Flags']['cleaning_ancillary_dynamic_source']
-        self.flag_cleaning_dynamic_outcome = self.obj_args.obj_datasets['Flags']['cleaning_ancillary_dynamic_outcome']
+        self.flag_cleaning_static = self.obj_args.obj_datasets['Flags']['cleaning_ancillary_data_static']
+        self.flag_cleaning_dynamic_source = self.obj_args.obj_datasets['Flags'][
+            'cleaning_ancillary_data_dynamic_source']
+        self.flag_cleaning_dynamic_outcome = self.obj_args.obj_datasets['Flags'][
+            'cleaning_ancillary_data_dynamic_outcome']
+        self.flag_cleaning_dynamic_exec = self.obj_args.obj_datasets['Flags'][
+            'cleaning_ancillary_data_dynamic_execution']
 
         self.dset_ref_tag = ['DataGeo', 'Gridded']
         self.dset_ref_variable = 'Terrain'
@@ -173,17 +177,16 @@ class ModelCleaner:
         self.tag_run_logging = 'log'
         self.tag_run_root_generic = 'run_root_generic'
         self.tag_run_root_main = 'run_root_main'
-        self.tag_run_flag_ancillary_archive = 'cleaning_ancillary_archive'
         self.tag_run_flag_run_execution = 'cleaning_run_execution'
         self.tag_run_flag_run_logging = 'cleaning_run_logging'
+        self.tag_run_tmp = 'cleaning_run_tmp'
 
         self.folder_run_root_generic = self.set_tag_value(self.obj_run.obj_run_path, self.tag_run_root_generic)
         self.folder_run_root_main = self.set_tag_value(self.obj_run.obj_run_path, self.tag_run_root_main)
 
         self.file_path_logging = self.set_tag_value(self.obj_run.obj_run_path, self.tag_run_logging)
 
-        self.cleaning_flag_ancillary_archive = self.set_tag_value(self.obj_args.obj_datasets,
-                                                                  self.tag_run_flag_ancillary_archive)
+        self.cleaning_flag_run_tmp = self.set_tag_value(self.obj_args.obj_datasets, self.tag_run_tmp)
         self.cleaning_flag_run_execution = self.set_tag_value(self.obj_args.obj_datasets,
                                                               self.tag_run_flag_run_execution)
         self.cleaning_flag_run_logging = self.set_tag_value(self.obj_args.obj_datasets,
@@ -213,7 +216,7 @@ class ModelCleaner:
         log_stream.info(' #### Configure cleaning datasets ... ')
 
         # Method to clean ancillary archive
-        self.clean_ancillary_archive(self.cleaning_flag_ancillary_archive)
+        self.clean_run_tmp(self.cleaning_flag_run_tmp)
 
         # Method to clean run execution
         self.clean_run_execution(self.cleaning_flag_run_execution)
@@ -228,13 +231,13 @@ class ModelCleaner:
 
     # -------------------------------------------------------------------------------------
     # Method to clean ancillary archive
-    def clean_ancillary_archive(self, flag_ancillary_archive):
+    def clean_run_tmp(self, flag_run_tmp):
 
-        log_stream.info(' ----> Clean ancillary datasets ... ')
+        log_stream.info(' ----> Clean run temporary datasets ... ')
 
         collection_ancillary = self.collections_ancillary
 
-        if flag_ancillary_archive:
+        if flag_run_tmp:
 
             collection_path_tmp = []
             for collection_key, collection_filepath in collection_ancillary.items():
@@ -249,9 +252,9 @@ class ModelCleaner:
                     delete_folder(collection_path_step)
                 else:
                     log_stream.warning(' ===> Folder: ' + collection_path_step + ' is not empty')
-            log_stream.info(' ----> Clean ancillary datasets ... DONE')
+            log_stream.info(' ----> Clean run temporary datasets ... DONE')
         else:
-            log_stream.info(' ----> Clean ancillary datasets ... SKIPPED. Flag is not activated')
+            log_stream.info(' ----> Clean run temporary datasets ... SKIPPED. Flag is not activated')
 
     # -------------------------------------------------------------------------------------
 

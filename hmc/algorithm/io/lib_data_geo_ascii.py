@@ -19,6 +19,7 @@ from collections import OrderedDict
 
 from hmc.algorithm.io.lib_data_io_generic import create_darray_2d
 
+from hmc.algorithm.utils.lib_utils_system import create_folder
 from hmc.algorithm.utils.lib_utils_list import pad_or_truncate_list
 from hmc.algorithm.utils.lib_utils_string import parse_row2string
 from hmc.algorithm.default.lib_default_args import logger_name
@@ -29,6 +30,43 @@ log_stream = logging.getLogger(logger_name)
 # Debug
 import matplotlib.pylab as plt
 #######################################################################################
+
+
+# -------------------------------------------------------------------------------------
+# Method to write file point section(s)
+def write_data_point_section(file_name, file_data, file_cols_expected=8):
+
+    file_keys = list(file_data.keys())
+
+    cols = file_data.__len__()
+    if cols != file_cols_expected:
+        log_stream.error(' ===> File sections columns ' + str(cols) + ' found != columns expected' +
+                         str(file_cols_expected))
+        raise IOError('File datasets are in a wrong format')
+
+    rows = -9999
+    for key in file_keys:
+        if rows != file_data[key].__len__():
+            rows = file_data[key].__len__()
+            break
+
+    file_obj = []
+    for i in range(0, rows):
+        row = []
+        for key in file_keys:
+            point = file_data[key][i]
+            row.append(point)
+        file_obj.append(row)
+
+    file_folder = os.path.split(file_name)[0]
+    create_folder(file_folder)
+    with open(file_name, "w", encoding='utf-8') as file:
+        for file_row in file_obj:
+            string_row = ' '.join(str(item) for item in file_row)
+            string_row = string_row + '\n'
+            file.write(string_row)
+
+# -------------------------------------------------------------------------------------
 
 
 # -------------------------------------------------------------------------------------

@@ -137,8 +137,16 @@ class ModelSource:
         dset_source_frame_merge = None
         for file_type, dset_source_subset_static in obj_static_datasets.items():
 
+            var_data_dict = {}
+            for var_check in list(dset_source_subset_static['file_check'].keys()):
+                var_data_dict[var_check] = None
+                if dset_collections_static is not None:
+                    if var_check in list(dset_collections_static.keys()):
+                        var_data_dict[var_check] = dset_collections_static[var_check]
+
             dset_source_subset_static = obj_static_datasets[file_type]
-            dset_source_frame_raw = reader_dataset.collect_data(dset_source_subset_static)
+            dset_source_frame_raw = reader_dataset.collect_data(dset_source_subset_static,
+                                                                data_source_static=var_data_dict)
 
             if dset_source_frame_merge is None:
                 dset_source_frame_merge = deepcopy(dset_source_frame_raw)
@@ -146,7 +154,9 @@ class ModelSource:
             else:
                 dset_source_values_merged = dset_source_frame_merge[reader_dataset.datasets_tag]
                 dset_source_values_raw = dset_source_frame_raw[reader_dataset.datasets_tag]
-                dset_collections_static = {**dset_source_values_merged, **dset_source_values_raw}
+                dset_source_frame_merge[reader_dataset.datasets_tag] = {**dset_source_values_merged, **dset_source_values_raw}
+
+                dset_collections_static = dset_source_frame_merge[reader_dataset.datasets_tag]
 
         # Get static point information for dam(s) and section(s)
         if 'Dam' in list(dset_collections_static.keys()):

@@ -301,6 +301,7 @@ class ModelRun:
             else:
                 obj_type_upd[obj_key] = [obj_value] * run_mode.__len__()
         obj_type_upd['run_var'] = run_var
+        obj_type_upd['run_cpu'] = run_cpu
 
         run_obj = {}
         for i, (var_step, mode_step, run_step, n_step, mp_step, cpu_step) in enumerate(zip(

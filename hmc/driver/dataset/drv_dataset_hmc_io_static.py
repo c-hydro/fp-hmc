@@ -18,10 +18,10 @@ import pandas as pd
 from copy import deepcopy
 
 from hmc.algorithm.utils.lib_utils_geo import get_raster
-from hmc.algorithm.utils.lib_utils_dict import get_dict_nested_value
+from hmc.algorithm.utils.lib_utils_dict import get_dict_nested_value, get_dict_value, lookup_dict_keys
 from hmc.algorithm.utils.lib_utils_string import fill_tags2string
 
-from hmc.driver.dataset.drv_dataset_hmc_io_type import DSetReader
+from hmc.driver.dataset.drv_dataset_hmc_io_type import DSetReader, DSetWriter
 
 from hmc.algorithm.default.lib_default_args import logger_name
 
@@ -44,7 +44,7 @@ class DSetManager:
                  dset_list_format=None, **kwargs):
 
         if dset_list_format is None:
-            dset_list_format = ['Gridded', 'Point']
+            dset_list_format = ['Shapefile', 'Point', 'Gridded']
 
         self.dset = dset
         self.dset_list_format = dset_list_format
@@ -121,7 +121,7 @@ class DSetManager:
 
     # -------------------------------------------------------------------------------------
     # Method to collect datasets
-    def collect_data(self, dset_source_static):
+    def collect_data(self, dset_source_static, data_source_static=None):
 
         # Starting information
         log_stream.info(' -----> Collect static datasets ... ')
@@ -139,8 +139,17 @@ class DSetManager:
 
             file_info = {'var_format': file_format, 'var_mandatory': file_mandatory, 'var_check': file_check}
 
-            driver_hmc_parser = DSetReader(file_name, file_info, None, time_src_info=None)
-            obj_var = driver_hmc_parser.read_filename_static(var_name)
+            var_data = data_source_static[var_name]
+
+            if var_data is None:
+                driver_hmc_parser = DSetReader(file_name, file_info, None, time_src_info=None)
+                obj_var = driver_hmc_parser.read_filename_static(var_name)
+            elif var_data is not None:
+                driver_hmc_parser = DSetWriter(file_name, file_info, None, time_dst_info=None)
+                obj_var = driver_hmc_parser.write_filename_static(var_name, var_data)
+            else:
+                log_stream.error(' ===> Variable data format is not allowed')
+                raise NotImplementedError('Object static format is not valid')
 
             if dset_source is None:
                 dset_source = {}

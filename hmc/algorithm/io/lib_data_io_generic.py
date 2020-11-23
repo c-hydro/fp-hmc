@@ -15,6 +15,7 @@ import logging
 import os
 import pickle
 import json
+import glob
 
 import pandas as pd
 import xarray as xr
@@ -350,6 +351,38 @@ def write_dset(file_name,
     dset_data.to_netcdf(path=file_name, format=dset_format, mode=dset_mode, engine=dset_engine,
                         encoding=dset_encoding)
 
+# -------------------------------------------------------------------------------------
+
+
+# -------------------------------------------------------------------------------------
+# Method to store file
+def store_file(file_name, file_ext='.old.{}', file_max=1):
+
+    # Get file folder
+    file_folder = os.path.split(file_name)[0]
+
+    # Iterate to store old logging file
+    if os.path.exists(file_name):
+
+        file_loop = file_name
+        file_id = 0
+        while os.path.exists(file_loop):
+            file_id = file_id + 1
+            file_loop = file_name + file_ext.format(file_id)
+
+            if file_id > file_max:
+                file_obj = glob.glob(os.path.join(file_folder, '*'))
+                for file_step in file_obj:
+                    if file_step.startswith(file_name):
+                        os.remove(file_step)
+                file_loop = file_name
+                break
+
+        if file_loop:
+            if file_name != file_loop:
+                os.rename(file_name, file_loop)
+
+    return file_loop
 # -------------------------------------------------------------------------------------
 
 

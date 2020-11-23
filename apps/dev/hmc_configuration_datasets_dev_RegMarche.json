@@ -2,10 +2,13 @@
   "__comment": " ### HMC configuration file - Static and dynamic data settings ###",
   "Flags": {
     "__comment": " --- Flags configuration --- ",
-    "cleaning_ancillary_static": false,
-    "cleaning_ancillary_dynamic_source": true,
-    "cleaning_ancillary_execution": false,
-    "cleaning_ancillary_dynamic_outcome": true
+    "cleaning_ancillary_data_static": true,
+    "cleaning_ancillary_data_dynamic_source": false,
+    "cleaning_ancillary_data_dynamic_execution": false,
+    "cleaning_ancillary_data_dynamic_outcome": false,
+    "cleaning_run_execution": true,
+    "cleaning_run_logging": false,
+    "cleaning_run_tmp": false
   },
   "DataSummary" : {
     "__comment": " --- DataSummary configuration --- ",
@@ -54,7 +57,7 @@
       "hmc_file_name": "hmc.dynamic_source.{dset_datetime_ancillary}.workspace",
       "hmc_file_folder": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/run/{run_name}/{run_mode}/ancillary/{dset_sub_path_ancillary}"
     },
-    "execution": {
+    "dynamic_execution": {
       "hmc_file_name": "hmc.execution.{dset_datetime_ancillary}.workspace",
       "hmc_file_folder": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/run/{run_name}/{run_mode}/ancillary/{dset_sub_path_ancillary}"
     },
@@ -111,6 +114,15 @@
         "Intake"                : {"var_name": "intake",            "check": true,   "mandatory": true  },
         "Joint"                 : {"var_name": "joint",             "check": true,   "mandatory": false },
         "Lake"                  : {"var_name": "lake",              "check": true,   "mandatory": false },
+        "Section"               : {"var_name": "section",           "check": true,   "mandatory": true  }
+      }
+    },
+    "Shapefile": {
+      "hmc_file_name"     : "fp_sections_marche.shp",
+      "hmc_file_folder"   : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/data/data_static/shapefile/",
+      "hmc_file_format"   : "shapefile",
+      "hmc_file_frequency": null,
+      "hmc_file_variable" : {
         "Section"               : {"var_name": "section",           "check": true,   "mandatory": true  }
       }
     }

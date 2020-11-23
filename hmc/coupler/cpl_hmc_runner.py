@@ -71,8 +71,10 @@ class ModelRunner:
         self.run_info_collections = {'time_info' : self.time_info, 'run_info': self.run_info,
                                      'cmd_info': self.command_line_info, self.tag_run_response: None}
 
-        self.flag_cleaning_run_execution = self.obj_args.obj_datasets['Flags']['cleaning_ancillary_execution']
-        self.flag_cleaning_dynamic_outcome = self.obj_args.obj_datasets['Flags']['cleaning_ancillary_dynamic_outcome']
+        self.flag_cleaning_dynamic_execution = self.obj_args.obj_datasets['Flags'][
+            'cleaning_ancillary_data_dynamic_execution']
+        self.flag_cleaning_dynamic_outcome = self.obj_args.obj_datasets['Flags'][
+            'cleaning_ancillary_data_dynamic_outcome']
 
     # -------------------------------------------------------------------------------------
 
@@ -97,7 +99,7 @@ class ModelRunner:
     # -------------------------------------------------------------------------------------
     # Method to configure execution
     def configure_execution(self, ancillary_datasets_collections,
-                            ancillary_run_tag_type='execution', ancillary_outcome_tag_type='dynamic_outcome'):
+                            ancillary_run_tag_type='dynamic_execution', ancillary_outcome_tag_type='dynamic_outcome'):
 
         log_stream.info(' #### Configure execution ... ')
 
@@ -107,7 +109,7 @@ class ModelRunner:
                 os.remove(file_path_outcome_ancillary)
 
         file_path_run_ancillary = ancillary_datasets_collections[ancillary_run_tag_type]
-        if self.flag_cleaning_run_execution:
+        if self.flag_cleaning_dynamic_execution:
             if os.path.exists(file_path_run_ancillary):
                 os.remove(file_path_run_ancillary)
 
