@@ -64,7 +64,7 @@ def get_raster(filename_reference):
     lats = np.flipud(lats)
 
     obj = {'values': values, 'longitude': lons, 'latitude': lats,
-           'transform': transform,
+           'transform': transform, 'bbox': [bounds.left, bounds.bottom, bounds.right, bounds.top],
            'bb_left': bounds.left, 'bb_right': bounds.right,
            'bb_top': bounds.top, 'bb_bottom': bounds.bottom,
            'res_lon': res[0], 'res_lat': res[1]}

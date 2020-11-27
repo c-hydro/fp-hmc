@@ -343,7 +343,7 @@ def read_data(file_name_list, var_name=None, var_time_start=None, var_time_end=N
                                 da_tmp = None
                         else:
                             log_stream.error(' ===> Variable dimensions in data array creation not allowed yet')
-                            raise IOError(' ===> Case not implemented')
+                            raise NotImplementedError(' ===> Case not implemented')
 
                         if da_tmp is not None:
                             if da_var is None:
@@ -362,10 +362,21 @@ def read_data(file_name_list, var_name=None, var_time_start=None, var_time_end=N
                 da_raw_dims = da_raw.dims
 
                 if 'time' in da_raw_dims:
-                    dim = da_raw_dims[0].lower()
+
+                    dims_list = list(da_raw_dims)
+                    time_idx = dims_list.index('time')
+
+                    dim = da_raw_dims[time_idx].lower()
                     if dim == 'time':
                         values_raw = da_raw.values
-                        values_reshape = reshape_var3d(values_raw)
+
+                        if time_idx == 0:
+                            values_reshape = reshape_var3d(values_raw)
+                        elif time_idx == 2:
+                            values_reshape = values_raw
+                        else:
+                            log_stream.error(' ===> Time idx ' + str(time_idx) + ' is not allowed in 3d variables')
+                            raise NotImplementedError(' ===> Case not implemented')
 
                         geo_y_upper = da_geo_y.values[0, 0]
                         geo_y_lower = da_geo_y.values[-1, 0]

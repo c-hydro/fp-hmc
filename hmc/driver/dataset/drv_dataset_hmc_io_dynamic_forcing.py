@@ -36,6 +36,7 @@ from hmc.driver.dataset.drv_dataset_hmc_io_type import DSetReader
 log_stream = logging.getLogger(logger_name)
 
 # Debug
+import matplotlib.pylab as plt
 #######################################################################################
 
 
@@ -46,7 +47,7 @@ class DSetManager:
     # -------------------------------------------------------------------------------------
     # Method to initialize class
     def __init__(self, dset,
-                 terrain_values=None, terrain_geo_x=None, terrain_geo_y=None, terrain_transform=None,
+                 terrain_values=None, terrain_geo_x=None, terrain_geo_y=None, terrain_transform=None, terrain_bbox=None,
                  dset_list_format=None,
                  dset_list_type=None,
                  dset_list_group=None,
@@ -74,6 +75,7 @@ class DSetManager:
         self.terrain_geo_x = terrain_geo_x
         self.terrain_geo_y = terrain_geo_y
         self.terrain_tranform = terrain_transform
+        self.terrain_bbox = terrain_bbox
 
         self.da_terrain = create_darray_2d(self.terrain_values, self.terrain_geo_x, self.terrain_geo_y,
                                            coord_name_x=coord_name_geo_x, coord_name_y=coord_name_geo_y,
@@ -201,10 +203,16 @@ class DSetManager:
         self.file_compression_mode = file_compression_mode
         self.file_compression_ext = file_compression_ext
 
-        self.file_attributes_dict = {'ncols': self.da_terrain.shape[1], 'nrows': self.da_terrain.shape[0],
+        self.terrain_geo_x_llcorner = self.terrain_bbox[0]
+        self.terrain_geo_y_llcorner = self.terrain_bbox[1]
+        self.terrain_geo_cellsize = self.terrain_tranform[0]
+
+        self.file_attributes_dict = {'ncols': self.da_terrain.shape[1],
+                                     'nrows': self.da_terrain.shape[0],
                                      'nodata_value': -9999.0,
-                                     'xllcorner': self.terrain_tranform[2], 'yllcorner': self.terrain_tranform[5],
-                                     'cellsize': self.terrain_tranform[0]}
+                                     'xllcorner': self.terrain_geo_x_llcorner,
+                                     'yllcorner': self.terrain_geo_y_llcorner,
+                                     'cellsize': self.terrain_geo_cellsize}
 
         self.column_sep = ';'
         self.list_sep = ':'
@@ -568,16 +576,21 @@ class DSetManager:
 
                                     # Get variable, data, time and attributes of expected data
                                     var_data_expected = np.zeros(
-                                        [var_da_step.shape[dim_idx_geo_x], var_da_step.shape[dim_idx_geo_y],
+                                        [var_da_step.shape[dim_idx_geo_y], var_da_step.shape[dim_idx_geo_x],
                                          dset_time.shape[0]])
-                                    # Check datasets dimensions for trying a correction
+                                    # Check datasets dimensions and in case of mismatching try to correct
                                     if var_data_expected.shape[:2] != da_terrain.shape:
                                         var_data_expected = np.zeros([da_terrain.shape[0], da_terrain.shape[1],
                                                                      dset_time.shape[0]])
-                                        log_stream.warning(
-                                            ' ===> Dimensions expected for variable ' + var_name_step
-                                            + ' and terrain are not equal in automatic detection')
+                                        log_stream.info(' --------> ' + var_name_step +
+                                                        ' datasets and terrain datasets have not the same dimensions'
+                                                        ' found by using the automatic detection')
                                         log_stream.warning(' ===> Use terrain dimensions to try datasets analysis')
+                                    else:
+                                        log_stream.info(' --------> ' + var_name_step +
+                                                        ' datasets and terrain datasets have the same dimensions'
+                                                        ' found by using the automatic detection')
+
                                     var_data_expected[:, :, :] = np.nan
 
                                     # Get variable, data, time and attributes of expected data
@@ -806,16 +819,20 @@ class DSetManager:
 
                             obj_var_name_list = list(obj_var.data_vars)
                             if obj_var_name_list.__len__() == 1:
-                                obj_var_name = obj_var_name_list[0]
-                            else:
-                                log_stream.error(' ===> Expected a list of one variable element, got ' +
-                                                 str(obj_var_name_list.__len__()))
-                                raise NotImplementedError('Variables list not supported yet')
 
-                            if obj_var_name != var_name:
-                                obj_var = obj_var.rename_vars({obj_var_name: var_name})
-                                log_stream.warning(' ===> Switch variable name in dataset from "' +
-                                                   obj_var_name + '" to "' + var_name + '"')
+                                log_stream.info(' --------> Variable list: ' + str(obj_var_name_list) +
+                                                ' with 1 item')
+
+                                obj_var_name = obj_var_name_list[0]
+
+                                if obj_var_name != var_name:
+                                    obj_var = obj_var.rename_vars({obj_var_name: var_name})
+                                    log_stream.warning(' ===> Switch variable name in dataset from "' +
+                                                       obj_var_name + '" to "' + var_name + '"')
+
+                            else:
+                                log_stream.info(' --------> Variable list: ' + str(obj_var_name_list) +
+                                                ' with ' + str(obj_var_name_list.__len__()) + ' items')
 
                             if dset_source is None:
                                 dset_source = obj_var

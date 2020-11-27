@@ -29,7 +29,7 @@ class DSetManager(DSetManager_Dynamic):
     # -------------------------------------------------------------------------------------
     # Method to initialize class
     def __init__(self, dset,
-                 terrain_values=None, terrain_geo_x=None, terrain_geo_y=None, terrain_transform=None,
+                 terrain_values=None, terrain_geo_x=None, terrain_geo_y=None, terrain_transform=None, terrain_bbox=None,
                  dset_list_format=None,
                  dset_list_type=None,
                  dset_list_group=None,
@@ -49,7 +49,8 @@ class DSetManager(DSetManager_Dynamic):
             dset_list_group = ['RESTART']
 
         super(DSetManager, self).__init__(dset,
-                                          terrain_values, terrain_geo_x, terrain_geo_y, terrain_transform,
+                                          terrain_values, terrain_geo_x, terrain_geo_y,
+                                          terrain_transform, terrain_bbox,
                                           dset_list_format=dset_list_format,
                                           dset_list_type=dset_list_type,
                                           dset_list_group=dset_list_group,

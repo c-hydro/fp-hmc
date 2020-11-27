@@ -88,6 +88,7 @@ class ModelSource:
             terrain_geo_x=self.reader_geo.dset_static_ref['longitude'],
             terrain_geo_y=self.reader_geo.dset_static_ref['latitude'],
             terrain_transform=self.reader_geo.dset_static_ref['transform'],
+            terrain_bbox=self.reader_geo.dset_static_ref['bbox'],
             dset_list_type=['ARCHIVE'],
             model_tag=self.tag_model, datasets_tag=self.tag_datasets, template_time=self.obj_template_time)
 
@@ -102,6 +103,7 @@ class ModelSource:
             terrain_geo_x=self.reader_geo.dset_static_ref['longitude'],
             terrain_geo_y=self.reader_geo.dset_static_ref['latitude'],
             terrain_transform=self.reader_geo.dset_static_ref['transform'],
+            terrain_bbox=self.reader_geo.dset_static_ref['bbox'],
             dset_list_type=['OBS', 'FOR'],
             model_tag=self.tag_model, datasets_tag=self.tag_datasets, template_time=self.obj_template_time,
             file_compression_mode=True)
@@ -116,6 +118,7 @@ class ModelSource:
             terrain_geo_x=self.reader_geo.dset_static_ref['longitude'],
             terrain_geo_y=self.reader_geo.dset_static_ref['latitude'],
             terrain_transform=self.reader_geo.dset_static_ref['transform'],
+            terrain_bbox=self.reader_geo.dset_static_ref['bbox'],
             dset_list_type=['ARCHIVE'],
             model_tag=self.tag_model, datasets_tag=self.tag_datasets, template_time=self.obj_template_time)
 

@@ -6,8 +6,13 @@ Version 3.1.3 (20201028)
 ========================
 
 - Codes and package based on HMC Fortran codes version 3.1.3;
+- Add the shapefile reading to get the section information; the "{domain}.info_sections.txt" is saved by the procedure using the shapefile points;
 - Fix bugs in managing the forcing gridded netcdf;
-- Fix bugs in managing the analysis time-series netcdf.
+- Fix bugs in managing the analysis time-series netcdf;
+- Fix bugs in managing the dimensions of gridded netcdf;
+- Fix bugs in managing the variables defined as (t,y,x) or (y,x,t) to correctly find the time dimension;
+- Fix bugs in managing the orientation of gridded netcdf variables;
+- Fix bugs in saving file attributes of "x_ll_corner" and "y_ll_corner";
 
 Version 3.1.2 (20200819)
 ========================
