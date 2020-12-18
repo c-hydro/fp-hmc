@@ -183,10 +183,12 @@ def read_outcome_point(file_name, file_time, file_columns=None, file_ancillary=N
 
 # -------------------------------------------------------------------------------------
 # Method to read data point file
-def read_data_point(file_name, file_time, file_columns=None, file_ancillary=None):
+def read_data_point(file_name, file_time, file_columns=None, file_ancillary=None, select_columns=None):
 
     if file_columns is None:
         file_columns = {0: 'ref', 1: 'dset'}
+    if select_columns is None:
+        select_columns = list(file_columns.values())
 
     if not isinstance(file_name, list):
         file_name = [file_name]
@@ -207,8 +209,12 @@ def read_data_point(file_name, file_time, file_columns=None, file_ancillary=None
             for file_idx, file_array in zip(file_table.index, file_table.values):
                 file_row = file_array.tolist()[0]
 
-                file_row_strip = file_row.strip()
-                file_row_split = file_row_strip.split()
+                if isinstance(file_row, str):
+                    file_row_strip = file_row.strip()
+                    file_row_split = file_row_strip.split()
+                else:
+                    log_stream.error(' ===> Data ascii point format is not allowed')
+                    raise NotImplementedError('Case not implemented yet')
 
                 for row_n, row_value in enumerate(file_row_split):
 
@@ -218,6 +224,7 @@ def read_data_point(file_name, file_time, file_columns=None, file_ancillary=None
 
                         if row_value < 0:
                             string_no_code = 'no_code_{}'.format(id_nan)
+                            # string_no_code = 'no_code_{}'.format(file_idx)
                             id_nan += 1
                             row_value_upd = string_no_code
                         else:
@@ -231,17 +238,25 @@ def read_data_point(file_name, file_time, file_columns=None, file_ancillary=None
                             data_obj[value_ref] = {}
                     else:
 
-                        if isinstance(row_value_upd, str):
-                            row_value_upd = float(row_value_upd)
+                        if col_type in select_columns:
+                            if isinstance(row_value_upd, str):
 
-                        value_dset = row_value_upd
-                        if col_type not in list(data_obj[value_ref].keys()):
-                            data_obj[value_ref][col_type] = {}
-                            data_obj[value_ref][col_type] = [value_dset]
-                        else:
-                            row_tmp = data_obj[value_ref][col_type]
-                            row_tmp.append(value_dset)
-                            data_obj[value_ref][col_type] = row_tmp
+                                try:
+                                    row_value_upd = float(row_value_upd)
+                                except BaseException as exp_obj:
+                                    row_value_upd = row_value_upd
+                                    log_stream.warning(' ===> Value ' + str(row_value_upd) +
+                                                       ' is not cast to float. Check your time-series for errors'
+                                                       ' Exception ' + str(exp_obj))
+
+                            value_dset = row_value_upd
+                            if col_type not in list(data_obj[value_ref].keys()):
+                                data_obj[value_ref][col_type] = {}
+                                data_obj[value_ref][col_type] = [value_dset]
+                            else:
+                                row_tmp = data_obj[value_ref][col_type]
+                                row_tmp.append(value_dset)
+                                data_obj[value_ref][col_type] = row_tmp
 
     n_obs = data_obj.__len__()
     if file_ancillary is not None:
@@ -262,15 +277,16 @@ def read_data_point(file_name, file_time, file_columns=None, file_ancillary=None
     for data_key, (data_ref, data_value) in zip(file_keys_sel, data_obj.items()):
         for tag_columns in file_columns.values():
             if tag_columns != 'ref':
-                data_ts = data_value[tag_columns]
+                if tag_columns in list(data_value.keys()):
+                    data_ts = data_value[tag_columns]
 
-                if tag_columns not in list(data_var.keys()):
-                    data_var[tag_columns] = {}
-                data_var[tag_columns][data_key] = {}
-                data_var[tag_columns][data_key] = data_ts
+                    if tag_columns not in list(data_var.keys()):
+                        data_var[tag_columns] = {}
+                    data_var[tag_columns][data_key] = {}
+                    data_var[tag_columns][data_key] = data_ts
 
-                if data_key not in data_list:
-                    data_list.append(data_key)
+                    if data_key not in data_list:
+                        data_list.append(data_key)
 
     time_n = time_step_expected.__len__()
     var_data_expected = [-9999.0] * time_n
@@ -280,15 +296,20 @@ def read_data_point(file_name, file_time, file_columns=None, file_ancillary=None
     for var_id, (var_key, var_ts) in enumerate(data_var.items()):
         for var_pivot, var_data_defined in var_ts.items():
 
-            dframe_expected = pd.DataFrame(index=time_step_expected, data=var_data_expected, columns=[var_pivot])
-            dframe_expected.index.name = 'Time'
+            if var_data_defined.__len__() == var_data_expected.__len__():
 
-            dframe_point_tmp = pd.DataFrame(index=time_step_exists, data=var_data_defined, columns=[var_pivot])
-            dframe_point_tmp.index.name = 'Time'
+                dframe_expected = pd.DataFrame(index=time_step_expected, data=var_data_expected, columns=[var_pivot])
+                dframe_expected.index.name = 'Time'
 
-            dframe_expected.update(dframe_point_tmp)
-            series_filled = dframe_expected.iloc[:, 0]
-            dframe_merged[var_pivot] = series_filled
+                dframe_point_tmp = pd.DataFrame(index=time_step_exists, data=var_data_defined, columns=[var_pivot])
+                dframe_point_tmp.index.name = 'Time'
+
+                dframe_expected.update(dframe_point_tmp)
+                series_filled = dframe_expected.iloc[:, 0]
+                dframe_merged[var_pivot] = series_filled
+            else:
+                log_stream.error(' ===> Data ascii time-series length is not correct')
+                raise IOError('Time-series defined have not the same length of time-series expected')
 
         dframe_summary[var_key] = deepcopy(dframe_merged)
 

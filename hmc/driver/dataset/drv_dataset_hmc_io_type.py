@@ -260,9 +260,10 @@ class DSetReader:
                 if var_name == 'Discharge':
 
                     if tag_datatype == 'forcing':
-                        file_columns_var = {0: 'ref', 1: 'section_discharge_obs'}
+                        file_columns_var = {0: 'ref', 1: 'section_discharge_obs', 2: 'section_tag'}
                         obj_var = read_data_point(file_path, self.file_src_time, file_columns=file_columns_var,
-                                                  file_ancillary=var_static_info)
+                                                  file_ancillary=var_static_info,
+                                                  select_columns=['ref', 'section_discharge_obs'])
                     elif tag_datatype == 'outcome':
                         file_columns_var = {0: 'section_discharge_sim'}
                         obj_var = read_outcome_point(file_path, self.file_src_time, file_columns=file_columns_var,
@@ -385,7 +386,7 @@ class DSetReader:
                 raise IOError('File type not allowed')
 
             # Info
-            log_stream.info(' ---------> TimePeriod ' + str(var_time_start) + ' :: ' + str(var_time_end) + ' ... ')
+            log_stream.info(' ---------> TimePeriod ' + str(var_time_start) + ' :: ' + str(var_time_end) + ' ... DONE')
 
         else:
             log_stream.warning(' ===> Some/All filenames are not available!')
