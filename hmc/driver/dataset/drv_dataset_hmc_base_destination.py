@@ -358,23 +358,28 @@ class ModelDestination:
 
                     for lut_name in obj_lut_step:
 
-                        file_name_tmp = obj_filename[dset_key].to_dict()[lut_name]
-                        file_name_filter = [i for i in file_name_tmp.values() if isinstance(i, str)][0]
-                        file_list = file_name_filter.split(writer_dataset.list_sep)
-                        file_attrs = obj_default_step[lut_name]
+                        file_dict_tmp = obj_filename[dset_key].to_dict()
 
                         log_stream.info(' -------> Dump summary outcome ... ')
-                        if obj_fx_step['dump']:
-                            writer_dataset.dump_data(file_list, file_data, file_time,
-                                                     file_format=file_attrs['var_format'],
-                                                     obj_run=obj_run,
-                                                     obj_time=obj_time, obj_static=obj_static,
-                                                     no_data=self.nan_filled_array)
+                        if lut_name in list(file_dict_tmp.keys()):
+                            file_name_tmp = file_dict_tmp[lut_name]
+                            file_name_filter = [i for i in file_name_tmp.values() if isinstance(i, str)][0]
+                            file_list = file_name_filter.split(writer_dataset.list_sep)
+                            file_attrs = obj_default_step[lut_name]
 
-                            log_stream.info(' -------> Dump summary outcome ... DONE')
+                            if obj_fx_step['dump']:
+                                writer_dataset.dump_data(file_list, file_data, file_time,
+                                                         file_format=file_attrs['var_format'],
+                                                         obj_run=obj_run,
+                                                         obj_time=obj_time, obj_static=obj_static,
+                                                         no_data=self.nan_filled_array)
+
+                                log_stream.info(' -------> Dump summary outcome ... DONE')
+                            else:
+                                log_stream.info(' -------> Dump summary outcome ... SKIPPED. Dump not activated')
                         else:
-                            log_stream.info(' -------> Dump summary outcome ... SKIPPED. Dump not activated')
-
+                            log_stream.info(
+                                ' -------> Dump summary outcome ... SKIPPED. Datasets undefined and dump not activated')
                     # Info
                     log_stream.info(' ------> Datasets ' + dset_key + ' ... DONE')
 

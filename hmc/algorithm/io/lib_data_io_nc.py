@@ -316,8 +316,11 @@ def read_data(file_name_list, var_name=None, var_time_start=None, var_time_end=N
                             elif var_name == 'times':
                                 var_data = var_tmp
                         else:
-                            log_stream.error(' ===> Variable dimensions not allowed yet')
-                            raise IOError(' ===> Case not implemented')
+                            if var_name != 'times':
+                                log_stream.error(' ===> Variable ' + var_name + ' with 1 dimension')
+                                raise IOError(' ===> Variable are expected to have 2 or 3 dimensions')
+                            elif var_name == 'times':
+                                var_data = var_tmp
 
                         if var_data.shape.__len__() == 2:
                             da_tmp = create_darray_2d(var_data, values_geo_x, values_geo_y, time=datetime_idx_select,
@@ -342,8 +345,11 @@ def read_data(file_name_list, var_name=None, var_time_start=None, var_time_end=N
                             elif var_name == 'times':
                                 da_tmp = None
                         else:
-                            log_stream.error(' ===> Variable dimensions in data array creation not allowed yet')
-                            raise NotImplementedError(' ===> Case not implemented')
+                            if var_name != 'times':
+                                log_stream.error(' ===> Only variable times can be 1-dimension')
+                                raise IOError(' ===> Case not implemented')
+                            elif var_name == 'times':
+                                da_tmp = None
 
                         if da_tmp is not None:
                             if da_var is None:
@@ -353,6 +359,7 @@ def read_data(file_name_list, var_name=None, var_time_start=None, var_time_end=N
                                 da_var = da_var.merge(da_tmp, join='right')
 
                 else:
+
                     values_geo_y = da_geo_y.values
                     values_geo_x = da_geo_x.values
                     da_var = dst
@@ -397,14 +404,42 @@ def read_data(file_name_list, var_name=None, var_time_start=None, var_time_end=N
                                                   dim_name_x=dim_name_geo_x, dim_name_y=dim_name_geo_y,
                                                   dims_order=[dim_name_geo_y, dim_name_geo_x, dim_name_time])
                     else:
-                        da_var = da_raw
-                        values_geo_y = da_geo_y.values
-                        values_geo_x = da_geo_x.values
+                        # da_var = da_raw
+                        # values_geo_y = da_geo_y.values
+                        # values_geo_x = da_geo_x.values
+
+                        log_stream.error(' ===> Time dimension is not defined')
+                        raise IOError(' ===> Case not implemented yet!')
+
                 else:
 
-                    da_var = da_raw
-                    values_geo_y = da_geo_y.values
-                    values_geo_x = da_geo_x.values
+                    values_raw = da_raw.values
+
+                    geo_y_upper = da_geo_y.values[0, 0]
+                    geo_y_lower = da_geo_y.values[-1, 0]
+                    if geo_y_lower > geo_y_upper:
+                        values_flip = np.flipud(values_raw)
+                        values_geo_y = np.flipud(da_geo_y.values)
+                        values_geo_x = da_geo_x.values
+                    else:
+                        values_flip = values_raw
+                        values_geo_y = da_geo_y.values
+                        values_geo_x = da_geo_x.values
+
+                    if values_flip.shape.__len__() == 2:
+                        values_reshape_flip = np.reshape(
+                            values_flip, (values_flip.shape[0], values_flip.shape[1], 1))
+                    else:
+                        log_stream.error(' ===> Expected variable with 2 dimensions')
+                        raise NotImplementedError(' ===> Case not implemented')
+
+                    da_var = create_darray_3d(values_reshape_flip,
+                                              datetime_idx, values_geo_x, values_geo_y,
+                                              coord_name_time=coord_name_time,
+                                              coord_name_x=coord_name_geo_x, coord_name_y=coord_name_geo_y,
+                                              dim_name_time=dim_name_time,
+                                              dim_name_x=dim_name_geo_x, dim_name_y=dim_name_geo_y,
+                                              dims_order=[dim_name_geo_y, dim_name_geo_x, dim_name_time])
 
             if da_time is not None:
                 if coord_name_time not in list(da_var.coords):

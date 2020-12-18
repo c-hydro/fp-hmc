@@ -371,22 +371,26 @@ class DSetManager:
                         template_merge_ref['dset_var_name_summary_collections'] = var_lut
 
                     if dset_extra is None:
-                        folder_name_tmp = fill_tags2string(folder_name_raw, template_merge_ref, template_merge_filled)
-                        file_name_tmp = fill_tags2string(file_name_raw, template_merge_ref, template_merge_filled)
-
-                        file_path_list.append(os.path.join(folder_name_tmp, file_name_tmp))
+                        if (folder_name_raw is not None) and (file_name_raw is not None):
+                            folder_name_tmp = fill_tags2string(folder_name_raw, template_merge_ref, template_merge_filled)
+                            file_name_tmp = fill_tags2string(file_name_raw, template_merge_ref, template_merge_filled)
+                            file_path_list.append(os.path.join(folder_name_tmp, file_name_tmp))
+                        else:
+                            file_path_list.append(None)
                     else:
                         for basin_name, section_name in zip(dset_extra['basin_name'], dset_extra['section_name']):
 
                             template_merge_ref['string_var_name_summary_basin'] = basin_name
                             template_merge_ref['string_var_name_summary_section'] = section_name
 
-                            folder_name_tmp = fill_tags2string(
-                                folder_name_raw, template_merge_ref, template_merge_filled)
-                            file_name_tmp = fill_tags2string(
-                                file_name_raw, template_merge_ref, template_merge_filled)
-
-                            file_path_list.append(os.path.join(folder_name_tmp, file_name_tmp))
+                            if (folder_name_raw is not None) and (file_name_raw is not None):
+                                folder_name_tmp = fill_tags2string(
+                                    folder_name_raw, template_merge_ref, template_merge_filled)
+                                file_name_tmp = fill_tags2string(
+                                    file_name_raw, template_merge_ref, template_merge_filled)
+                                file_path_list.append(os.path.join(folder_name_tmp, file_name_tmp))
+                            else:
+                                file_path_list.append(None)
 
                     file_time_list.append(datestring_idx_step)
 
@@ -406,16 +410,20 @@ class DSetManager:
             for (var_key, var_time), var_data in zip(dict_time.items(), dict_vars.values()):
 
                 if isinstance(var_data, list):
-                    var_data_merge = self.list_sep.join(var_data)
+                    if var_data[0] is not None:
+                        var_data_merge = self.list_sep.join(var_data)
+                    else:
+                        var_data_merge = None
                 elif isinstance(var_data, str):
                     var_data_merge = var_data
                 else:
                     log_stream.error(' ===> Type of summary data not allowed')
                     raise NotImplementedError('Object summary type is not valid')
 
-                time_ts = pd.DatetimeIndex(var_time)
-                var_ts = pd.Series(index=time_ts, data=var_data_merge, name=var_key).fillna(value=pd.NA)
-                df_vars[var_key] = var_ts
+                if var_data_merge is not None:
+                    time_ts = pd.DatetimeIndex(var_time)
+                    var_ts = pd.Series(index=time_ts, data=var_data_merge, name=var_key).fillna(value=pd.NA)
+                    df_vars[var_key] = var_ts
 
             ws_vars[dset_format] = df_vars
 

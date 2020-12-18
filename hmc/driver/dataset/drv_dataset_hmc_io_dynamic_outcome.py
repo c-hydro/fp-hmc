@@ -906,11 +906,16 @@ class DSetManager:
                                 template_merge_ref['dset_var_name_outcome_ts'] = var_lut
                                 template_merge_ref['dset_var_name_state_ts'] = var_lut
 
-                            folder_name_tmp = fill_tags2string(folder_name_raw, template_merge_ref, template_merge_filled)
-                            file_name_tmp = fill_tags2string(file_name_raw, template_merge_ref, template_merge_filled)
+                            if (folder_name_raw is not None) and (file_name_raw is not None):
 
-                            file_path_list.append(os.path.join(folder_name_tmp, file_name_tmp))
-                            file_time_list.append(datestring_idx_step)
+                                folder_name_tmp = fill_tags2string(folder_name_raw, template_merge_ref, template_merge_filled)
+                                file_name_tmp = fill_tags2string(file_name_raw, template_merge_ref, template_merge_filled)
+
+                                file_path_list.append(os.path.join(folder_name_tmp, file_name_tmp))
+                                file_time_list.append(datestring_idx_step)
+                            else:
+                                file_path_list.append(None)
+                                file_time_list.append(datestring_idx_step)
 
                         dset_vars[dset_format][dset_key] = file_path_list
                         dset_time[dset_format][dset_key] = file_time_list

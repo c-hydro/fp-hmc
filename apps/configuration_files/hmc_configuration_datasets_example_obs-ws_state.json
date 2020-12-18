@@ -3,8 +3,8 @@
   "Flags": {
     "__comment": " --- Flags configuration --- ",
     "cleaning_ancillary_data_static": true,
-    "cleaning_ancillary_data_dynamic_source": true,
-    "cleaning_ancillary_data_dynamic_execution": true,
+    "cleaning_ancillary_data_dynamic_source": false,
+    "cleaning_ancillary_data_dynamic_execution": false,
     "cleaning_ancillary_data_dynamic_outcome": true,
     "cleaning_run_execution": false,
     "cleaning_run_logging": false,
@@ -20,8 +20,8 @@
       "hmc_file_dims"        : {"T": "time"},
       "hmc_file_list"        : {
         "ALL"		      : {
-          "var_file_name"   : "hmc.collections.{dset_datetime_summary}.nc",
-          "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_summary}/outcome/collections/{run_mode}",
+          "var_file_name"   : null,
+          "var_file_folder" : null,
           "var_file_dset"	: "ALL",
           "var_file_format"	: "netcdf",
           "var_file_limits"	: null,
@@ -37,8 +37,8 @@
       "hmc_file_dims"        : {"T": "time"},
       "hmc_file_list"        : {
         "Discharge"		  : {
-          "var_file_name"   : "hydrograph_{string_var_name_summary_section}_{string_var_name_summary_basin}_{dset_datetime_summary}.json",
-          "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_summary}/outcome/collections/{run_mode}/",
+          "var_file_name"   : null,
+          "var_file_folder" : null,
           "var_file_dset"	: "Discharge",
           "var_file_format"	: "json_time_series",
           "var_file_limits"	: [0, null],
@@ -401,8 +401,8 @@
           "var_dims"        : {"X": "west_east", "Y": "south_north"},
           "var_list"        : {
             "ALL"			  : {
-              "var_file_name"   : "hmc.output-grid.{dset_datetime_outcome}.nc.gz",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_outcome}/outcome/gridded/{run_mode}/",
+              "var_file_name"   : null,
+              "var_file_folder" : null,
               "var_file_dset"	: "ALL",
               "var_file_format"	: "netcdf",
               "var_file_limits"	: [null, null],
@@ -426,32 +426,32 @@
           "var_dims"        : {"T": "time"},
           "var_list"        : {
             "Discharge"	      : {
-              "var_file_name"   : "hmc.{dset_var_name_outcome_point}.{dset_datetime_outcome}.txt",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_outcome}/outcome/point/{run_mode}/discharge/",
+              "var_file_name"   : null,
+              "var_file_folder" : null,
               "var_file_dset"	: "discharge",
               "var_file_format"	: "ascii_point",
               "var_file_limits"	: [0, null],
               "var_file_units"  : "m^3/s"
             },
             "DamV"			  : {
-              "var_file_name"   : "hmc.{dset_var_name_outcome_point}.{dset_datetime_outcome}.txt",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_outcome}/outcome/point/{run_mode}/dam_volume/",
+              "var_file_name"   : null,
+              "var_file_folder" : null,
               "var_file_dset"	: "vdam",
               "var_file_format"	: "ascii_point",
               "var_file_limits"	: [0, null],
               "var_file_units"  : "m^3"
             },
             "DamL"	          : {
-              "var_file_name"   : "hmc.{dset_var_name_outcome_point}.{dset_datetime_outcome}.txt",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_outcome}/outcome/point/{run_mode}/dam_level/",
+              "var_file_name"   : null,
+              "var_file_folder" : null,
               "var_file_dset"	: "ldam",
               "var_file_format"	: "ascii_point",
               "var_file_limits"	: [0, null],
               "var_file_units"  : "m"
             },
             "VarAnalysis"	  : {
-              "var_file_name"   : "hmc.{dset_var_name_outcome_point}.{dset_datetime_outcome}.txt",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_outcome}/outcome/point/{run_mode}/analysis/",
+              "var_file_name"   : null,
+              "var_file_folder" : null,
               "var_file_dset"	: "var-analysis",
               "var_file_format"	: "ascii_point",
               "var_file_limits"	: [null, null],
@@ -475,32 +475,32 @@
           "var_dims"        : {"T": "time"},
           "var_list"        : {
             "Discharge"		  : {
-              "var_file_name"   : "hmc.hydrograph.txt",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_outcome}/outcome/timeseries/{run_mode}/",
+              "var_file_name"   : null,
+              "var_file_folder" : null,
               "var_file_dset"	: "hydrograph",
               "var_file_format"	: "ascii_time_series",
               "var_file_limits"	: [0, null],
               "var_file_units"  : "m^3/s"
             },
             "DamV"		      : {
-              "var_file_name"   : "hmc.vdam.txt",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_outcome}/outcome/timeseries/{run_mode}/",
+              "var_file_name"   : null,
+              "var_file_folder" : null,
               "var_file_dset"	: "vdam",
               "var_file_format"	: "ascii_time_series",
               "var_file_limits"	: [0, null],
               "var_file_units"  : "m^3"
             },
             "DamL"			  : {
-              "var_file_name"   : "hmc.ldam.txt",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_outcome}/outcome/timeseries/{run_mode}/",
+              "var_file_name"   : null,
+              "var_file_folder" : null,
               "var_file_dset"	: "ldam",
               "var_file_format"	: "ascii_time_series",
               "var_file_limits"	: [0, null],
               "var_file_units"  : "m"
             },
             "VarAnalysis"	  : {
-              "var_file_name"   : "hmc.var-analysis.txt",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_outcome}/outcome/timeseries/{run_mode}/",
+              "var_file_name"   : null,
+              "var_file_folder" : null,
               "var_file_dset"	: "var-analysis",
               "var_file_format"	: "ascii_time_series",
               "var_file_limits"	: [null, null],
@@ -633,24 +633,24 @@
           "var_dims"        : {"T": "time"},
           "var_list"        : {
             "Discharge"		  : {
-              "var_file_name"   : "discharge.observed.{dset_datetime_obs}.txt",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_obs}/obs/point/{run_mode}/discharge/",
+              "var_file_name"   : null,
+              "var_file_folder" : null,
               "var_file_dset"	: "discharge",
               "var_file_format"	: "ascii_point",
               "var_file_limits"	: [0, null],
               "var_file_units"  : "m^3/s"
             },
             "DamV"			  : {
-              "var_file_name"   : "damv.observed.{dset_datetime_obs}.txt",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_obs}/obs/point/{run_mode}/dam_volume/",
+              "var_file_name"   : null,
+              "var_file_folder" : null,
               "var_file_dset"	: "damv",
               "var_file_format"	: "ascii_point",
               "var_file_limits"	: [0, null],
               "var_file_units"  : "m^3"
             },
             "DamL"			  : {
-              "var_file_name"   : "daml.observed.{dset_datetime_obs}.txt",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_obs}/obs/point/{run_mode}/dam_level/",
+              "var_file_name"   : null,
+              "var_file_folder" : null,
               "var_file_dset"	: "daml",
               "var_file_format"	: "ascii_point",
               "var_file_limits"	: [0, null],
