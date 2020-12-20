@@ -105,7 +105,7 @@
   "Time_Info": {
     "time_run": null,
     "time_forecast_period": 0,
-    "time_observed_period": 12,
+    "time_observed_period": 48,
     "time_check_period": 4,
     "time_restart_period": 0,
     "time_forecast_frequency": "H",

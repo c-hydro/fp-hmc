@@ -196,14 +196,16 @@ class ModelDestination:
                                     type_ts_step + ' ... ')
                     if fx_destination_subset_base['copy']:
                         writer_dataset.copy_data(dset_model_subset_dyn, dset_destination_subset_dyn)
+                        log_stream.info(' ------> Datasets ' + file_type + ' operations for period ' +
+                                        type_ts_step + ' ... DONE')
+                    elif not fx_destination_subset_base['copy']:
+                        log_stream.info(' ------> Datasets ' + file_type + ' operations for period ' +
+                                        type_ts_step + ' ... SKIPPED. Copy not activated')
                     else:
                         log_stream.info(' ------> Datasets ' + file_type + ' operations for period ' +
                                         type_ts_step + ' ... FAILED')
                         log_stream.error(' ===> Only copy operations are allowed for outcome datasets')
                         raise RuntimeError('Operation not permitted')
-
-                    log_stream.info(' ------> Datasets ' + file_type + ' operations for period ' +
-                                    type_ts_step + ' ... DONE')
 
                     # Outcome datasets analysis
                     log_stream.info(' ------> Datasets ' + file_type + ' analysis for period ' +

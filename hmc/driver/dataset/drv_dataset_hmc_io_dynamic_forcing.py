@@ -465,9 +465,8 @@ class DSetManager:
             log_stream.info(' --------> Filename ' + dset_file_name_step_unzip + ' ... ')
 
             dset_attrs = self.file_attributes_dict
-
             write_dset(dset_file_path_step_unzip,
-                       dset_data=dset_step, dset_format=self.dset_write_format,
+                       dset_data=dset_step, dset_attrs=dset_attrs, dset_format=self.dset_write_format,
                        dset_compression=self.dset_write_compression_level, dset_engine=self.dset_write_engine)
             log_stream.info(' --------> Filename ' + dset_file_name_step_unzip + ' ... DONE')
 
