@@ -145,8 +145,10 @@ class ModelDestination:
             id_ts_select = [x for x in id_ts_tmp if x == x]
 
             type_ts_tmp = []
-            for type_step in obj_ts_select['File_Type'].values:
-                if type_step not in type_ts_tmp:
+            group_ts_tmp = []
+            for type_step, group_step in zip(obj_ts_select['File_Type'].values, obj_ts_select['File_Group'].values):
+                if group_step not in group_ts_tmp:
+                    group_ts_tmp.append(group_step)
                     type_ts_tmp.append(type_step)
             type_ts_select = [x for x in type_ts_tmp if x == x]
 

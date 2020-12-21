@@ -313,8 +313,7 @@ class DSetManager:
 
                         if os.path.exists(file_path_source_step):
                             create_folder(folder_name_dest_step)
-                            if not os.path.exists(file_path_dest_step):
-                                copy_file(file_path_source_step, file_path_dest_step)
+                            copy_file(file_path_source_step, file_path_dest_step)
                         else:
                             log_stream.warning(' ===> Copy file: ' + file_name_source_step +
                                                ' FAILED. File does not exist!')

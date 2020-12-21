@@ -424,6 +424,9 @@ class ModelSource:
                             reader_dataset.dump_data(dset_model_subset_dyn, idx_ts_subselect, dset_source_frame_values_def)
                         elif fx_source_subset_base['copy']:
                             reader_dataset.copy_data(dset_model_subset_dyn, dset_source_subset_dyn)
+                        else:
+                            log_stream.error(' ===> Source datasets operation not permitted')
+                            raise NotImplementedError('Case not implemented yet')
 
                         # Info
                         log_stream.info(' ------> Datasets ' + file_type + ' ... DONE')
