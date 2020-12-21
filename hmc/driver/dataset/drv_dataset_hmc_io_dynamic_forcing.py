@@ -436,43 +436,48 @@ class DSetManager:
         file_path_list_zip = []
         for time_step in dset_time:
 
-            dset_step = dset_source.sel(time=time_step)
-            dset_file_path_step = dset_model.loc[time_step][self.model_tag]
+            if time_step in list(dset_source[self.dim_name_time].values):
 
-            dset_file_folder_step, dset_file_name_step = split_path(dset_file_path_step)
-            create_folder(dset_file_folder_step)
+                dset_step = dset_source.sel(time=time_step)
+                dset_file_path_step = dset_model.loc[time_step][self.model_tag]
 
-            if self.file_compression_mode:
-                if not dset_file_name_step.endswith(self.file_compression_ext):
-                    log_stream.warning(
-                        ' ===> File expected in zipped format with ' + self.file_compression_ext + ' extension. Got '
-                        + dset_file_name_step + ' filename. Add extension to given filename')
-                    dset_file_name_step = add_zip_extension(dset_file_name_step, self.file_compression_ext)
+                dset_file_folder_step, dset_file_name_step = split_path(dset_file_path_step)
+                create_folder(dset_file_folder_step)
 
-            if dset_file_name_step.endswith(self.file_compression_ext):
-                dset_file_name_step_zip = dset_file_name_step
-                dset_file_name_step_unzip = os.path.splitext(dset_file_name_step)[0]
+                if self.file_compression_mode:
+                    if not dset_file_name_step.endswith(self.file_compression_ext):
+                        log_stream.warning(
+                            ' ===> File expected in zipped format with ' + self.file_compression_ext + ' extension. Got '
+                            + dset_file_name_step + ' filename. Add extension to given filename')
+                        dset_file_name_step = add_zip_extension(dset_file_name_step, self.file_compression_ext)
+
+                if dset_file_name_step.endswith(self.file_compression_ext):
+                    dset_file_name_step_zip = dset_file_name_step
+                    dset_file_name_step_unzip = os.path.splitext(dset_file_name_step)[0]
+                else:
+                    dset_file_name_step_zip = dset_file_name_step
+                    dset_file_name_step_unzip = dset_file_name_step
+                    self.file_compression_mode = True
+
+                dset_file_path_step_zip = os.path.join(dset_file_folder_step, dset_file_name_step_zip)
+                dset_file_path_step_unzip = os.path.join(dset_file_folder_step, dset_file_name_step_unzip)
+
+                # Write dset
+                log_stream.info(' --------> Filename ' + dset_file_name_step_unzip + ' ... ')
+
+                dset_attrs = self.file_attributes_dict
+                write_dset(dset_file_path_step_unzip,
+                           dset_data=dset_step, dset_attrs=dset_attrs, dset_format=self.dset_write_format,
+                           dset_compression=self.dset_write_compression_level, dset_engine=self.dset_write_engine)
+                log_stream.info(' --------> Filename ' + dset_file_name_step_unzip + ' ... DONE')
+
+                file_path_list_unzip.append(dset_file_path_step_unzip)
+                file_path_list_zip.append(dset_file_path_step_zip)
+
+                dump_status_list.append(True)
+
             else:
-                dset_file_name_step_zip = dset_file_name_step
-                dset_file_name_step_unzip = dset_file_name_step
-                self.file_compression_mode = True
-
-            dset_file_path_step_zip = os.path.join(dset_file_folder_step, dset_file_name_step_zip)
-            dset_file_path_step_unzip = os.path.join(dset_file_folder_step, dset_file_name_step_unzip)
-
-            # Write dset
-            log_stream.info(' --------> Filename ' + dset_file_name_step_unzip + ' ... ')
-
-            dset_attrs = self.file_attributes_dict
-            write_dset(dset_file_path_step_unzip,
-                       dset_data=dset_step, dset_attrs=dset_attrs, dset_format=self.dset_write_format,
-                       dset_compression=self.dset_write_compression_level, dset_engine=self.dset_write_engine)
-            log_stream.info(' --------> Filename ' + dset_file_name_step_unzip + ' ... DONE')
-
-            file_path_list_unzip.append(dset_file_path_step_unzip)
-            file_path_list_zip.append(dset_file_path_step_zip)
-
-            dump_status_list.append(True)
+                log_stream.warning(' ===> Dump time step ' + str(time_step) + ' skipped. Time step is not in datasets')
 
         # Ending info
         log_stream.info(' -------> Dump data ... DONE')
@@ -558,6 +563,38 @@ class DSetManager:
 
                                     if isinstance(dset_time, pd.Timestamp):
                                         dset_time = pd.DatetimeIndex([dset_time])
+
+                                    # Recompute period in case of time_start and/or time end are not the same
+                                    dset_time_step_start = dset_time_step.values[0]
+                                    dset_time_step_end = dset_time_step.values[-1]
+
+                                    dset_time_start = dset_time.values[0]
+                                    dset_time_end = dset_time.values[-1]
+
+                                    if dset_time_step_start < dset_time_start:
+                                        index_start_step_tmp = dset_time_step.get_loc(dset_time_start)
+                                        index_start_tmp = dset_time.get_loc(dset_time_start)
+                                    elif dset_time_step_start == dset_time_start:
+                                        index_start_step_tmp = 0
+                                        index_start_tmp = 0
+                                    else:
+                                        log_stream.error(' ===> Time start is greater than time start step.')
+                                        raise NotImplementedError('Case not implemented yet')
+
+                                    if dset_time_step_end < dset_time_end:
+                                        index_end_step_tmp = dset_time_step.get_loc(dset_time_step_end) + 1
+                                        index_end_tmp = dset_time.get_loc(dset_time_step_end) + 1
+                                    elif dset_time_step_end == dset_time_end:
+                                        index_end_step_tmp = dset_time_step.get_loc(dset_time_end) + 1
+                                        index_end_tmp = dset_time.get_loc(dset_time_end) + 1
+                                    else:
+                                        log_stream.error(' ===> Time start is greater than time start step.')
+                                        raise NotImplementedError('Case not implemented yet')
+
+                                    dset_time_step = dset_time_step[index_start_step_tmp:index_end_step_tmp]
+                                    var_da_step = var_da_step[:, :, index_start_step_tmp:index_end_step_tmp]
+
+                                    dset_time = dset_time[index_start_tmp:index_end_tmp]
 
                                     # Search index of longitude and latitude
                                     if self.dim_name_geo_x in dims_list:

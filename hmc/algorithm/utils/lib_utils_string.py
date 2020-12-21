@@ -10,6 +10,7 @@ Version:       '3.0.0'
 #######################################################################################
 # Library
 import logging
+import re
 
 from datetime import datetime
 from copy import deepcopy
@@ -22,6 +23,15 @@ log_stream = logging.getLogger(logger_name)
 # Debug
 # import matplotlib.pylab as plt
 #######################################################################################
+
+
+# -------------------------------------------------------------------------------------
+# Method to convert bytes string to character string
+def separate_number_chars(s):
+    res = re.split('([-+]?\d+\.\d+)|([-+]?\d+)', s.strip())
+    res_f = [r.strip() for r in res if r is not None and r.strip() != '']
+    return res_f
+# -------------------------------------------------------------------------------------
 
 
 # -------------------------------------------------------------------------------------

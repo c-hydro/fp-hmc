@@ -11,12 +11,14 @@ Version:       '3.0.0'
 # Library
 import logging
 import warnings
+import re
 
 import pandas as pd
 import numpy as np
 
 from hmc.algorithm.utils.lib_utils_time import get_time, convert_timestamp_to_timestring
 from hmc.algorithm.utils.lib_utils_geo import compute_corrivation_time
+from hmc.algorithm.utils.lib_utils_string import separate_number_chars
 from hmc.algorithm.utils.lib_utils_dataframe import convert_dict_2_df
 from hmc.algorithm.default.lib_default_args import logger_name, \
     time_format_algorithm, time_format_datasets, time_calendar, time_units
@@ -325,6 +327,7 @@ class ModelTime:
 
         if not time_forecast_frequency[0].isdigit():
             time_forecast_frequency = '1' + time_forecast_frequency
+        time_forecast_frequency_digit, time_forecast_frequency_char = separate_number_chars(time_forecast_frequency)
         time_forecast_delta_total_seconds = int(pd.Timedelta(time_forecast_frequency).total_seconds())
 
         if not time_check_frequency[0].isdigit():
@@ -354,6 +357,17 @@ class ModelTime:
         time_start = time_observed_range[0]
 
         if time_forecast_period > 0:
+            # eta: Update the time forecast period as a function of run start time (if greater than the nwp start time
+            # the time forecast period will be reduced according with the steps between the start nwp time and the run
+            # start time
+            eta_step_from = time_step_for.floor(time_forecast_eta) + pd.Timedelta(
+                int(time_forecast_frequency_digit), unit=time_forecast_frequency_char)
+            eta_step_to = time_step_for - pd.Timedelta(
+                int(time_forecast_frequency_digit), unit=time_forecast_frequency_char)
+            eta_forecast_range = pd.date_range(start=eta_step_from, end=eta_step_to, freq=time_forecast_frequency)
+
+            time_forecast_period = time_forecast_period - eta_forecast_range.shape[0]
+
             time_forecast_range = pd.date_range(start=time_step_for, periods=time_forecast_period,
                                                 freq=time_forecast_frequency)
         else:

@@ -104,7 +104,7 @@
   },
   "Time_Info": {
     "time_run": null,
-    "time_forecast_period": 24,
+    "time_forecast_period": 48,
     "time_observed_period": 24,
     "time_check_period": 4,
     "time_restart_period": 24,
@@ -118,7 +118,7 @@
     "time_observed_rounding": "H",
     "time_check_rounding": "D",
     "time_restart_rounding": "D",
-    "time_tc": -9999,
+    "time_tc": 12,
     "time_vegetation_max": 720
   },
   "HMC_Info": {
