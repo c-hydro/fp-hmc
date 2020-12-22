@@ -587,6 +587,9 @@ class DSetManager:
                                     elif dset_time_step_end == dset_time_end:
                                         index_end_step_tmp = dset_time_step.get_loc(dset_time_end) + 1
                                         index_end_tmp = dset_time.get_loc(dset_time_end) + 1
+                                    elif dset_time_step_end > dset_time_end:
+                                        index_end_step_tmp = dset_time_step.get_loc(dset_time_end) + 1
+                                        index_end_tmp = dset_time.get_loc(dset_time_end) + 1
                                     else:
                                         log_stream.error(' ===> Time start is greater than time start step.')
                                         raise NotImplementedError('Case not implemented yet')
