@@ -60,14 +60,18 @@ def getFilePoint_1D(sFileName, iVarCol=None):
         oDataArray = oDrv_IO.oFileLibrary.getVar(oFile_DATA)
         oDrv_IO.oFileLibrary.closeFile(oFile_DATA)
 
-        oDataWS = []
-        for oDataLine in oDataArray:
+        if oDataArray is not None:
+            oDataWS = []
+            for oDataLine in oDataArray:
 
-            if iVarCol is not None:
-                oDataValue = oDataLine[iVarCol]
-            else:
-                oDataValue = oDataLine[0]
-            oDataWS.append(oDataValue)
+                if iVarCol is not None:
+                    oDataValue = oDataLine[iVarCol]
+                else:
+                    oDataValue = oDataLine[0]
+                oDataWS.append(oDataValue)
+        else:
+            # Data not found
+            oDataWS = None
 
     else:
         # File not found
