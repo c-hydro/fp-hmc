@@ -591,7 +591,8 @@ class DSetManager:
                                         index_end_step_tmp = dset_time_step.get_loc(dset_time_end) + 1
                                         index_end_tmp = dset_time.get_loc(dset_time_end) + 1
                                     else:
-                                        log_stream.error(' ===> Time start is greater than time start step.')
+                                        log_stream.error(' ===> Matching between time start and time start step failed')
+                                        log_stream.error(' ===> Errors occurred for unknown reason')
                                         raise NotImplementedError('Case not implemented yet')
 
                                     dset_time_step = dset_time_step[index_start_step_tmp:index_end_step_tmp]

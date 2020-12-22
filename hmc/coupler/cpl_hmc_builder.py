@@ -137,9 +137,9 @@ class ModelBuilder:
                 tag_datatype='ARCHIVE', tag_datadriver='restart')
 
             # Method to analyze dynamic forcing datasets
-            self.driver_io_source.analyze_data_dynamic_forcing(
-                time_series_collections, time_info_collections, static_datasets_collections, dynamic_datasets_obj,
-                tag_datatype='OBS', tag_datadriver='forcing')
+            #self.driver_io_source.analyze_data_dynamic_forcing(
+            #    time_series_collections, time_info_collections, static_datasets_collections, dynamic_datasets_obj,
+            #    tag_datatype='OBS', tag_datadriver='forcing')
             self.driver_io_source.analyze_data_dynamic_forcing(
                 time_series_collections, time_info_collections, static_datasets_collections, dynamic_datasets_obj,
                 tag_datatype='FOR', tag_datadriver='forcing')
