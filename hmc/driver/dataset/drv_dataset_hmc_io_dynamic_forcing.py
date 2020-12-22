@@ -579,6 +579,7 @@ class DSetManager:
                                         index_start_tmp = 0
                                     else:
                                         log_stream.error(' ===> Time start is greater than time start step.')
+                                        log_stream.error(' ===> Errors occurred for unreal condition')
                                         raise NotImplementedError('Case not implemented yet')
 
                                     if dset_time_step_end < dset_time_end:

@@ -59,8 +59,9 @@ class ModelTime:
         else:
             self.time_run = self.time_run_info
 
-        self.eta_period = 2
-
+        # Set the steps to search in forecast part the nwp availability
+        self.eta_period = 0
+        # Set column delimiter
         self.column_sep = ';'
 
         if self.time_run is None:
@@ -416,7 +417,7 @@ class ModelTime:
         eta_observed_ws = [[eta_step] for eta_step in eta_observed_list]
 
         if time_forecast_range is not None:
-            eta_forecast_range = pd.DatetimeIndex([time_forecast_range.floor(time_forecast_eta).unique()[-1]])
+            eta_forecast_range = pd.DatetimeIndex([time_forecast_range.floor(time_forecast_eta).unique()[0]])
             eta_forecast_to = eta_forecast_range
             for i_step in range(1, self.eta_period + 1):
                 eta_forecast_from = pd.date_range(end=eta_forecast_to[0], periods=i_step + 1, freq=time_forecast_eta)
