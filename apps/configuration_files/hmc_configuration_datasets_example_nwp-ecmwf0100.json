@@ -4,8 +4,8 @@
     "__comment": " --- Flags configuration --- ",
     "cleaning_ancillary_data_static": true,
     "cleaning_ancillary_data_dynamic_source": true,
-    "cleaning_ancillary_data_dynamic_execution": true,
-    "cleaning_ancillary_data_dynamic_outcome": true,
+    "cleaning_ancillary_data_dynamic_execution": false,
+    "cleaning_ancillary_data_dynamic_outcome": false,
     "cleaning_run_execution": false,
     "cleaning_run_logging": false,
     "cleaning_run_tmp": false

@@ -280,10 +280,17 @@ class ModelRun:
             for run_name_step, run_id in zip(run_name, run_n):
                 run_name_step = "{:03d}".format(run_name_step)
 
-                var_name_step = var_name_raw.format(var_name=obj_mode['ens_variable']['var_name'],
-                                                    ens_name=run_name_step)
-                run_mode_step = run_mode_raw.format(var_name=obj_mode['ens_variable']['var_name'],
-                                                    ens_name=run_name_step)
+                tag_name_step = obj_mode['ens_variable']['var_name']
+
+                if (tag_name_step is None) or (not tag_name_step):
+                    var_name_raw = '{ens_name}'
+                    run_mode_raw = 'probabilistic_{ens_name}'
+                    var_name_step = var_name_raw.format(ens_name=run_name_step)
+                    run_mode_step = run_mode_raw.format(ens_name=run_name_step)
+                else:
+                    var_name_step = var_name_raw.format(var_name=tag_name_step, ens_name=run_name_step)
+                    run_mode_step = run_mode_raw.format(var_name=tag_name_step, ens_name=run_name_step)
+
                 run_var.append(var_name_step)
                 run_mode.append(run_mode_step)
         else:

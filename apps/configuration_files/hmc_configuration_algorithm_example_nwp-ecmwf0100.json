@@ -73,9 +73,9 @@
       "run_mode": {
         "ens_active": false,
         "ens_variable": {
-          "var_name": "RFarm_ENS",
+          "var_name": null,
           "var_min": 1,
-          "var_max": 4,
+          "var_max": 1,
           "var_step": 1
         }
       }
