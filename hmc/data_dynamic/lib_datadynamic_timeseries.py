@@ -114,15 +114,16 @@ def writeTS_Default(sFileName, oFileData, sFileHeader=None):
     for sTimeData, oVarData in sorted(oFileData.items()):
 
         # Data parser
-        if isinstance(oVarData, list):
-            oLineData = oVarData
-        else:
-            oLineData = oVarData.tolist()
+        if oVarData is not None:
+            if isinstance(oVarData, list):
+                oLineData = oVarData
+            else:
+                oLineData = oVarData.tolist()
 
-        oLineData.insert(0, sTimeData)
-        sLineData = ' '.join(oLineData)
-        # Save Data to file
-        oDrv.oFileLibrary.writeVar(oFile, sLineData)
+            oLineData.insert(0, sTimeData)
+            sLineData = ' '.join(oLineData)
+            # Save Data to file
+            oDrv.oFileLibrary.writeVar(oFile, sLineData)
 
     # Close file and driver
     oDrv.oFileLibrary.closeFile(oFile)
