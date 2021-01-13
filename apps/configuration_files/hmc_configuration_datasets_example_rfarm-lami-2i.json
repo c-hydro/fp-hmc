@@ -3,7 +3,7 @@
   "Flags": {
     "__comment": " --- Flags configuration --- ",
     "cleaning_ancillary_data_static": false,
-    "cleaning_ancillary_data_dynamic_source": false,
+    "cleaning_ancillary_data_dynamic_source": true,
     "cleaning_ancillary_data_dynamic_execution": false,
     "cleaning_ancillary_data_dynamic_outcome": false,
     "cleaning_run_execution": false,
@@ -200,8 +200,8 @@
           "var_dims"        : {"X": "west_east", "Y": "south_north", "time" :"time"},
           "var_list"        : {
             "Rain"            : {
-              "var_file_name"   : "nwp.lami-2i.{dset_datetime_forcing_for}.nc.gz",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/data/data_dynamic/nwp/lami-2i/{dset_sub_path_forcing_for}/",
+              "var_file_name"   : "rf.lami-2i.{dset_datetime_forcing_for}_{run_var}.nc.gz",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/data/data_dynamic/rfarm/lami-2i/{dset_sub_path_forcing_for}/",
               "var_file_dset"	: "Rain",
               "var_file_format"	: "netcdf",
               "var_file_limits"	: [0, null],

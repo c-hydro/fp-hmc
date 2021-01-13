@@ -356,6 +356,8 @@ class DSetManager:
                     template_run_filled_step = deepcopy(template_run_filled)
 
                     template_time_filled = dict.fromkeys(list(self.template_time.keys()), datestring_idx_step)
+                    # template_time_filled = dict.fromkeys(list(self.template_time.keys()), etastring_idx_step)
+                    template_time_filled['dset_datetime_summary'] = etastring_idx_step
                     template_time_filled['dset_sub_path_summary'] = etastring_idx_step
                     template_merge_filled = {**template_run_filled_step, **template_time_filled}
 

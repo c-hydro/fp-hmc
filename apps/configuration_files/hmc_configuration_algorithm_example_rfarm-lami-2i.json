@@ -1,0 +1,182 @@
+{
+  "__comment": " ### HMC configuration file - Run settings ### ",
+  "General_Info": {
+    "Conventions": "CF-1.7",
+    "title": "HMC Run Manager",
+    "institution": "CIMA Research Foundation - www.cimafoundation.org",
+    "website": "",
+    "source": "",
+    "history": "Python application for running hydrological model Continuum (HMC)",
+    "references": "http://cf-pcmdi.llnl.gov/ ; http://cf-pcmdi.llnl.gov/documents/cf-standard-names/ecmwf-grib-mapping",
+    "authors": "Fabio Delogu",
+    "email": "fabio.delogu@cimafoundation.org",
+    "project": "HMC - Hydrological Model Continuum",
+    "version": "3.1.3",
+    "date": "20201102"
+  },
+  "Template": {
+    "time": {
+      "dset_datetime_hmc": "%Y%m%d%H%M",
+      "dset_sub_path_hmc": "%Y/%m/%d/",
+      "dset_datetime_ancillary": "%Y%m%d%H%M",
+      "dset_sub_path_ancillary": "%Y/%m/%d/%H",
+      "dset_datetime_summary": "%Y%m%d%H%M",
+      "dset_sub_path_summary": "%Y/%m/%d/%H/",
+      "dset_datetime_restart": "%Y%m%d%H%M",
+      "dset_sub_path_restart": "%Y/%m/%d/",
+      "dset_datetime_forcing_obs": "%Y%m%d%H%M",
+      "dset_sub_path_forcing_obs": "%Y/%m/%d/",
+      "dset_datetime_forcing_for": "%Y%m%d0000",
+      "dset_sub_path_forcing_for": "%Y/%m/%d/",
+      "dset_datetime_outcome": "%Y%m%d%H%M",
+      "dset_sub_path_outcome": "%Y/%m/%d/%H/",
+      "dset_datetime_state": "%Y%m%d%H%M",
+      "dset_sub_path_state": "%Y/%m/%d/%H/",
+      "dset_datetime_obs": "%Y%m%d%H%M",
+      "dset_sub_path_obs": "%Y/%m/%d/%H/"
+    },
+    "run" : {
+      "run_domain": "string_run_domain",
+      "run_name": "string_run_name",
+      "run_mode": "string_run_mode",
+      "run_var": "string_run_var"
+    },
+    "dset_static": {
+      "dset_var_name_geo": "string_var_name_geo"
+    },
+    "dset_dynamic_forcing": {
+      "dset_var_name_forcing_point": "string_var_name_point",
+      "dset_var_name_forcing_ts_plant": "string_var_name_ts_plant",
+      "dset_var_name_forcing_ts_section": "string_var_name_ts_section",
+      "dset_var_name_forcing_ts_basin": "string_var_name_ts_basin"
+    },
+    "dset_dynamic_outcome" : {
+      "dset_var_name_outcome_point": "string_var_name_outcome_point",
+      "dset_var_name_outcome_ts": "string_var_name_outcome_ts",
+      "dset_var_name_state_point": "string_var_name_outcome_point",
+      "dset_var_name_state_ts": "string_var_name_outcome_ts",
+      "dset_var_name_summary_collections": "string_var_name_summary_collections",
+      "dset_var_name_summary_ts": "string_var_name_summary_ts",
+      "dset_var_name_summary_section": "string_var_name_summary_section",
+      "dset_var_name_summary_basin": "string_var_name_summary_basin"
+    },
+    "dset_dynamic_obs" : {
+      "dset_var_name_obs_point": "string_var_name_obs_point"
+    }
+  },
+  "Run_Info": {
+    "run_type": {
+      "run_mp": true,
+      "run_cpu": 2,
+      "run_domain": "marche",
+      "run_name": "rfarm_lami-2i",
+      "run_mode": {
+        "ens_active": true,
+        "ens_variable": {
+          "var_name": null,
+          "var_min": 1,
+          "var_max": 2,
+          "var_step": 1
+        }
+      }
+    },
+    "run_location": {
+      "executable": {
+        "file_folder": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/run/{run_name}/{run_mode}/exec/",
+        "file_name": "HMC_Model_V3_{run_name}.x",
+        "arguments": "{run_domain}.info.txt",
+        "namelist": "{run_domain}.info.txt"
+      },
+      "tmp": {
+        "file_folder": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/run/{run_name}/{run_mode}/temp/",
+        "file_name": null
+      },
+      "library": {
+        "file_folder": "/home/fabio/fp_libs_system/hmc_v313/",
+        "file_name": "HMC_Model_V3_$RUN.x",
+        "dependencies": ["/home/fabio/fp_libs_system/nc4/lib/"]
+      },
+      "log": {
+        "file_folder": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/log/",
+        "file_name": "hmc_logging_{run_name}_{run_domain}.txt"
+      }
+    }
+  },
+  "Time_Info": {
+    "time_run": null,
+    "time_forecast_period": 48,
+    "time_observed_period": 24,
+    "time_check_period": 4,
+    "time_restart_period": 24,
+    "time_forecast_frequency": "H",
+    "time_observed_frequency": "H",
+    "time_forecast_eta": "D",
+    "time_observed_eta": "H",
+    "time_check_frequency": "H",
+    "time_restart_frequency": "H",
+    "time_forecast_rounding": "H",
+    "time_observed_rounding": "H",
+    "time_check_rounding": "D",
+    "time_restart_rounding": "D",
+    "time_tc": 12,
+    "time_vegetation_max": 720
+  },
+  "HMC_Info": {
+    "hmc_parameters": {
+      "ct": 0.5,
+      "cf": 0.02,
+      "uc": 20,
+      "uh": 1.5,
+      "cpi": 0.3,
+      "cn": 56.01,
+      "ws": 3.6780000000000003e-09,
+      "fracturation": 0.2374,
+      "ksat_ratio": 1,
+      "wtable_hbr": 500,
+      "slope_max": 70
+    },
+    "hmc_flags": {
+      "flag_model_os": 10,
+      "flag_model_restart": 1,
+      "flag_phys_flow_deep": 1,
+      "flag_phys_convolution_dt": 1,
+      "flag_phys_snow": 0,
+      "flag_phys_assimilation_snow": 0,
+      "flag_phys_assimilation_soil_moisture": 0,
+      "flag_phys_coeff_resolution": 0,
+      "flag_phys_water_sources": 0,
+      "flag_phys_release_mass": 1,
+      "flag_phys_convolution_type": 1,
+      "flag_phys_fracturation": 0,
+      "flag_phys_dynamic_vegetation": 0,
+      "flag_phys_flooding": 0,
+      "flag_datasets_lai": 0,
+      "flag_datasets_albedo": 0,
+      "flag_debug_set": 0,
+      "flag_debug_level": 3
+    },
+    "hmc_dt": {
+      "dt_model": 3600,
+      "dt_phys_convolution": 50
+    },
+    "hmc_phys_parametrization": {
+      "phys_lst_maximum_integration_delta": 40,
+      "phys_dam_initial_percentage_outflow" : 0.95,
+      "phys_dam_initial_delta_spill": 3
+    },
+    "hmc_datasets": {
+      "dset_forcing_threshold": 95,
+      "dset_output_generic": 2,
+      "dset_output_flooding": 0,
+      "dset_output_snow": 0,
+      "dset_output_accumulated_hour_step": 23
+    }
+  },
+  "GeoSystem_Info": {
+    "epsg_code": 4326,
+    "grid_mapping_name": "latitude_longitude",
+    "longitude_of_prime_meridian": 0.0,
+    "semi_major_axis": 6378137.0,
+    "inverse_flattening": 298.257223563
+  }
+}
