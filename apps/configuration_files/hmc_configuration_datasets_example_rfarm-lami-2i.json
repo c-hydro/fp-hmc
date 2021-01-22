@@ -3,7 +3,7 @@
   "Flags": {
     "__comment": " --- Flags configuration --- ",
     "cleaning_ancillary_data_static": false,
-    "cleaning_ancillary_data_dynamic_source": true,
+    "cleaning_ancillary_data_dynamic_source": false,
     "cleaning_ancillary_data_dynamic_execution": false,
     "cleaning_ancillary_data_dynamic_outcome": false,
     "cleaning_run_execution": false,
@@ -51,19 +51,19 @@
     "__comment": " --- DataAncillary configuration --- ",
     "static": {
       "hmc_file_name": "hmc.static.workspace",
-      "hmc_file_folder": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_ancillary}/ancillary/{run_mode}/"
+      "hmc_file_folder": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/run/{run_name}/ancillary/"
     },
     "dynamic_source": {
       "hmc_file_name": "hmc.dynamic_source.{dset_datetime_ancillary}.workspace",
-      "hmc_file_folder": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_ancillary}/ancillary/{run_mode}/"
+      "hmc_file_folder": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/run/{run_name}/ancillary/"
     },
     "dynamic_execution": {
       "hmc_file_name": "hmc.execution.{dset_datetime_ancillary}.workspace",
-      "hmc_file_folder": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_ancillary}/ancillary/{run_mode}/"
+      "hmc_file_folder": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/run/{run_name}/ancillary/"
     },
     "dynamic_outcome": {
       "hmc_file_name": "hmc.dynamic_outcome.{dset_datetime_ancillary}.workspace",
-      "hmc_file_folder": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_ancillary}/ancillary/{run_mode}/"
+      "hmc_file_folder": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/run/{run_name}/ancillary/"
     }
   },
   "DataGeo"    : {
@@ -402,7 +402,7 @@
           "var_list"        : {
             "ALL"			  : {
               "var_file_name"   : "hmc.output-grid.{dset_datetime_outcome}.nc.gz",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_outcome}/outcome/gridded/{run_mode}/",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_outcome}/probabilistic_{run_var}/gridded/{run_mode}/",
               "var_file_dset"	: "ALL",
               "var_file_format"	: "netcdf",
               "var_file_limits"	: [null, null],
@@ -427,7 +427,7 @@
           "var_list"        : {
             "Discharge"	      : {
               "var_file_name"   : "hmc.{dset_var_name_outcome_point}.{dset_datetime_outcome}.txt",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_outcome}/outcome/point/{run_mode}/discharge/",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_outcome}/probabilistic_{run_var}/point/{run_mode}/discharge/",
               "var_file_dset"	: "discharge",
               "var_file_format"	: "ascii_point",
               "var_file_limits"	: [0, null],
@@ -435,7 +435,7 @@
             },
             "DamV"			  : {
               "var_file_name"   : "hmc.{dset_var_name_outcome_point}.{dset_datetime_outcome}.txt",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_outcome}/outcome/point/{run_mode}/dam_volume/",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_outcome}/probabilistic_{run_var}/point/{run_mode}/dam_volume/",
               "var_file_dset"	: "vdam",
               "var_file_format"	: "ascii_point",
               "var_file_limits"	: [0, null],
@@ -443,7 +443,7 @@
             },
             "DamL"	          : {
               "var_file_name"   : "hmc.{dset_var_name_outcome_point}.{dset_datetime_outcome}.txt",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_outcome}/outcome/point/{run_mode}/dam_level/",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_outcome}/probabilistic_{run_var}/point/{run_mode}/dam_level/",
               "var_file_dset"	: "ldam",
               "var_file_format"	: "ascii_point",
               "var_file_limits"	: [0, null],
@@ -451,7 +451,7 @@
             },
             "VarAnalysis"	  : {
               "var_file_name"   : "hmc.{dset_var_name_outcome_point}.{dset_datetime_outcome}.txt",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_outcome}/outcome/point/{run_mode}/analysis/",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_outcome}/probabilistic_{run_var}/point/{run_mode}/analysis/",
               "var_file_dset"	: "var-analysis",
               "var_file_format"	: "ascii_point",
               "var_file_limits"	: [null, null],
@@ -476,7 +476,7 @@
           "var_list"        : {
             "Discharge"		  : {
               "var_file_name"   : "hmc.hydrograph.txt",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_outcome}/outcome/timeseries/{run_mode}/",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_outcome}/probabilistic_{run_var}/timeseries/{run_mode}/",
               "var_file_dset"	: "hydrograph",
               "var_file_format"	: "ascii_time_series",
               "var_file_limits"	: [0, null],
@@ -484,7 +484,7 @@
             },
             "DamV"		      : {
               "var_file_name"   : "hmc.vdam.txt",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_outcome}/outcome/timeseries/{run_mode}/",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_outcome}/probabilistic_{run_var}/timeseries/{run_mode}/",
               "var_file_dset"	: "vdam",
               "var_file_format"	: "ascii_time_series",
               "var_file_limits"	: [0, null],
@@ -492,7 +492,7 @@
             },
             "DamL"			  : {
               "var_file_name"   : "hmc.ldam.txt",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_outcome}/outcome/timeseries/{run_mode}/",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_outcome}/probabilistic_{run_var}/timeseries/{run_mode}/",
               "var_file_dset"	: "ldam",
               "var_file_format"	: "ascii_time_series",
               "var_file_limits"	: [0, null],
@@ -500,7 +500,7 @@
             },
             "VarAnalysis"	  : {
               "var_file_name"   : "hmc.var-analysis.txt",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_outcome}/outcome/timeseries/{run_mode}/",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_outcome}/probabilistic_{run_var}/timeseries/{run_mode}/",
               "var_file_dset"	: "var-analysis",
               "var_file_format"	: "ascii_time_series",
               "var_file_limits"	: [null, null],
@@ -528,7 +528,7 @@
           "var_list"        : {
             "ALL"			  : {
               "var_file_name"   : "hmc.state-grid.{dset_datetime_state}.nc.gz",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_state}/state/gridded/{run_mode}/",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_state}/probabilistic_{run_var}/gridded/{run_mode}/",
               "var_file_dset"	: "ALL",
               "var_file_format"	: "netcdf",
               "var_file_limits"	: [null, null],
@@ -553,7 +553,7 @@
           "var_list"        : {
             "ALL"			  : {
               "var_file_name"   : "hmc.state-point.{dset_datetime_state}.txt",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_state}/state/point/{run_mode}/",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name}/{dset_sub_path_state}/probabilistic_{run_var}/point/{run_mode}/",
               "var_file_dset"	: "ALL",
               "var_file_format"	: "ascii_point",
               "var_file_limits"	: [null, null],
