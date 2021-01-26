@@ -145,8 +145,33 @@ class DSetManager:
                 driver_hmc_parser = DSetReader(file_name, file_info, None, time_src_info=None)
                 obj_var = driver_hmc_parser.read_filename_static(var_name)
             elif var_data is not None:
-                driver_hmc_parser = DSetWriter(file_name, file_info, None, time_dst_info=None)
-                obj_var = driver_hmc_parser.write_filename_static(var_name, var_data)
+
+                if not os.path.exists(file_name):
+                    driver_hmc_parser = DSetWriter(file_name, file_info, None, time_dst_info=None)
+                    obj_var = driver_hmc_parser.write_filename_static(var_name, var_data)
+                else:
+
+                    driver_hmc_parser = DSetReader(file_name, file_info, None, time_src_info=None)
+                    check_data = driver_hmc_parser.read_filename_static(var_name)
+
+                    log_stream.info(' ------> Check variable ' + var_name + ' ... ')
+                    log_stream.info(' -------> File name ' + file_name + 'for variable ' + var_name +
+                                    ' is already available')
+
+                    len_check_data = check_data.__len__()
+                    for key, values in var_data.items():
+                        len_var_data = values.__len__()
+                        break
+                    if len_check_data == len_var_data:
+                        log_stream.info(' -------> The loaded datasets and the stored datasets have the same length')
+                        log_stream.info(' -------> The instance will use the stored datasets.')
+                        obj_var = check_data
+                        log_stream.info(' ------> Check variable ' + var_name + ' ... DONE')
+                    else:
+                        log_stream.error(' -------> The loaded datasets and the stored datasets have different lengths')
+                        log_stream.error(' -------> The instance will exit for this reason.')
+                        log_stream.info(' ------> Check variable ' + var_name + ' ... FAILED')
+                        raise IOError('Object static length is not valid')
             else:
                 log_stream.error(' ===> Variable data format is not allowed')
                 raise NotImplementedError('Object static format is not valid')
