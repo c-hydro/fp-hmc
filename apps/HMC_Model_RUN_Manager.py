@@ -13,7 +13,7 @@ __library__ = 'hmc'
 
 General command line:
     python3 HMC_Model_RUN_Manager.py
-        -settings_algorithm configuration_algorithm.json.json
+        -settings_algorithm configuration_algorithm.json
         -settings_data configuration_datasets.json
         -time "YYYY-MM-DD HH:MM"
 
@@ -42,6 +42,15 @@ from hmc.coupler.cpl_hmc_manager import ModelInitializer, ModelCleaner
 from hmc.coupler.cpl_hmc_builder import ModelBuilder
 from hmc.coupler.cpl_hmc_runner import ModelRunner
 from hmc.coupler.cpl_hmc_finalizer import ModelFinalizer
+# -------------------------------------------------------------------------------------
+
+# -------------------------------------------------------------------------------------
+# Version and algorithm information
+project_name = 'HMC'
+alg_version = '3.1.3'
+alg_type = 'Model'
+alg_name = 'RUN MANAGER TOOL'
+alg_release = '2020-11-02'
 # -------------------------------------------------------------------------------------
 
 
@@ -91,11 +100,6 @@ def get_args(settings_algorithm=None, settings_datasets=None, settings_time=None
 def main(settings_algorithm=None, settings_datasets=None, settings_time=None):
 
     # -------------------------------------------------------------------------------------
-    # Version and algorithm information
-    project_name = 'HMC'
-    alg_version = '3.1.3'
-    alg_type = 'Model'
-    alg_name = 'RUN MANAGER TOOL'
     # Time algorithm information
     time_start = time.time()
 
@@ -110,7 +114,8 @@ def main(settings_algorithm=None, settings_datasets=None, settings_time=None):
 
     # -------------------------------------------------------------------------------------
     # Start Program
-    log_stream.info('[' + project_name + ' ' + alg_type + ' - ' + alg_name + ' (Version ' + alg_version + ')]')
+    log_stream.info('[' + project_name + ' ' + alg_type + ' - ' + alg_name +
+                    ' (Version ' + alg_version + ' - Release ' + alg_release + ')]')
     log_stream.info('[' + project_name + '] Start Program ... ')
     # -------------------------------------------------------------------------------------
 
@@ -190,7 +195,8 @@ def main(settings_algorithm=None, settings_datasets=None, settings_time=None):
     # End Program
     time_elapsed = round(time.time() - time_start, 1)
 
-    log_stream.info('[' + project_name + ' ' + alg_type + ' - ' + alg_name + ' (Version ' + alg_version + ')]')
+    log_stream.info('[' + project_name + ' ' + alg_type + ' - ' + alg_name +
+                    ' (Version ' + alg_version + ' - Release ' + alg_release + ')]')
     log_stream.info('End Program - Time elapsed: ' + str(time_elapsed) + ' seconds')
     # -------------------------------------------------------------------------------------
 
