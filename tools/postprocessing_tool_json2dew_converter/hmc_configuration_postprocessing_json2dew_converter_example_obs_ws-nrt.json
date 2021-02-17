@@ -64,8 +64,8 @@
     }
   },
   "log": {
-    "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hyde-ws/marche/log/hmc_tools/json2dew_converter/",
-    "file_name": "hmc_postprocessing_json2dew_converter_log.txt",
+    "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hyde-ws/marche/log/hmc_tools/{run_name_hmc}/json2dew_converter/",
+    "file_name": "hmc_postprocessing_json2dew_converter_{run_name_hmc}_log.txt",
     "file_history": true
   },
   "time": {

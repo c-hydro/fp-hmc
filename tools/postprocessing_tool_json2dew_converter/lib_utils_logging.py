@@ -19,6 +19,8 @@ from tools.postprocessing_tool_json2dew_converter.lib_info_args import logger_fi
 from tools.postprocessing_tool_json2dew_converter.lib_info_args import logger_handle as logger_handle_default
 from tools.postprocessing_tool_json2dew_converter.lib_info_args import logger_format as logger_formatter_default
 
+from tools.postprocessing_tool_json2dew_converter.lib_utils_system import make_folder
+
 # Debug
 # import matplotlib.pylab as plt
 #######################################################################################
@@ -28,10 +30,21 @@ from tools.postprocessing_tool_json2dew_converter.lib_info_args import logger_fo
 # Method to set logging file
 def set_logging_file(logger_file=logger_file_default, logger_name=logger_name_default,
                      logger_handle=logger_handle_default, logger_formatter=logger_formatter_default,
-                     logger_history=False, logger_history_maxfiles=12):
+                     logger_history=False, logger_history_maxfiles=12,
+                     logger_extra_tags=None):
 
     # Set to flush progressbar output in logging stream handle
     # progressbar.streams.wrap_stderr()
+
+    if logger_extra_tags is not None:
+        for extra_key, extra_value in logger_extra_tags.items():
+            logger_file = logger_file.replace(extra_key, ':')
+            string_count = logger_file.count(':')
+            extra_value = [extra_value] * string_count
+            logger_file = logger_file.format(*extra_value)
+
+    logger_folder_name, logger_file_name = os.path.split(logger_file)
+    make_folder(logger_folder_name)
 
     # Save old logger file (to check run in the past)
     if logger_history:

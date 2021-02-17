@@ -23,7 +23,6 @@ import argparse
 import time
 
 from tools.postprocessing_tool_json2dew_converter.lib_utils_logging import set_logging_file
-from tools.postprocessing_tool_json2dew_converter.lib_utils_system import make_folder
 from tools.postprocessing_tool_json2dew_converter.lib_utils_time import set_time
 from tools.postprocessing_tool_json2dew_converter.lib_data_io_json import read_file_settings
 from tools.postprocessing_tool_json2dew_converter.lib_info_args import logger_name, time_format_algorithm
@@ -54,9 +53,10 @@ def main():
     data_settings = read_file_settings(alg_settings)
 
     # Set algorithm logging
-    make_folder(data_settings['log']['folder_name'])
-    set_logging_file(logger_name=logger_name,
-                     logger_file=os.path.join(data_settings['log']['folder_name'], data_settings['log']['file_name']))
+    set_logging_file(
+        logger_name=logger_name,
+        logger_file=os.path.join(data_settings['log']['folder_name'], data_settings['log']['file_name']),
+        logger_extra_tags={'run_name_hmc': data_settings['algorithm']['ancillary']['run_name_hmc']})
     # -------------------------------------------------------------------------------------
 
     # ----------------------------------------------------------------------------------------------------------------------

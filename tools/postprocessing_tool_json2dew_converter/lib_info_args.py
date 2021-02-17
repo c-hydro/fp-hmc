@@ -22,8 +22,8 @@ time_format_algorithm = '%Y-%m-%d %H:%M'
 time_machine = pd.Timestamp.now
 
 # Logging information
-logger_name = 'hmc_postprocessing_ensemble_maker_logger'
-logger_file = 'hmc_ensemble_maker.txt'
+logger_name = 'hmc_postprocessing_json2dew_converter_logger'
+logger_file = 'hmc_json2dew_converter.txt'
 logger_handle = 'file'  # 'file' or 'stream'
 logger_format = '%(asctime)s %(name)-12s %(levelname)-8s %(message)-80s %(filename)s:[%(lineno)-6s - %(funcName)-20s()] '
 
