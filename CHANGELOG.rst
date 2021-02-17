@@ -13,6 +13,9 @@ Version 3.1.3 (20201028)
 - Fix bugs in managing the variables defined as (t,y,x) or (y,x,t) to correctly find the time dimension;
 - Fix bugs in managing the orientation of gridded netcdf variables;
 - Fix bugs in saving file attributes of "x_ll_corner" and "y_ll_corner";
+- Add tool to convert binary to netcdf file;
+- Add tool to merge discharges in a probabilistic json output;
+- Add tool to convert json output in ascii dewetra format. 
 
 Version 3.1.2 (20200819)
 ========================

@@ -37,6 +37,7 @@ class DriverDynamic:
     def __init__(self, time_now, time_run, src_dict, anc_dict, dest_dict, static_data_collection,
                  alg_ancillary=None, alg_template_tags=None,
                  tag_section_data='section_data', tag_section_name='section_name', tag_basin_name='section_domain',
+                 tag_run_mode_probabilistic='probabilistic', tag_run_mode_deterministic='deterministic',
                  flag_cleaning_dynamic_ancillary=True, flag_cleaning_dynamic_data=True, flag_cleaning_dynamic_tmp=True):
 
         self.time_now = time_now
@@ -57,11 +58,17 @@ class DriverDynamic:
         self.run_name_dew = self.alg_ancillary['run_name_dewetra']
         self.run_type = self.alg_ancillary['run_type']
 
-        self.ensemble_start = self.alg_ancillary['ensemble_start']
-        self.ensemble_end = self.alg_ancillary['ensemble_end']
-        self.ensemble_step = self.alg_ancillary['ensemble_step']
-        self.ensemble_format = self.alg_ancillary['ensemble_format']
-        self.ensemble_list, self.run_list = self.collect_ensemble_list()
+        self.tag_run_var = 'run_var'
+        self.tag_run_mode = 'run_mode'
+        self.tag_run_ens_start = 'run_ensemble_start'
+        self.tag_run_ens_end = 'run_ensemble_end'
+
+        run_mode_probabilistic = self.alg_ancillary[self.tag_run_mode][tag_run_mode_probabilistic]
+        run_mode_deterministic = self.alg_ancillary[self.tag_run_mode][tag_run_mode_deterministic]
+        self.str_run_mode, self.ensemble_start, self.ensemble_end, self.ensemble_step, self.ensemble_format = self.define_run_mode(
+            run_mode_deterministic, run_mode_probabilistic, tag_activate='activate')
+
+        self.run_list, self.ensemble_list = self.collect_run_instance()
 
         self.section_name_list = self.collect_section_list([self.tag_section_name])[self.tag_section_name]
         self.basin_name_list = self.collect_section_list([self.tag_basin_name])[self.tag_basin_name]
@@ -114,18 +121,50 @@ class DriverDynamic:
         self.tag_ts_simulated_single_run = 'time_series_discharge_simulated'
         self.tag_ts_simulated_multi_run = 'time_series_discharge_simulated_{:03d}'
 
-        self.tag_run_var = 'run_var'
-        self.tag_run_mode = 'run_mode'
-        self.tag_run_ens_start = 'run_ensemble_start'
-        self.tag_run_ens_end = 'run_ensemble_end'
-
-        self.str_run_mode = 'probabilistic_ensemble'
         self.str_run_ens_start = str(self.ensemble_start)
         self.str_run_ens_end = str(self.ensemble_end)
 
         self.tag_ws_observed = 'obs_dframe'
         self.tag_ws_simulated = 'sim_dframe'
         # -------------------------------------------------------------------------------------
+
+    # -------------------------------------------------------------------------------------
+    # Method to define run mode
+    @staticmethod
+    def define_run_mode(run_mode_det, run_mode_prob, tag_activate='activate'):
+
+        if tag_activate in list(run_mode_det.keys()):
+            flag_activate_det = run_mode_det[tag_activate]
+        else:
+            raise IOError('Deterministic mode activate flag not defined. Check your settings file.')
+        if tag_activate in list(run_mode_prob.keys()):
+            flag_activate_prob = run_mode_prob[tag_activate]
+        else:
+            raise IOError('Probabilistic mode activate flag not defined. Check your settings file.')
+
+        if flag_activate_det and flag_activate_prob:
+            raise IOError('Both deterministic and probabilistic mode are activated. Check your settings file.')
+        if (not flag_activate_det) and (not flag_activate_prob):
+            raise IOError('Both deterministic and probabilistic mode are not activated. Check your settings file.')
+
+        if flag_activate_det:
+            ensemble_start = None
+            ensemble_end = None
+            ensemble_step = None
+            ensemble_format = None
+            run_mode_tag = 'deterministic_mode'
+        elif flag_activate_prob:
+            ensemble_start = run_mode_prob['ensemble_start']
+            ensemble_end = run_mode_prob['ensemble_end']
+            ensemble_step = run_mode_prob['ensemble_step']
+            ensemble_format = run_mode_prob['ensemble_format']
+            run_mode_tag = 'probabilistic_mode'
+        else:
+            raise NotImplementedError('Run mode not implemented yet')
+
+        return run_mode_tag, ensemble_start, ensemble_end, ensemble_step, ensemble_format
+
+    # -------------------------------------------------------------------------------------
 
     # -------------------------------------------------------------------------------------
     # Method to define  filename
@@ -135,7 +174,7 @@ class DriverDynamic:
         if file_extra_args is None:
             file_extra_args = {}
         if file_ensemble_list is None:
-            file_ensemble_list = ['000']
+            file_ensemble_list = [None]
 
         alg_template_tags = self.alg_template_tags
         domain_name = self.domain_name
@@ -186,25 +225,29 @@ class DriverDynamic:
     # -------------------------------------------------------------------------------------
 
     # -------------------------------------------------------------------------------------
-    # Method to compute ensemble list
-    def collect_ensemble_list(self):
+    # Method to collect run instance
+    def collect_run_instance(self):
 
         ens_format = self.ensemble_format
 
-        ens_start = self.ensemble_start
-        ens_end = self.ensemble_end + 1
-        ens_step = self.ensemble_step
+        if ens_format is not None:
+            ens_start = self.ensemble_start
+            ens_end = self.ensemble_end + 1
+            ens_step = self.ensemble_step
 
-        ens_n = np.arange(ens_start, ens_end, ens_step).tolist()
-        run_n = np.arange(1, ens_n.__len__() + 1, 1).tolist()
+            ens_n = np.arange(ens_start, ens_end, ens_step).tolist()
+            run_n = np.arange(1, ens_n.__len__() + 1, 1).tolist()
 
-        run_n_list = []
-        ens_n_list = []
-        for ens_n_step, run_n_step in zip(ens_n, run_n):
-            ens_n_str = ens_format.format(ens_n_step)
-            ens_n_list.append(ens_n_str)
-            run_n_list.append(run_n_step)
-        return ens_n_list, run_n_list
+            run_n_list = []
+            ens_n_list = []
+            for ens_n_step, run_n_step in zip(ens_n, run_n):
+                ens_n_str = ens_format.format(ens_n_step)
+                ens_n_list.append(ens_n_str)
+                run_n_list.append(run_n_step)
+        else:
+            ens_n_list = None
+            run_n_list = 1
+        return run_n_list, ens_n_list
     # -------------------------------------------------------------------------------------
 
     # -------------------------------------------------------------------------------------
@@ -322,7 +365,7 @@ class DriverDynamic:
                 point_file_anc = point_file_anc[0]
 
             if point_file_src.__len__() == 1:
-                tag_mode_run = ['000']
+                tag_mode_run = ['deterministic']
             elif point_file_src.__len__() > 1:
                 tag_mode_run = ensemble_list
 
