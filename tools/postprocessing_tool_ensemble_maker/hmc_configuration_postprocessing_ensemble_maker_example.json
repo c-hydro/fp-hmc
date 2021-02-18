@@ -59,8 +59,8 @@
     }
   },
   "log": {
-    "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hyde-ws/marche/log/hmc_tools/ensemble_maker/",
-    "file_name": "hmc_postprocessing_ensemble_maker_log.txt",
+    "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hyde-ws/marche/log/hmc_tools/ensemble_maker/{run_name}",
+    "file_name": "hmc_postprocessing_ensemble_maker_{run_name}_log.txt",
     "file_history": true
   },
   "time": {

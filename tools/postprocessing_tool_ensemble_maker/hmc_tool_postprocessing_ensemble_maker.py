@@ -15,7 +15,7 @@ Version:
 20210126 (2.0.0) --> Beta release for HMC package
 20190928 (1.0.0) --> First relase for Barbados operational chain
 """
-# ----------------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------
 # Library
 import logging
 import os
@@ -23,26 +23,25 @@ import argparse
 import time
 
 from tools.postprocessing_tool_ensemble_maker.lib_utils_logging import set_logging_file
-from tools.postprocessing_tool_ensemble_maker.lib_utils_system import make_folder
 from tools.postprocessing_tool_ensemble_maker.lib_utils_time import set_time
 from tools.postprocessing_tool_ensemble_maker.lib_data_io_json import read_file_settings
 from tools.postprocessing_tool_ensemble_maker.lib_info_args import logger_name, time_format_algorithm
 
 from tools.postprocessing_tool_ensemble_maker.driver_data_io_static import DriverStatic
 from tools.postprocessing_tool_ensemble_maker.driver_data_io_dynamic import DriverDynamic
-# ----------------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------
 
-# ----------------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------
 # Algorithm information
 project_name = 'HMC'
 alg_name = 'TOOL ENSEMBLE MAKER'
 alg_type = 'Model'
 alg_version = '2.0.0'
 alg_release = '2021-01-26'
-# ----------------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------
 
 
-# ----------------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------
 # Script Main
 def main():
 
@@ -54,12 +53,12 @@ def main():
     data_settings = read_file_settings(alg_settings)
 
     # Set algorithm logging
-    make_folder(data_settings['log']['folder_name'])
     set_logging_file(logger_name=logger_name,
-                     logger_file=os.path.join(data_settings['log']['folder_name'], data_settings['log']['file_name']))
+                     logger_file=os.path.join(data_settings['log']['folder_name'], data_settings['log']['file_name']),
+                     logger_extra_tags={'run_name': data_settings['algorithm']['ancillary']['run_name']})
     # -------------------------------------------------------------------------------------
 
-    # ----------------------------------------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------------------
     # Info algorithm
     logging.info(' ============================================================================ ')
     logging.info('[' + project_name + ' ' + alg_type + ' - ' + alg_name + ' (Version ' + alg_version +
@@ -69,7 +68,7 @@ def main():
 
     # Time algorithm information
     alg_time_start = time.time()
-    # ----------------------------------------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------------------
 
     # -------------------------------------------------------------------------------------
     # Organize time run
@@ -93,7 +92,7 @@ def main():
     static_data_collection = driver_data_static.organize_static()
     # -------------------------------------------------------------------------------------
 
-    # ----------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------------------
     # Iterate over time range
     for time_step in time_range:
 
