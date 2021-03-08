@@ -77,34 +77,57 @@ def read_data_point_section(file_name, section_cols_expected=8):
     file_lines = file_handle.readlines()
     file_handle.close()
 
-    point_frame = OrderedDict()
-    for row_id, row_data in enumerate(file_lines):
-        section_row = row_data.strip()
-        section_cols = section_row.split()
+    if file_lines.__len__() > 1:
 
-        if section_cols.__len__() < section_cols_expected:
-            section_cols = pad_or_truncate_list(section_cols, section_cols_expected)
+        string_parts = None
 
-        section_idx_ji = [int(section_cols[0]), int(section_cols[1])]
-        section_domain = section_cols[2]
-        section_name = section_cols[3]
-        section_code = int(section_cols[4])
-        section_drained_area = float(section_cols[5])
-        section_discharge_thr_alert = float(section_cols[6])
-        section_discharge_thr_alarm = float(section_cols[7])
-        section_id = int(row_id)
+        point_frame = OrderedDict()
+        for row_id, row_data in enumerate(file_lines):
 
-        section_key = ':'.join([section_domain, section_name])
+            # Read line by line
+            section_row = row_data.strip()
+            # Clean unnecessary string delimiter ""
+            section_row = section_row.replace('"', '')
+            # Split string to cell(s)
+            section_cols = section_row.split()
 
-        point_frame[section_key] = {}
-        point_frame[section_key]['section_id'] = section_id
-        point_frame[section_key]['section_name'] = section_name
-        point_frame[section_key]['section_domain'] = section_domain
-        point_frame[section_key]['section_idx_ji'] = section_idx_ji
-        point_frame[section_key]['section_code'] = section_code
-        point_frame[section_key]['section_drained_area'] = section_drained_area
-        point_frame[section_key]['section_discharge_thr_alert'] = section_discharge_thr_alert
-        point_frame[section_key]['section_discharge_thr_alarm'] = section_discharge_thr_alarm
+            if section_row != '':
+                if string_parts is None:
+                    string_parts = section_cols.__len__()
+
+                if section_cols.__len__() > string_parts:
+                    log_stream.error(' ===> Parse section filename failed for filename ' + os.path.split(file_name)[1])
+                    raise IOError(' ===> Section file in wrong format at line: [' + section_row + ']')
+
+                if section_cols.__len__() < section_cols_expected:
+                    section_cols = pad_or_truncate_list(section_cols, section_cols_expected)
+
+                section_idx_ji = [int(section_cols[0]), int(section_cols[1])]
+                section_domain = section_cols[2]
+                section_name = section_cols[3]
+                section_code = int(section_cols[4])
+                section_drained_area = float(section_cols[5])
+                section_discharge_thr_alert = float(section_cols[6])
+                section_discharge_thr_alarm = float(section_cols[7])
+                section_id = int(row_id)
+
+                section_key = ':'.join([section_domain, section_name])
+
+                point_frame[section_key] = {}
+                point_frame[section_key]['section_id'] = section_id
+                point_frame[section_key]['section_name'] = section_name
+                point_frame[section_key]['section_domain'] = section_domain
+                point_frame[section_key]['section_idx_ji'] = section_idx_ji
+                point_frame[section_key]['section_code'] = section_code
+                point_frame[section_key]['section_drained_area'] = section_drained_area
+                point_frame[section_key]['section_discharge_thr_alert'] = section_discharge_thr_alert
+                point_frame[section_key]['section_discharge_thr_alarm'] = section_discharge_thr_alarm
+
+    else:
+
+        log_stream.warning(' ===> File info for sections was found; sections are equal to zero. Datasets is None')
+        log_stream.warning(' ===> Filename ' + os.path.split(file_name)[1])
+        point_frame = None
 
     return point_frame
 # -------------------------------------------------------------------------------------
@@ -123,67 +146,75 @@ def read_data_point_dam(file_name, line_delimiter='#'):
     row_id += 1
     plant_n = int(file_lines[row_id].split(line_delimiter)[0])
 
-    point_frame = OrderedDict()
-    for dam_id in range(0, dam_n):
-        row_id += 1
-        _ = parse_row2string(file_lines[row_id], line_delimiter)
-        row_id += 1
-        dam_name = parse_row2string(file_lines[row_id], line_delimiter)
-        row_id += 1
-        dam_idx_ji = list(map(int, parse_row2string(file_lines[row_id], line_delimiter).split()))
-        row_id += 1
-        dam_plant_n = int(parse_row2string(file_lines[row_id], line_delimiter))
-        row_id += 1
-        dam_cell_lake_code = int(parse_row2string(file_lines[row_id], line_delimiter))
-        row_id += 1
-        dam_volume_max = float(parse_row2string(file_lines[row_id], line_delimiter))
-        row_id += 1
-        dam_volume_init = float(parse_row2string(file_lines[row_id], line_delimiter))
-        row_id += 1
-        dam_discharge_max = float(parse_row2string(file_lines[row_id], line_delimiter))
-        row_id += 1
-        dam_level_max = float(parse_row2string(file_lines[row_id], line_delimiter))
-        row_id += 1
-        dam_h_max = float(parse_row2string(file_lines[row_id], line_delimiter))
-        row_id += 1
-        dam_lin_coeff = float(parse_row2string(file_lines[row_id], line_delimiter))
-        row_id += 1
-        dam_storage_curve = parse_row2string(file_lines[row_id], line_delimiter)
+    if dam_n > 0:
 
-        for plant_id in range(0, int(dam_plant_n)):
+        point_frame = OrderedDict()
+        for dam_id in range(0, dam_n):
             row_id += 1
-            plant_name = parse_row2string(file_lines[row_id], line_delimiter)
+            _ = parse_row2string(file_lines[row_id], line_delimiter)
             row_id += 1
-            plant_idx_ji = list(map(int, parse_row2string(file_lines[row_id], line_delimiter).split()))
+            dam_name = parse_row2string(file_lines[row_id], line_delimiter)
             row_id += 1
-            plant_tc = int(parse_row2string(file_lines[row_id], line_delimiter))
+            dam_idx_ji = list(map(int, parse_row2string(file_lines[row_id], line_delimiter).split()))
             row_id += 1
-            plant_discharge_max = float(parse_row2string(file_lines[row_id], line_delimiter))
+            dam_plant_n = int(parse_row2string(file_lines[row_id], line_delimiter))
             row_id += 1
-            plant_discharge_flag = int(parse_row2string(file_lines[row_id], line_delimiter))
+            dam_cell_lake_code = int(parse_row2string(file_lines[row_id], line_delimiter))
+            row_id += 1
+            dam_volume_max = float(parse_row2string(file_lines[row_id], line_delimiter))
+            row_id += 1
+            dam_volume_init = float(parse_row2string(file_lines[row_id], line_delimiter))
+            row_id += 1
+            dam_discharge_max = float(parse_row2string(file_lines[row_id], line_delimiter))
+            row_id += 1
+            dam_level_max = float(parse_row2string(file_lines[row_id], line_delimiter))
+            row_id += 1
+            dam_h_max = float(parse_row2string(file_lines[row_id], line_delimiter))
+            row_id += 1
+            dam_lin_coeff = float(parse_row2string(file_lines[row_id], line_delimiter))
+            row_id += 1
+            dam_storage_curve = parse_row2string(file_lines[row_id], line_delimiter)
 
-            if plant_name != '':
-                dam_key = ':'.join([dam_name, plant_name])
-            else:
-                dam_key = dam_name
+            for plant_id in range(0, int(dam_plant_n)):
+                row_id += 1
+                plant_name = parse_row2string(file_lines[row_id], line_delimiter)
+                row_id += 1
+                plant_idx_ji = list(map(int, parse_row2string(file_lines[row_id], line_delimiter).split()))
+                row_id += 1
+                plant_tc = int(parse_row2string(file_lines[row_id], line_delimiter))
+                row_id += 1
+                plant_discharge_max = float(parse_row2string(file_lines[row_id], line_delimiter))
+                row_id += 1
+                plant_discharge_flag = int(parse_row2string(file_lines[row_id], line_delimiter))
 
-            point_frame[dam_key] = {}
-            point_frame[dam_key]['dam_name'] = dam_name
-            point_frame[dam_key]['dam_idx_ji'] = dam_idx_ji
-            point_frame[dam_key]['dam_plant_n'] = dam_plant_n
-            point_frame[dam_key]['dam_lake_code'] = dam_cell_lake_code
-            point_frame[dam_key]['dam_volume_max'] = dam_volume_max
-            point_frame[dam_key]['dam_volume_init'] = dam_volume_init
-            point_frame[dam_key]['dam_discharge_max'] = dam_discharge_max
-            point_frame[dam_key]['dam_level_max'] = dam_level_max
-            point_frame[dam_key]['dam_h_max'] = dam_h_max
-            point_frame[dam_key]['dam_lin_coeff'] = dam_lin_coeff
-            point_frame[dam_key]['dam_storage_curve'] = dam_storage_curve
-            point_frame[dam_key]['plant_name'] = plant_name
-            point_frame[dam_key]['plant_idx_ji'] = plant_idx_ji
-            point_frame[dam_key]['plant_tc'] = plant_tc
-            point_frame[dam_key]['plant_discharge_max'] = plant_discharge_max
-            point_frame[dam_key]['plant_discharge_flag'] = plant_discharge_flag
+                if plant_name != '':
+                    dam_key = ':'.join([dam_name, plant_name])
+                else:
+                    dam_key = dam_name
+
+                point_frame[dam_key] = {}
+                point_frame[dam_key]['dam_name'] = dam_name
+                point_frame[dam_key]['dam_idx_ji'] = dam_idx_ji
+                point_frame[dam_key]['dam_plant_n'] = dam_plant_n
+                point_frame[dam_key]['dam_lake_code'] = dam_cell_lake_code
+                point_frame[dam_key]['dam_volume_max'] = dam_volume_max
+                point_frame[dam_key]['dam_volume_init'] = dam_volume_init
+                point_frame[dam_key]['dam_discharge_max'] = dam_discharge_max
+                point_frame[dam_key]['dam_level_max'] = dam_level_max
+                point_frame[dam_key]['dam_h_max'] = dam_h_max
+                point_frame[dam_key]['dam_lin_coeff'] = dam_lin_coeff
+                point_frame[dam_key]['dam_storage_curve'] = dam_storage_curve
+                point_frame[dam_key]['plant_name'] = plant_name
+                point_frame[dam_key]['plant_idx_ji'] = plant_idx_ji
+                point_frame[dam_key]['plant_tc'] = plant_tc
+                point_frame[dam_key]['plant_discharge_max'] = plant_discharge_max
+                point_frame[dam_key]['plant_discharge_flag'] = plant_discharge_flag
+
+    else:
+
+        log_stream.warning(' ===> File info for dams was found; dams are equal to zero. Datasets is None')
+        log_stream.warning(' ===> Filename ' + os.path.split(file_name)[1])
+        point_frame = None
 
     return point_frame
 # -------------------------------------------------------------------------------------
@@ -202,43 +233,147 @@ def read_data_point_intake(file_name, line_delimiter='#'):
     row_id += 1
     release_n = int(file_lines[row_id].split(line_delimiter)[0])
 
-    point_frame = OrderedDict()
-    for release_id in range(0, release_n):
-        row_id += 1
-        release_name = parse_row2string(file_lines[row_id], line_delimiter)
-        row_id += 1
-        release_idx_ji = list(map(int, parse_row2string(file_lines[row_id], line_delimiter).split()))
-        row_id += 1
-        release_catch_n = int(parse_row2string(file_lines[row_id], line_delimiter))
+    if release_n > 0:
 
-        for catch_id in range(0, int(release_catch_n)):
+        point_frame = OrderedDict()
+        for release_id in range(0, release_n):
             row_id += 1
-            catch_name = parse_row2string(file_lines[row_id], line_delimiter)
+            _ = parse_row2string(file_lines[row_id], line_delimiter)
             row_id += 1
-            catch_tc = int(parse_row2string(file_lines[row_id], line_delimiter))
+            release_name = parse_row2string(file_lines[row_id], line_delimiter)
             row_id += 1
-            catch_idx_ji = list(map(int, parse_row2string(file_lines[row_id], line_delimiter).split()))
+            release_idx_ji = list(map(int, parse_row2string(file_lines[row_id], line_delimiter).split()))
             row_id += 1
-            catch_discharge_max = float(parse_row2string(file_lines[row_id], line_delimiter))
-            row_id += 1
-            catch_discharge_min = float(parse_row2string(file_lines[row_id], line_delimiter))
-            row_id += 1
-            catch_discharge_weight = float(parse_row2string(file_lines[row_id], line_delimiter))
+            release_catch_n = int(parse_row2string(file_lines[row_id], line_delimiter))
 
-            release_key = ':'.join([release_name, catch_name])
+            for catch_id in range(0, int(release_catch_n)):
+                row_id += 1
+                catch_name = parse_row2string(file_lines[row_id], line_delimiter)
+                row_id += 1
+                catch_tc = int(parse_row2string(file_lines[row_id], line_delimiter))
+                row_id += 1
+                catch_idx_ji = list(map(int, parse_row2string(file_lines[row_id], line_delimiter).split()))
+                row_id += 1
+                catch_discharge_max = float(parse_row2string(file_lines[row_id], line_delimiter))
+                row_id += 1
+                catch_discharge_min = float(parse_row2string(file_lines[row_id], line_delimiter))
+                row_id += 1
+                catch_discharge_weight = float(parse_row2string(file_lines[row_id], line_delimiter))
 
-            point_frame[release_key] = {}
-            point_frame[release_key]['release_name'] = release_name
-            point_frame[release_key]['release_idx_ji'] = release_idx_ji
-            point_frame[release_key]['release_catch_n'] = release_catch_n
-            point_frame[release_key]['catch_name'] = catch_name
-            point_frame[release_key]['catch_idx_ji'] = catch_idx_ji
-            point_frame[release_key]['catch_tc'] = catch_tc
-            point_frame[release_key]['catch_discharge_max'] = catch_discharge_max
-            point_frame[release_key]['catch_discharge_min'] = catch_discharge_min
-            point_frame[release_key]['catch_discharge_weight'] = catch_discharge_weight
+                release_key = ':'.join([release_name, catch_name])
+
+                point_frame[release_key] = {}
+                point_frame[release_key]['release_name'] = release_name
+                point_frame[release_key]['release_idx_ji'] = release_idx_ji
+                point_frame[release_key]['release_catch_n'] = release_catch_n
+                point_frame[release_key]['catch_name'] = catch_name
+                point_frame[release_key]['catch_idx_ji'] = catch_idx_ji
+                point_frame[release_key]['catch_tc'] = catch_tc
+                point_frame[release_key]['catch_discharge_max'] = catch_discharge_max
+                point_frame[release_key]['catch_discharge_min'] = catch_discharge_min
+                point_frame[release_key]['catch_discharge_weight'] = catch_discharge_weight
+
+    else:
+
+        log_stream.warning(' ===> File info for intakes was found; intakes are equal to zero. Datasets is None')
+        log_stream.warning(' ===> Filename ' + os.path.split(file_name)[1])
+        point_frame = None
 
     return point_frame
+# -------------------------------------------------------------------------------------
+
+
+# -------------------------------------------------------------------------------------
+# Method to read file point joint(s)
+def read_data_point_joint(file_name, line_delimiter='#'):
+
+    file_handle = open(file_name, 'r')
+    file_lines = file_handle.readlines()
+    file_handle.close()
+
+    row_id = 0
+    joint_n = int(file_lines[row_id].split(line_delimiter)[0])
+
+    if joint_n > 0:
+        log_stream.error(' ===> File info for joints was found; function to read joints is not implemented')
+        raise NotImplementedError(' ===> Method is not implemented yet')
+    else:
+        log_stream.warning(' ===> File info for joints was found; joints are equal to zero. Datasets is None')
+        log_stream.warning(' ===> Filename ' + os.path.split(file_name)[1])
+        point_frame = None
+
+    return point_frame
+
+# -------------------------------------------------------------------------------------
+
+
+# -------------------------------------------------------------------------------------
+# Method to read file point lake(s)
+def read_data_point_lake(file_name, line_delimiter='#'):
+
+    file_handle = open(file_name, 'r')
+    file_lines = file_handle.readlines()
+    file_handle.close()
+
+    row_id = 0
+    lake_n = int(file_lines[row_id].split(line_delimiter)[0])
+
+    if lake_n > 0:
+
+        point_frame = OrderedDict()
+        for lake_id in range(0, lake_n):
+            row_id += 1
+            _ = parse_row2string(file_lines[row_id], line_delimiter)
+            row_id += 1
+            lake_name = parse_row2string(file_lines[row_id], line_delimiter)
+            row_id += 1
+            lake_idx_ji = list(map(int, parse_row2string(file_lines[row_id], line_delimiter).split()))
+            row_id += 1
+            lake_cell_code = int(parse_row2string(file_lines[row_id], line_delimiter))
+            row_id += 1
+            lake_volume_min = float(parse_row2string(file_lines[row_id], line_delimiter))
+            row_id += 1
+            lake_volume_init = float(parse_row2string(file_lines[row_id], line_delimiter))
+            row_id += 1
+            lake_const_draining = float(parse_row2string(file_lines[row_id], line_delimiter))
+
+            lake_key = lake_name
+
+            point_frame[lake_key] = {}
+            point_frame[lake_key]['lake_name'] = lake_name
+            point_frame[lake_key]['lake_idx_ji'] = lake_idx_ji
+            point_frame[lake_key]['lake_cell_code'] = lake_cell_code
+            point_frame[lake_key]['lake_volume_min'] = lake_volume_min
+            point_frame[lake_key]['lake_volume_init'] = lake_volume_init
+            point_frame[lake_key]['lake_constant_draining'] = lake_const_draining
+
+    else:
+
+        log_stream.warning(' ===> File info for lakes was found; lakes are equal to zero. Datasets is None')
+        log_stream.warning(' ===> Filename ' + os.path.split(file_name)[1])
+        point_frame = None
+
+    return point_frame
+# -------------------------------------------------------------------------------------
+
+
+# -------------------------------------------------------------------------------------
+# Method to write an empty data point file
+def write_data_point_undefined(file_path, element_n=2, element_init=0):
+
+    if not os.path.exists(file_path):
+
+        element_list = [str(element_init)] * element_n
+
+        folder_name, file_name = os.path.split(file_path)
+        create_folder(folder_name)
+
+        file_handle = open(file_path, 'w')
+        for element_step in element_list:
+            element_step = element_step + '\n'
+            file_handle.write(element_step)
+        file_handle.close()
+
 # -------------------------------------------------------------------------------------
 
 
@@ -286,6 +421,7 @@ def read_data_grid(file_name):
                                     coord_name_x='west_east', coord_name_y='south_north',
                                     dim_name_x='west_east', dim_name_y='south_north')
     except IOError as io_error:
+
         da_frame = None
         log_stream.warning(' ===> File static in ascii grid was not correctly open with error ' + str(io_error))
         log_stream.warning(' ===> Filename ' + os.path.split(file_name)[1])

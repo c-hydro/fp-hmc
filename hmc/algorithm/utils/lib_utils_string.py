@@ -63,6 +63,11 @@ def remove_string_parts(string_raw, deny_parts_list=None):
 # Method to parse complex row to string
 def parse_row2string(row_obj, row_delimiter='#'):
 
+    # Check if line starts with {number}######
+    if row_obj.count(row_delimiter) > 1:
+        pattern = r'[0-9]'
+        row_obj = re.sub(pattern, '', row_obj)
+
     row_string = row_obj.split(row_delimiter)[0]
 
     # Check delimiter character (in intake file info there are both '#' and '%')

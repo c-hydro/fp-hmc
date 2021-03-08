@@ -105,7 +105,7 @@ class ModelInitializer:
             dset_ref = get_raster(file_path_ref)
         else:
             log_stream.error(' ===> Reference static datasets is not available')
-            raise IOError('File is not found in the selected folder')
+            raise IOError(' ===> File "' + file_path_ref + '" is not found in the selected folder')
         return dset_ref
     # -------------------------------------------------------------------------------------
 

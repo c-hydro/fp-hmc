@@ -15,12 +15,15 @@ import os
 import pandas as pd
 
 from hmc.algorithm.io.lib_data_io_nc import read_data as read_data_nc
+from hmc.algorithm.io.lib_data_io_tiff import read_data as read_data_tiff
+
 from hmc.algorithm.io.lib_data_io_ascii import read_data_point, read_data_time_series, read_state_point, \
     read_outcome_point, read_outcome_time_series
 from hmc.algorithm.io.lib_data_io_generic import store_file
 from hmc.algorithm.io.lib_data_geo_ascii import read_data_vector, read_data_grid
 from hmc.algorithm.io.lib_data_geo_ascii import read_data_point_dam, read_data_point_intake, \
-    read_data_point_section, write_data_point_section
+    read_data_point_joint, read_data_point_lake, \
+    read_data_point_section, write_data_point_section, write_data_point_undefined
 from hmc.algorithm.io.lib_data_geo_shapefile import read_data_shapefile_section
 from hmc.algorithm.io.lib_data_zip_gzip import unzip_filename
 
@@ -140,6 +143,18 @@ class DSetReader:
     # -------------------------------------------------------------------------------------
 
     # -------------------------------------------------------------------------------------
+    # Method to write filename for static datasets
+    @staticmethod
+    def write_filename_undefined(file_path, var_name):
+
+        # Write an empty point static file
+        if var_name in ['Dam', 'Intake', 'Lake', 'Joint']:
+            write_data_point_undefined(file_path)
+            log_stream.warning(' ===> File static for variable ' + var_name + ' is initialized by default value')
+
+    # -------------------------------------------------------------------------------------
+
+    # -------------------------------------------------------------------------------------
     # Method to read filename for static datasets
     def read_filename_static(self, var_name):
 
@@ -170,9 +185,9 @@ class DSetReader:
                 elif var_name == 'Intake':
                     obj_var = read_data_point_intake(file_path)
                 elif var_name == 'Lake':
-                    obj_var = None
+                    obj_var = read_data_point_lake(file_path)
                 elif var_name == 'Joint':
-                    obj_var = None
+                    obj_var = read_data_point_joint(file_path)
                 elif var_name == 'Section':
                     obj_var = read_data_point_section(file_path)
                 else:
@@ -190,8 +205,10 @@ class DSetReader:
                 raise IOError('File type not allowed')
 
         else:
+
             log_stream.warning(' ===> File static for variable ' + var_name + ' is not found in reading method!')
             log_stream.warning(' ===> Filename: ' + file_path)
+
             obj_var = None
 
         # Check mandatory variable status
@@ -199,7 +216,7 @@ class DSetReader:
             if self.file_src_mandatory:
                 log_stream.error(' ===> File static ' + file_path + ' is mandatory! Execution exit.')
                 log_stream.info(' ------> Read variable ' + var_name + ' ... FAILED')
-                raise IOError('File not found')
+                raise IOError('File not found or datasets are undefined. Check your input or settings!')
             else:
                 log_stream.warning(' ===> File static ' + file_path + ' is ancillary! Execution continue.')
                 log_stream.info(' ------> Read variable ' + var_name + ' ... SKIPPED')
@@ -234,6 +251,14 @@ class DSetReader:
                 log_stream.error(' ===> File dynamic type is not allowed! Check your datasets!')
                 raise IOError('File type not allowed')
 
+            if isinstance(file_path, list):
+                for id_path, step_path in enumerate(file_path):
+                    if step_path == '':
+                        file_path[id_path] = None
+            else:
+                log_stream.error(' ===> File dynamic path is in wrong format!')
+                raise NotImplementedError('File path format not implemented yet')
+
             if self.file_src_name is not None:
                 file_var_name = self.file_src_name
             else:
@@ -252,6 +277,16 @@ class DSetReader:
                         obj_var = da_var
                     else:
                         obj_var = da_var.to_dataset(name=file_var_name)
+                else:
+                    obj_var = None
+
+            elif self.file_src_format == 'tiff':
+
+                da_var, da_time, geo_x, geo_y = read_data_tiff(file_path, var_name=file_var_name,
+                                                               var_time_start=var_time_start, var_time_end=var_time_end)
+
+                if da_var is not None:
+                    obj_var = da_var.to_dataset(name=file_var_name)
                 else:
                     obj_var = None
 

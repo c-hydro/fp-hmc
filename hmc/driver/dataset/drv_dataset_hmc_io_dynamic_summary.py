@@ -188,10 +188,15 @@ class DSetManager:
 
     # Method to dump data
     def dump_data(self, file_list, file_data, file_time, file_format=None,
-                  obj_time=None, obj_static=None, obj_run=None, no_data=-9999.0):
+                  obj_time=None, obj_static=None, obj_run=None, no_data=-9999.0, no_attr='NA'):
 
+        # Starting info
+        log_stream.info(' --------> Dump data ... ')
+
+        # Get attributes object
         obj_attrs = {**obj_time, **obj_static, **obj_run}
 
+        # Define attributes
         file_attrs = {}
         for attr_key, attr_value in obj_attrs.items():
             if attr_key in self.attrs_selected:
@@ -202,8 +207,13 @@ class DSetManager:
                     attr_value_filter = attr_value
                 file_attrs[attr_name] = attr_value_filter
 
-        # Starting info
-        log_stream.info(' --------> Dump data ... ')
+        # Filter attributes
+        for attr_key, attr_value in file_attrs.items():
+            if attr_value is None:
+                log_stream.warning(' ===> Value of attribute "' +
+                                   attr_key + '" is None. Initialize with "' + no_attr + '" default value.')
+                attr_value = no_attr
+            file_attrs[attr_key] = attr_value
 
         if file_format is not None:
             if file_format == 'netcdf':

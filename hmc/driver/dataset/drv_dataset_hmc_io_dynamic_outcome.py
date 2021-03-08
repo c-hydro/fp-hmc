@@ -574,14 +574,32 @@ class DSetManager:
                                     var_data_expected = np.zeros(
                                         [var_da_step.shape[dim_idx_geo_x], var_da_step.shape[dim_idx_geo_y],
                                          dset_time.shape[0]])
+
                                     # Check datasets dimensions for trying a correction
-                                    if var_data_expected.shape[:2] != da_terrain.shape:
+                                    if (var_data_expected.shape[0] == da_terrain.shape[1]) and (
+                                            var_data_expected.shape[1] == da_terrain.shape[0]):
                                         var_data_expected = np.zeros([da_terrain.shape[0], da_terrain.shape[1],
                                                                      dset_time.shape[0]])
                                         log_stream.warning(
-                                            ' ===> Dimensions expected for variable ' + var_name_step
-                                            + ' and terrain are not equal in automatic detection')
+                                            ' ===> Dimensions expected for variable ' +
+                                            var_name_step + ' and terrain are the same but in wrong order by using '
+                                                            'the automatic detection')
                                         log_stream.warning(' ===> Use terrain dimensions to try datasets analysis')
+
+                                        active_interp_method = True
+
+                                    elif var_data_expected.shape[:2] == da_terrain.shape:
+                                        log_stream.info(' --------> ' + var_name_step +
+                                                        ' datasets and terrain datasets have the same dimensions'
+                                                        ' found by using the automatic detection')
+                                        active_interp_method = False
+
+                                    else:
+                                        log_stream.error(' --------> ' + var_name_step +
+                                                         ' datasets and terrain datasets give an error'
+                                                         ' by using the automatic detection')
+                                        raise IOError('Check your static and forcing datasets')
+
                                     var_data_expected[:, :, :] = np.nan
 
                                     # Get variable, data, time and attributes of expected data
@@ -605,14 +623,17 @@ class DSetManager:
                                         raise IOError('Datasets are not on the same period or sub-period.')
 
                                     # Perform interpolation and masking of datasets
-                                    if self.var_interp == 'nearest':
-                                        var_da_interp = var_da_selected.interp(
-                                            south_north=self.da_terrain['south_north'],
-                                            west_east=self.da_terrain['west_east'], method='nearest')
+                                    if active_interp_method:
+                                        if self.var_interp == 'nearest':
+                                            var_da_interp = var_da_selected.interp(
+                                                south_north=self.da_terrain['south_north'],
+                                                west_east=self.da_terrain['west_east'], method='nearest')
+                                        else:
+                                            # Ending info for undefined function
+                                            log_stream.error(' ===> Interpolation method not available')
+                                            raise NotImplemented('Interpolation method not implemented yet')
                                     else:
-                                        # Ending info for undefined function
-                                        log_stream.error(' ===> Interpolation method not available')
-                                        raise NotImplemented('Interpolation method not implemented yet')
+                                        var_da_interp = deepcopy(var_da_selected)
 
                                     var_da_masked = var_da_interp.where(self.da_terrain != -9999)
 

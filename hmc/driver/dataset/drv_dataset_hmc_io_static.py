@@ -142,8 +142,25 @@ class DSetManager:
             var_data = data_source_static[var_name]
 
             if var_data is None:
-                driver_hmc_parser = DSetReader(file_name, file_info, None, time_src_info=None)
-                obj_var = driver_hmc_parser.read_filename_static(var_name)
+
+                if os.path.exists(file_name):
+                    driver_hmc_parser = DSetReader(file_name, file_info, None, time_src_info=None)
+                    obj_var = driver_hmc_parser.read_filename_static(var_name)
+                else:
+                    if file_mandatory:
+                        log_stream.error(' ===> Static datasets for variable ' +
+                                         var_name + ' in ' + file_format + ' format is mandatory. Exit.')
+                        raise IOError('File ' + file_name + ' not found!')
+                    else:
+                        log_stream.warning(' ===> Static datasets for variable ' +
+                                           var_name + ' in ' + file_format + ' format is ancillary')
+                        log_stream.warning(' ===> File ' + file_name +
+                                           ' not found! Datasets will be initialized to None.')
+
+                        driver_hmc_parser = DSetReader(file_name, file_info, None, time_src_info=None)
+                        driver_hmc_parser.write_filename_undefined(file_name, var_name)
+                        obj_var = None
+
             elif var_data is not None:
 
                 if not os.path.exists(file_name):

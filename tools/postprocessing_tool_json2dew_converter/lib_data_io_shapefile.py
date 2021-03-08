@@ -3,7 +3,7 @@ Class Features
 
 Name:          lib_data_io_shapefile
 Author(s):     Fabio Delogu (fabio.delogu@cimafoundation.org)
-Date:          '20210113'
+Date:          '20210225'
 Version:       '1.0.0'
 """
 
@@ -23,7 +23,7 @@ logging.getLogger('geopandas').setLevel(logging.WARNING)
 
 
 # -------------------------------------------------------------------------------------
-# Method to find data section
+# Method to find section data
 def find_data_section(section_df, section_name=None, basin_name=None,
                       tag_column_section_in='section_name', tag_column_basin_in='section_domain',
                       tag_column_section_out='section_name', tag_column_basin_out='basin_name'):
@@ -58,7 +58,7 @@ def find_data_section(section_df, section_name=None, basin_name=None,
 
 
 # -------------------------------------------------------------------------------------
-# Method to read shapefile section(s)
+# Method to read section(s) data (shapefile)
 def read_data_section(file_name, columns_name_expected_in=None, columns_name_expected_out=None, columns_name_type=None):
 
     if columns_name_expected_in is None:

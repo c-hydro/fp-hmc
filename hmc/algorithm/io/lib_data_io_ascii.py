@@ -123,58 +123,69 @@ def read_outcome_point(file_name, file_time, file_columns=None, file_ancillary=N
 
         if os.path.exists(file_step):
 
-            file_table = pd.read_table(file_step, header=None)
-            time_step_exists.append(time_step)
+            file_size = os.path.getsize(file_step)
 
-            for row_id, row_value in zip(file_table.index, file_table.values):
+            if file_size > 0:
 
-                if row_value.__len__() == 1:
-                    row_value = row_value[0]
-                else:
-                    raise NotImplementedError('Length list not allowed')
+                file_table = pd.read_table(file_step, header=None)
+                time_step_exists.append(time_step)
 
-                if row_id not in list(data_obj.keys()):
-                    data_obj[row_id] = [row_value]
-                else:
-                    row_tmp = data_obj[row_id]
-                    row_tmp.append(row_value)
-                    data_obj[row_id] = row_tmp
+                for row_id, row_value in zip(file_table.index, file_table.values):
 
-    data_var = {}
-    for data_id, (data_ref, data_ts) in enumerate(data_obj.items()):
+                    if row_value.__len__() == 1:
+                        row_value = row_value[0]
+                    else:
+                        raise NotImplementedError(' ===> Length list not allowed')
 
-        if file_ancillary is not None:
-            data_name = list(file_ancillary.keys())[data_id]
-        else:
-            data_name = data_ref
+                    if row_id not in list(data_obj.keys()):
+                        data_obj[row_id] = [row_value]
+                    else:
+                        row_tmp = data_obj[row_id]
+                        row_tmp.append(row_value)
+                        data_obj[row_id] = row_tmp
+            else:
+                log_stream.warning(' ===> Size of ' + file_step + ' is equal to zero. File is empty.')
+                data_obj = None
 
-        for tag_columns in file_columns.values():
+    if data_obj is not None:
+        data_var = {}
+        for data_id, (data_ref, data_ts) in enumerate(data_obj.items()):
 
-            if tag_columns not in list(data_var.keys()):
-                data_var[tag_columns] = {}
+            if file_ancillary is not None:
+                data_name = list(file_ancillary.keys())[data_id]
+            else:
+                data_name = data_ref
 
-            data_var[tag_columns][data_name] = {}
-            data_var[tag_columns][data_name] = data_ts
+            for tag_columns in file_columns.values():
 
-    time_n = time_step_expected.__len__()
-    var_data_expected = [-9999.0] * time_n
+                if tag_columns not in list(data_var.keys()):
+                    data_var[tag_columns] = {}
 
-    dframe_summary = {}
-    dframe_merged = pd.DataFrame(index=time_step_expected)
-    for var_id, (var_key, var_ts) in enumerate(data_var.items()):
-        for var_pivot, var_data_defined in var_ts.items():
+                data_var[tag_columns][data_name] = {}
+                data_var[tag_columns][data_name] = data_ts
 
-            dframe_expected = pd.DataFrame(index=time_step_expected, data=var_data_expected, columns=[var_pivot])
-            dframe_expected.index.name = 'Time'
+        time_n = time_step_expected.__len__()
+        var_data_expected = [-9999.0] * time_n
 
-            dframe_point_tmp = pd.DataFrame(index=time_step_exists, data=var_data_defined, columns=[var_pivot])
-            dframe_point_tmp.index.name = 'Time'
+        dframe_summary = {}
+        dframe_merged = pd.DataFrame(index=time_step_expected)
+        for var_id, (var_key, var_ts) in enumerate(data_var.items()):
+            for var_pivot, var_data_defined in var_ts.items():
 
-            dframe_expected.update(dframe_point_tmp)
-            series_filled = dframe_expected.iloc[:, 0]
-            dframe_merged[var_pivot] = series_filled
+                dframe_expected = pd.DataFrame(index=time_step_expected, data=var_data_expected, columns=[var_pivot])
+                dframe_expected.index.name = 'Time'
 
-        dframe_summary[var_key] = deepcopy(dframe_merged)
+                dframe_point_tmp = pd.DataFrame(index=time_step_exists, data=var_data_defined, columns=[var_pivot])
+                dframe_point_tmp.index.name = 'Time'
+
+                dframe_expected.update(dframe_point_tmp)
+                series_filled = dframe_expected.iloc[:, 0]
+                dframe_merged[var_pivot] = series_filled
+
+            dframe_summary[var_key] = deepcopy(dframe_merged)
+
+    else:
+        dframe_summary = None
 
     return dframe_summary
 
@@ -214,7 +225,7 @@ def read_data_point(file_name, file_time, file_columns=None, file_ancillary=None
                     file_row_split = file_row_strip.split()
                 else:
                     log_stream.error(' ===> Data ascii point format is not allowed')
-                    raise NotImplementedError('Case not implemented yet')
+                    raise NotImplementedError(' ===> Case not implemented yet')
 
                 for row_n, row_value in enumerate(file_row_split):
 
@@ -309,7 +320,7 @@ def read_data_point(file_name, file_time, file_columns=None, file_ancillary=None
                 dframe_merged[var_pivot] = series_filled
             else:
                 log_stream.error(' ===> Data ascii time-series length is not correct')
-                raise IOError('Time-series defined have not the same length of time-series expected')
+                raise IOError(' ===> Time-series defined have not the same length of time-series expected')
 
         dframe_summary[var_key] = deepcopy(dframe_merged)
 
@@ -393,57 +404,62 @@ def read_data_time_series(file_name, file_time,
         file_columns_type = {0: 'dset'}
     file_ref = list(file_columns_type.values())[0]
 
-    if column_sep in file_name[0]:
-        file_name = file_name[0].split(column_sep)
+    if file_name[0] is not None:
+        if column_sep in file_name[0]:
+            file_name = file_name[0].split(column_sep)
 
-    data_obj = {file_ref: {}}
-    for file_n, (file_step, file_col) in enumerate(zip(file_name, file_columns_name)):
+        data_obj = {file_ref: {}}
+        for file_n, (file_step, file_col) in enumerate(zip(file_name, file_columns_name)):
 
-        if os.path.exists(file_step):
-            file_table = pd.read_table(file_step, header=None)
-            file_column_values = file_table.values.tolist()
-            file_row_values = [item for sublist in file_column_values for item in sublist]
+            if os.path.exists(file_step):
+                file_table = pd.read_table(file_step, header=None)
+                file_column_values = file_table.values.tolist()
+                file_row_values = [item for sublist in file_column_values for item in sublist]
 
-            data_obj[file_ref][file_col] = file_row_values
+                data_obj[file_ref][file_col] = file_row_values
 
-    time_range_expected = pd.date_range(start=file_time_start, end=file_time_end, freq=file_time_frequency)
-    time_n_expected = time_range_expected.__len__()
-    var_data_expected = [-9999.0] * time_n_expected
+        time_range_expected = pd.date_range(start=file_time_start, end=file_time_end, freq=file_time_frequency)
+        time_n_expected = time_range_expected.__len__()
+        var_data_expected = [-9999.0] * time_n_expected
 
-    dframe_summary = {}
-    dframe_merged = pd.DataFrame(index=time_range_expected)
-    for var_id, (var_key, var_ts) in enumerate(data_obj.items()):
-        for var_pivot, var_data_dataset in var_ts.items():
+        dframe_summary = {}
+        dframe_merged = pd.DataFrame(index=time_range_expected)
+        for var_id, (var_key, var_ts) in enumerate(data_obj.items()):
+            for var_pivot, var_data_dataset in var_ts.items():
 
-            time_n_dataset = var_data_dataset.__len__()
+                time_n_dataset = var_data_dataset.__len__()
 
-            file_time_dataset = file_time[0]
-            time_range_dataset = pd.date_range(start=file_time_dataset,
-                                               periods=time_n_dataset, freq=file_time_frequency)
+                file_time_dataset = file_time[0]
+                time_range_dataset = pd.date_range(start=file_time_dataset,
+                                                   periods=time_n_dataset, freq=file_time_frequency)
 
-            dframe_dataset = pd.DataFrame(index=time_range_dataset, data=var_data_dataset, columns=[var_pivot])
-            dframe_time_start = dframe_dataset.index[0]
-            dframe_time_end = dframe_dataset.index[-1]
+                dframe_dataset = pd.DataFrame(index=time_range_dataset, data=var_data_dataset, columns=[var_pivot])
+                dframe_time_start = dframe_dataset.index[0]
+                dframe_time_end = dframe_dataset.index[-1]
 
-            var_time_start = time_range_dataset[time_range_dataset == file_time_start][0]
-            var_time_end = time_range_dataset[time_range_dataset == file_time_end][0]
+                var_time_start = time_range_dataset[time_range_dataset == file_time_start][0]
+                var_time_end = time_range_dataset[time_range_dataset == file_time_end][0]
 
-            if var_time_start >= dframe_time_start:
-                var_time_start_select = var_time_start
-            else:
-                var_time_start_select = dframe_time_start
-            if var_time_end >= dframe_time_end:
-                var_time_end_select = dframe_time_end
-            else:
-                var_time_end_select = var_time_end
+                if var_time_start >= dframe_time_start:
+                    var_time_start_select = var_time_start
+                else:
+                    var_time_start_select = dframe_time_start
+                if var_time_end >= dframe_time_end:
+                    var_time_end_select = dframe_time_end
+                else:
+                    var_time_end_select = var_time_end
 
-            dframe_time_series_filled = dframe_dataset[var_time_start_select: var_time_end_select]
-            dframe_time_series_filled.index.name = 'Time'
+                dframe_time_series_filled = dframe_dataset[var_time_start_select: var_time_end_select]
+                dframe_time_series_filled.index.name = 'Time'
 
-            series_filled = dframe_time_series_filled.iloc[:, 0]
-            dframe_merged[var_pivot] = series_filled
+                series_filled = dframe_time_series_filled.iloc[:, 0]
+                dframe_merged[var_pivot] = series_filled
 
-        dframe_summary[var_key] = deepcopy(dframe_merged)
+            dframe_summary[var_key] = deepcopy(dframe_merged)
+
+    else:
+
+        dframe_summary = None
 
     return dframe_summary
 # -------------------------------------------------------------------------------------

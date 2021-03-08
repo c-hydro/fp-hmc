@@ -12,6 +12,8 @@ Version:       '3.0.0'
 import logging
 import warnings
 import os
+import re
+import datetime
 
 import numpy as np
 import pandas as pd
@@ -28,7 +30,7 @@ from hmc.algorithm.utils.lib_utils_string import fill_tags2string
 from hmc.algorithm.utils.lib_utils_list import flat_list
 from hmc.algorithm.utils.lib_utils_zip import add_zip_extension
 
-from hmc.algorithm.default.lib_default_args import logger_name, time_format_algorithm
+from hmc.algorithm.default.lib_default_args import logger_name, time_format_algorithm, time_format_datasets
 
 from hmc.driver.dataset.drv_dataset_hmc_io_type import DSetReader
 
@@ -217,7 +219,47 @@ class DSetManager:
         self.column_sep = ';'
         self.list_sep = ':'
 
-    def copy_data(self, dset_model_dyn, dset_source_dyn, columns_excluded=None):
+    @staticmethod
+    def validate_flag(data_name, data_flag, flag_key_expected=None, flag_values_expected=None):
+
+        if flag_values_expected is None:
+            flag_values_expected = [None, True, False]
+        if flag_key_expected is None:
+            flag_key_expected = ['merge', 'split', 'dump', 'copy', 'analyze']
+
+        for flag_key, flag_value in data_flag.items():
+            if flag_key not in flag_key_expected:
+                log_stream.error(' ===> Datasets flag key "' + flag_key + '" is not allowed.')
+                raise KeyError('Flag key is not in the list of authorized flag keys')
+            if flag_value not in flag_values_expected:
+                log_stream.error(' ===> Datasets flag value "' + str(flag_value) + '" is not allowed.')
+                raise KeyError('Flag value is not in the list of authorized flag values')
+
+        if 'copy' in list(data_flag.keys()) and 'dump' in list(data_flag.keys()):
+            if data_flag['copy'] and data_flag['dump']:
+                log_stream.error(' ===> Flags "dump" and "copy" cannot be concurrently selected.')
+                raise RuntimeError('Flags have to be different using the allowed values' + str(flag_values_expected))
+
+        if 'merge' in list(data_flag.keys()) and 'split' in list(data_flag.keys()):
+            if data_flag['merge'] and data_flag['split']:
+                log_stream.error(' ===> Flags "merge" and "split" cannot be concurrently selected.')
+                raise RuntimeError('Flags have to be different using the allowed values' + str(flag_values_expected))
+
+    @staticmethod
+    def rename_filename(file_path_tmpl, file_path_ref):
+
+        folder_name_tmpl, file_name_tmpl = os.path.split(file_path_tmpl)
+        folder_name_ref, file_name_ref = os.path.split(file_path_ref)
+
+        time_match = re.search('\d{4}\d{2}\d{2}\d{2}\d{2}', file_name_ref)
+        time_stamp = pd.Timestamp(datetime.datetime.strptime(time_match.group(), time_format_datasets))
+        file_name_def = file_name_tmpl.format(dset_datetime_hmc=time_stamp.strftime(time_format_datasets))
+
+        file_path_def = os.path.join(folder_name_ref, file_name_def)
+
+        return file_path_def
+
+    def copy_data(self, dset_model_dyn, dset_source_dyn, columns_excluded=None, vars_selected=None):
 
         # Starting info
         log_stream.info(' -------> Copy data ... ')
@@ -283,7 +325,8 @@ class DSetManager:
                 file_source_list = []
 
             if not file_source_tmp:
-                file_source_list = None
+                file_source_list.append([])     # condition for empty datasets
+                # file_source_list = None
             else:
                 file_source_list.append(file_source_tmp)
 
@@ -300,27 +343,48 @@ class DSetManager:
                 elif file_dest_list.__len__() == file_source_list.__len__():
                     file_dest_select = file_dest_list[list_id]
                     file_source_select = file_source_list[list_id]
+                elif file_dest_list.__len__() < file_source_list.__len__():
+                    file_dest_select = flat_list(file_dest_list)
+                    file_source_select = file_source_list[list_id]
                 else:
                     log_stream.error(' ===> Copy failed for unexpected number of destination or source filenames')
                     raise IOError('Source and destination filenames have to be equal')
 
                 if file_dest_select and file_source_select:
 
+                    warning_message_print = True
                     for file_path_dest_step, file_path_source_step in zip(file_dest_select, file_source_select):
 
                         folder_name_source_step, file_name_source_step = split_path(file_path_source_step)
                         folder_name_dest_step, file_name_dest_step = split_path(file_path_dest_step)
 
                         if os.path.exists(file_path_source_step):
-                            create_folder(folder_name_dest_step)
-                            copy_file(file_path_source_step, file_path_dest_step)
+
+                            if var_source_step in vars_selected:
+
+                                if not os.path.exists(file_path_dest_step):
+                                    create_folder(folder_name_dest_step)
+                                    copy_file(file_path_source_step, file_path_dest_step)
+
+                            elif var_source_step not in vars_selected:
+
+                                if warning_message_print:
+                                    log_stream.warning(' ===> Variable: ' + var_source_step +
+                                                       ' is not expected for this datasets')
+                                    warning_message_print = False
+
                         else:
                             log_stream.warning(' ===> Copy file: ' + file_name_source_step +
                                                ' FAILED. File does not exist!')
+
+                    log_stream.info(' --------> Variable ' + var_source_step + ' ... DONE')
+                else:
+                    log_stream.warning(' ===> Copy file: ... FAILED. Datasets are undefined')
+                    log_stream.info(' --------> Variable ' + var_source_step + ' ... SKIPPED')
+
             else:
                 log_stream.warning(' ===> Copy file: ... FAILED. All files do not exist')
-
-            log_stream.info(' --------> Variable ' + var_source_step + ' ... DONE')
+                log_stream.info(' --------> Variable ' + var_source_step + ' ... SKIPPED')
 
         # Ending info
         log_stream.info(' -------> Copy data ... DONE')
@@ -618,18 +682,38 @@ class DSetManager:
                                     var_data_expected = np.zeros(
                                         [var_da_step.shape[dim_idx_geo_y], var_da_step.shape[dim_idx_geo_x],
                                          dset_time.shape[0]])
+
                                     # Check datasets dimensions and in case of mismatching try to correct
-                                    if var_data_expected.shape[:2] != da_terrain.shape:
+                                    if (var_data_expected.shape[0] == da_terrain.shape[1]) and (
+                                            var_data_expected.shape[1] == da_terrain.shape[0]):
                                         var_data_expected = np.zeros([da_terrain.shape[0], da_terrain.shape[1],
+                                                                      dset_time.shape[0]])
+                                        log_stream.info(' --------> ' + var_name_step +
+                                                        ' datasets and terrain datasets have the same dimensions'
+                                                        ' in different order found by using the automatic detection')
+                                        log_stream.warning(' ===> Use terrain dimensions to try datasets analysis')
+                                        active_interp_method = True
+
+                                    elif var_data_expected.shape[:2] != da_terrain.shape:
+                                        var_data_expected = np.zeros([geo_x_values.shape[0], geo_y_values.shape[1],
                                                                      dset_time.shape[0]])
                                         log_stream.info(' --------> ' + var_name_step +
                                                         ' datasets and terrain datasets have not the same dimensions'
                                                         ' found by using the automatic detection')
-                                        log_stream.warning(' ===> Use terrain dimensions to try datasets analysis')
-                                    else:
+                                        log_stream.warning(' ===> Use datasets dimensions to try datasets analysis')
+                                        active_interp_method = True
+
+                                    elif var_data_expected.shape[:2] == da_terrain.shape:
                                         log_stream.info(' --------> ' + var_name_step +
                                                         ' datasets and terrain datasets have the same dimensions'
                                                         ' found by using the automatic detection')
+                                        active_interp_method = False
+
+                                    else:
+                                        log_stream.error(' --------> ' + var_name_step +
+                                                         ' datasets and terrain datasets give an error'
+                                                         ' by using the automatic detection')
+                                        raise IOError('Check your static and forcing datasets')
 
                                     var_data_expected[:, :, :] = np.nan
 
@@ -657,15 +741,57 @@ class DSetManager:
                                         raise IOError('Datasets are not on the same period or sub-period.')
 
                                     # Perform interpolation and masking of datasets
-                                    if self.var_interp == 'nearest':
-                                        var_da_interp = var_da_selected.interp(
-                                            south_north=self.da_terrain['south_north'],
-                                            west_east=self.da_terrain['west_east'], method='nearest')
-                                    else:
-                                        # Ending info for undefined function
-                                        log_stream.error(' ===> Interpolation method not available')
-                                        raise NotImplemented('Interpolation method not implemented yet')
+                                    if active_interp_method:
 
+                                        # Interpolation info start
+                                        log_stream.info(' ---------> Interpolate ' + var_name_step +
+                                                        ' datasets ... ')
+
+                                        # Configure data array with longitude/latitude coordinates
+                                        var_da_selected_tmp = create_darray_3d(
+                                            var_da_selected.values, dset_time, geo_x_values, geo_y_values,
+                                            coord_name_time=self.coord_name_time,
+                                            coord_name_x='Longitude', coord_name_y='Latitude',
+                                            dim_name_time=self.dim_name_time,
+                                            dim_name_x='Longitude', dim_name_y='Latitude',
+                                            dims_order=['Latitude', 'Longitude', self.dim_name_time])
+
+                                        if self.var_interp == 'nearest':
+                                            # Interpolation method info start
+                                            log_stream.info(' ----------> Apply ' + self.var_interp + ' method ... ')
+
+                                            # Apply the interpolation methodò-...................-
+                                            var_da_interp_tmp = var_da_selected_tmp.interp(
+                                                Latitude=self.da_terrain['Latitude'],
+                                                Longitude=self.da_terrain['Longitude'], method='nearest')
+
+                                            # Interpolation method info end
+                                            log_stream.info(' ----------> Apply method ' + self.var_interp + ' ... DONE')
+                                        else:
+                                            # Ending info for undefined function
+                                            log_stream.error(' ===> Interpolation method ' +
+                                                             self.var_interp + ' not available')
+                                            raise NotImplemented('Interpolation method not implemented yet')
+
+                                        # Configure the data array with west_east/south_north coordinates
+                                        var_da_interp = create_darray_3d(
+                                            var_da_interp_tmp.values, dset_time,
+                                            self.da_terrain['Longitude'].values, self.da_terrain['Latitude'].values,
+                                            coord_name_time=self.coord_name_time,
+                                            coord_name_x=self.coord_name_geo_x, coord_name_y=self.coord_name_geo_y,
+                                            dim_name_time=self.dim_name_time,
+                                            dim_name_x=self.dim_name_geo_x, dim_name_y=self.dim_name_geo_y,
+                                            dims_order=[self.dim_name_geo_y, self.dim_name_geo_x,
+                                                        self.dim_name_time])
+
+                                        # Interpolation info end
+                                        log_stream.info(' ---------> Interpolate ' + var_name_step +
+                                                        ' datasets ... DONE')
+
+                                    else:
+                                        var_da_interp = deepcopy(var_da_selected)
+
+                                    # Mask the data array variable over the terrain reference data array
                                     var_da_masked = var_da_interp.where(self.da_terrain != -9999)
 
                                 else:
@@ -673,6 +799,7 @@ class DSetManager:
                                     if isinstance(dset_time, pd.Timestamp):
                                         dset_time = pd.DatetimeIndex([dset_time])
 
+                                    # Mask the data array variable over the terrain reference data array
                                     var_da_masked = var_da_step.where(self.da_terrain != -9999)
 
                                     if var_da_masked.ndim == 3:

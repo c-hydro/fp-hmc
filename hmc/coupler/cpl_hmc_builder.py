@@ -127,9 +127,14 @@ class ModelBuilder:
                 static_datasets_collections=None, tag_datadriver='restart')
 
             # Method to organize dynamic forcing datasets
-            dynamic_datasets_obj = self.driver_io_source.organize_data_dynamic(
+            dynamic_forcing_datasets_obj = self.driver_io_source.organize_data_dynamic(
                 time_series_collections, template_run_filled,
                 static_datasets_collections=static_datasets_collections, tag_datadriver='forcing')
+
+            # Method to organize dynamic updating datasets
+            dynamic_updating_datasets_obj = self.driver_io_source.organize_data_dynamic(
+                time_series_collections, template_run_filled,
+                static_datasets_collections=static_datasets_collections, tag_datadriver='updating')
 
             # Method to analyze dynamic restart datasets
             self.driver_io_source.analyze_data_dynamic_restart(
@@ -138,11 +143,16 @@ class ModelBuilder:
 
             # Method to analyze dynamic forcing datasets
             self.driver_io_source.analyze_data_dynamic_forcing(
-                time_series_collections, time_info_collections, static_datasets_collections, dynamic_datasets_obj,
-                tag_datatype='OBS', tag_datadriver='forcing')
+                time_series_collections, time_info_collections, static_datasets_collections,
+                dynamic_forcing_datasets_obj, tag_datatype='OBS', tag_datadriver='forcing')
             self.driver_io_source.analyze_data_dynamic_forcing(
-                time_series_collections, time_info_collections, static_datasets_collections, dynamic_datasets_obj,
-                tag_datatype='FOR', tag_datadriver='forcing')
+                time_series_collections, time_info_collections, static_datasets_collections,
+                dynamic_forcing_datasets_obj, tag_datatype='FOR', tag_datadriver='forcing')
+
+            # Method to analyze dynamic updating datasets
+            self.driver_io_source.analyze_data_dynamic_updating(
+                time_series_collections, time_info_collections, static_datasets_collections,
+                dynamic_updating_datasets_obj, tag_datatype='OBS', tag_datadriver='updating')
 
             # Retrieve dynamic collections
             dynamic_datasets_collections = self.driver_io_source.dset_collections_dynamic

@@ -2,8 +2,8 @@
 """
 HYDROLOGICAL MODEL CONTINUUM - Run manager to set parameters and datasets of the hydrological model
 
-__date__ = '20201102'
-__version__ = '3.1.3'
+__date__ = '20210308'
+__version__ = '3.1.4'
 __author__ =
         'Fabio Delogu (fabio.delogu@cimafoundation.org',
         'Simone Gabellani (simone.gabellani@cimafoundation.org',
@@ -26,6 +26,7 @@ Parameters:
         Time of the simulation in YYYY-MM-DD HH:MM format
 
 Version(s):
+20210308 (3.1.4) --> Development of run manager application for version 3.1.4 of HMC models
 20201102 (3.1.3) --> Development of run manager application for version 3.1.3 of HMC models
 20200723 (3.1.2) --> Development of run manager application for version 3.1.2 of HMC models
 20200401 (3.0.0) --> Beta release of run manager application for 3th generation of HMC models
@@ -47,51 +48,10 @@ from hmc.coupler.cpl_hmc_finalizer import ModelFinalizer
 # -------------------------------------------------------------------------------------
 # Version and algorithm information
 project_name = 'HMC'
-alg_version = '3.1.3'
+alg_version = '3.1.4'
 alg_type = 'Model'
 alg_name = 'RUN MANAGER TOOL'
-alg_release = '2020-11-02'
-# -------------------------------------------------------------------------------------
-
-
-# -------------------------------------------------------------------------------------
-# Method to get script argument(s)
-def get_args(settings_algorithm=None, settings_datasets=None, settings_time=None):
-
-    parser_handle = argparse.ArgumentParser()
-    parser_handle.add_argument('-settings_algorithm', action="store", dest="settings_algorithm")
-    parser_handle.add_argument('-settings_datasets', action="store", dest="settings_datasets")
-    parser_handle.add_argument('-time', action="store", dest="time")
-    parser_values = parser_handle.parse_args()
-
-    script_name = parser_handle.prog
-
-    if settings_algorithm is None:
-        if parser_values.settings_algorithm:
-            script_settings_algorithm = parser_values.settings_algorithm
-        else:
-            script_settings_algorithm = 'configuration_algorithm.json'
-    else:
-        script_settings_algorithm = settings_algorithm
-
-    if settings_datasets is None:
-        if parser_values.settings_datasets:
-            script_settings_datasets = parser_values.settings_datasets
-        else:
-            script_settings_datasets = 'configuration_datasets.json'
-    else:
-        script_settings_datasets = settings_datasets
-
-    if settings_time is None:
-        if parser_values.time:
-            script_time = parser_values.time
-        else:
-            script_time = None
-    else:
-        script_time = settings_time
-
-    return script_name, script_settings_algorithm, script_settings_datasets, script_time
-
+alg_release = '2021-03-08'
 # -------------------------------------------------------------------------------------
 
 
@@ -199,6 +159,47 @@ def main(settings_algorithm=None, settings_datasets=None, settings_time=None):
                     ' (Version ' + alg_version + ' - Release ' + alg_release + ')]')
     log_stream.info('End Program - Time elapsed: ' + str(time_elapsed) + ' seconds')
     # -------------------------------------------------------------------------------------
+
+
+# -------------------------------------------------------------------------------------
+# Method to get script argument(s)
+def get_args(settings_algorithm=None, settings_datasets=None, settings_time=None):
+
+    parser_handle = argparse.ArgumentParser()
+    parser_handle.add_argument('-settings_algorithm', action="store", dest="settings_algorithm")
+    parser_handle.add_argument('-settings_datasets', action="store", dest="settings_datasets")
+    parser_handle.add_argument('-time', action="store", dest="time")
+    parser_values = parser_handle.parse_args()
+
+    script_name = parser_handle.prog
+
+    if settings_algorithm is None:
+        if parser_values.settings_algorithm:
+            script_settings_algorithm = parser_values.settings_algorithm
+        else:
+            script_settings_algorithm = 'configuration_algorithm.json'
+    else:
+        script_settings_algorithm = settings_algorithm
+
+    if settings_datasets is None:
+        if parser_values.settings_datasets:
+            script_settings_datasets = parser_values.settings_datasets
+        else:
+            script_settings_datasets = 'configuration_datasets.json'
+    else:
+        script_settings_datasets = settings_datasets
+
+    if settings_time is None:
+        if parser_values.time:
+            script_time = parser_values.time
+        else:
+            script_time = None
+    else:
+        script_time = settings_time
+
+    return script_name, script_settings_algorithm, script_settings_datasets, script_time
+
+# -------------------------------------------------------------------------------------
 
 
 # ----------------------------------------------------------------------------

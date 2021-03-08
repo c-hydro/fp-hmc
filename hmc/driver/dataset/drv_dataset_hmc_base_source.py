@@ -20,7 +20,8 @@ from hmc.algorithm.default.lib_default_args import logger_name
 
 from hmc.driver.dataset.drv_dataset_hmc_io_static import DSetManager as DSetManager_Static
 from hmc.driver.dataset.drv_dataset_hmc_io_dynamic_restart import DSetManager as DSetManager_Restart
-from hmc.driver.dataset.drv_dataset_hmc_io_dynamic_forcing import DSetManager as DSetManager_Dynamic
+from hmc.driver.dataset.drv_dataset_hmc_io_dynamic_forcing import DSetManager as DSetManager_DynamicForcing
+from hmc.driver.dataset.drv_dataset_hmc_io_dynamic_updating import DSetManager as DSetManager_DynamicUpdating
 
 # Log
 log_stream = logging.getLogger(logger_name)
@@ -49,16 +50,18 @@ class ModelSource:
 
         self.dset_geo = self.dset_obj[tag_dset_geo]
         self.dset_restart = self.dset_obj[tag_dset_restart]
-        self.dset_observed = self.dset_obj[tag_dset_observed]
+        # self.dset_observed = self.dset_obj[tag_dset_observed]
 
         dset_forcing = self.dset_obj[tag_dset_forcing]
         dset_updating = self.dset_obj[tag_dset_updating]
 
-        dset_forcing = merge_structure(
-            dset_forcing, dset_updating, keys_target_list=['Gridded', 'hmc_file_variable', 'OBS', 'var_list'])
-        dset_forcing = merge_structure(
-            dset_forcing, dset_updating, keys_target_list=['Gridded', 'hmc_file_variable', 'OBS', 'var_operation'])
+        #dset_forcing = merge_structure(
+        #    dset_forcing, dset_updating, keys_target_list=['Gridded', 'hmc_file_variable', 'OBS', 'var_list'])
+        #dset_forcing = merge_structure(
+        #    dset_forcing, dset_updating, keys_target_list=['Gridded', 'hmc_file_variable', 'OBS', 'var_operation'])
+
         self.dset_forcing = dset_forcing
+        self.dset_updating = dset_updating
 
         self.obj_template_time = template_time
         self.obj_template_run_def = template_run_def
@@ -97,7 +100,7 @@ class ModelSource:
             'Point': 'ALL'
         }
 
-        self.reader_forcing = DSetManager_Dynamic(
+        self.reader_forcing = DSetManager_DynamicForcing(
             dset=self.dset_forcing,
             terrain_values=self.reader_geo.dset_static_ref['values'],
             terrain_geo_x=self.reader_geo.dset_static_ref['longitude'],
@@ -112,6 +115,20 @@ class ModelSource:
             'Gridded': 'ALL', 'Point': 'ALL', 'TimeSeries': 'ALL'
         }
 
+        self.reader_updating = DSetManager_DynamicUpdating(
+            dset=self.dset_updating,
+            terrain_values=self.reader_geo.dset_static_ref['values'],
+            terrain_geo_x=self.reader_geo.dset_static_ref['longitude'],
+            terrain_geo_y=self.reader_geo.dset_static_ref['latitude'],
+            terrain_transform=self.reader_geo.dset_static_ref['transform'],
+            terrain_bbox=self.reader_geo.dset_static_ref['bbox'],
+            dset_list_type=['OBS'],
+            model_tag=self.tag_model, datasets_tag=self.tag_datasets, template_time=self.obj_template_time,
+            file_compression_mode=True)
+
+        self.vars_updating_analysis = {}
+
+        '''
         self.reader_observed = DSetManager_Dynamic(
             dset=self.dset_observed,
             terrain_values=self.reader_geo.dset_static_ref['values'],
@@ -121,7 +138,7 @@ class ModelSource:
             terrain_bbox=self.reader_geo.dset_static_ref['bbox'],
             dset_list_type=['ARCHIVE'],
             model_tag=self.tag_model, datasets_tag=self.tag_datasets, template_time=self.obj_template_time)
-
+        '''
         self.dset_collections_static = None
         self.dset_collections_dynamic = None
 
@@ -163,18 +180,22 @@ class ModelSource:
 
         # Get static point information for dam(s) and section(s)
         if 'Dam' in list(dset_collections_static.keys()):
-            dam_list = list(dset_collections_static['Dam'].keys())
-            dam_parts = split_dict_keys(dam_list)
 
-            if dam_parts.__len__() == 2:
-                dam_list = dam_parts[0]
-                plant_list = dam_parts[1]
-            elif dam_parts.__len__() == 1:
-                dam_list = dam_parts[0]
-                plant_list = dam_parts[0]
+            if dset_collections_static['Dam'] is not None:
+                dam_list = list(dset_collections_static['Dam'].keys())
+                dam_parts = split_dict_keys(dam_list)
+                if dam_parts.__len__() == 2:
+                    dam_list = dam_parts[0]
+                    plant_list = dam_parts[1]
+                elif dam_parts.__len__() == 1:
+                    dam_list = dam_parts[0]
+                    plant_list = dam_parts[0]
+                else:
+                    logging.error(' ===> Dam parts are in a unsupported format')
+                    raise NotImplementedError('Case not implemented yet')
             else:
-                logging.error(' ===> Dam parts are in a unsupported format')
-                raise NotImplementedError('Case not implemented yet')
+                dam_list = None
+                plant_list = None
         else:
             logging.error(' ===> Dam key in static collections does not exist')
             raise NotImplementedError('Key not available in data collections')
@@ -225,6 +246,8 @@ class ModelSource:
 
         obj_dset_base = swap_dict_keys(reader_dataset.dset_obj)
         fx_dset_base = swap_dict_keys(reader_dataset.dset_fx)
+
+        vars_dataset = reader_dataset.dset_vars
 
         dset_collections_dynamic_out = {}
         for (run_key, obj_ts_step), obj_ti_step, obj_dset_step in zip(obj_time_series.items(), obj_time_info.values(),
@@ -299,8 +322,8 @@ class ModelSource:
                     if fx_source_subset_base['dump']:
                         reader_dataset.dump_data(dset_model_type_dyn, idx_ts_subselect, dset_source_frame_values_def)
                     elif fx_source_subset_base['copy']:
-                        reader_dataset.copy_data(dset_model_type_dyn, dset_source_type_dyn)
-
+                        reader_dataset.copy_data(dset_model_type_dyn, dset_source_type_dyn,
+                                                 vars_selected=vars_dataset)
                     # Info
                     log_stream.info(' ------> Datasets ' + file_type + ' ... DONE')
                 else:
@@ -324,7 +347,7 @@ class ModelSource:
     # -------------------------------------------------------------------------------------
 
     # -------------------------------------------------------------------------------------
-    # Method to analyze dynamic datasets and model
+    # Method to analyze dynamic forcing datasets and model
     def analyze_data_dynamic_forcing(self, obj_time_series, obj_time_info, obj_static_datasets,
                                      obj_dynamic_datasets, tag_datatype='OBS', tag_datadriver='forcing'):
 
@@ -340,6 +363,8 @@ class ModelSource:
 
         obj_dset_base = swap_dict_keys(reader_dataset.dset_obj)
         fx_dset_base = swap_dict_keys(reader_dataset.dset_fx)
+
+        vars_dataset = reader_dataset.dset_vars
 
         dset_collections_dynamic_out = {}
         for (run_key, obj_ts_step), obj_ti_step, obj_dset_step in zip(obj_time_series.items(), obj_time_info.values(),
@@ -360,7 +385,6 @@ class ModelSource:
 
             dset_model_base = obj_dset_base[self.tag_model]
             dset_source_base = obj_dset_base[self.tag_datasets]
-
             fx_source_base = fx_dset_base[self.tag_datasets]
 
             if dset_collections_dynamic_tmp is None:
@@ -392,8 +416,11 @@ class ModelSource:
                     dset_model_subset_dyn = dset_model_type_dyn[start_idx_subselect:end_idx_subselect]
                     dset_source_subset_dyn = dset_source_type_dyn[start_idx_subselect:end_idx_subselect]
 
+                    # Validate selected flag
+                    reader_dataset.validate_flag(tag_datadriver, fx_source_subset_base)
+
                     # Collect data
-                    dset_source_frame_raw = reader_dataset.collect_data(
+                    dset_source_frame_raw_base = reader_dataset.collect_data(
                         dset_model_subset_dyn, dset_source_subset_dyn, dset_source_subset_base,
                         dset_static_info=obj_static_datasets,
                         dset_time_info=obj_ti_step,
@@ -401,7 +428,7 @@ class ModelSource:
                         plant_name_list=obj_static_datasets[self.tag_plant_list])
 
                     # Check collected data
-                    if dset_source_frame_raw[self.tag_datasets] is not None:
+                    if dset_source_frame_raw_base[self.tag_datasets] is not None:
 
                         # Get analysis vars
                         if self.vars_forcing_analysis is not None:
@@ -414,7 +441,7 @@ class ModelSource:
 
                         # Organize data
                         dset_source_frame_values_def,  dset_source_frame_ts_def = reader_dataset.organize_data(
-                            idx_ts_subselect, dset_source_frame_raw, dset_variable_selected=vars_analysis)
+                            idx_ts_subselect, dset_source_frame_raw_base, dset_variable_selected=vars_analysis)
                         # Freeze data
                         dset_collections_dynamic_tmp = reader_dataset.freeze_data(
                             deepcopy(dset_collections_dynamic_tmp), dset_source_frame_ts_def)
@@ -423,7 +450,140 @@ class ModelSource:
                         if fx_source_subset_base['dump']:
                             reader_dataset.dump_data(dset_model_subset_dyn, idx_ts_subselect, dset_source_frame_values_def)
                         elif fx_source_subset_base['copy']:
-                            reader_dataset.copy_data(dset_model_subset_dyn, dset_source_subset_dyn)
+                            reader_dataset.copy_data(dset_model_subset_dyn, dset_source_subset_dyn,
+                                                     vars_selected=vars_dataset)
+                        else:
+                            log_stream.error(' ===> Source datasets operation not permitted')
+                            raise NotImplementedError('Case not implemented yet')
+
+                        # Info
+                        log_stream.info(' ------> Datasets ' + file_type + ' ... DONE')
+                    else:
+                        # Info
+                        log_stream.info(' ------> Datasets ' + file_type + ' ... SKIPPED. Datasets are undefined')
+
+            # Dump data in dictionary
+            dset_collections_dynamic_out[run_key] = dset_collections_dynamic_tmp
+            # Dump data in class environment
+            if self.dset_collections_dynamic is None:
+                self.dset_collections_dynamic = {}
+            self.dset_collections_dynamic[run_key] = dset_collections_dynamic_tmp
+
+            # Ending info
+            log_stream.info(' -----> Run ' + run_key + ' ... DONE')
+
+        # Ending info for routine
+        log_stream.info(' ----> Analyze ' + tag_datadriver + ' datasets for datatype ' + tag_datatype + ' ... DONE')
+
+        return dset_collections_dynamic_out
+    # -------------------------------------------------------------------------------------
+
+    # -------------------------------------------------------------------------------------
+    # Method to analyze dynamic updating datasets and model
+    def analyze_data_dynamic_updating(self, obj_time_series, obj_time_info, obj_static_datasets,
+                                     obj_dynamic_datasets, tag_datatype='OBS', tag_datadriver='updating'):
+
+        # Starting info for routine
+        log_stream.info(' ----> Analyze ' + tag_datadriver + ' datasets for datatype ' + tag_datatype + ' ... ')
+
+        if tag_datadriver == 'updating':
+            reader_dataset = self.reader_updating
+        else:
+            log_stream.error(' ===> Source datasets driver is not allowed')
+            raise RuntimeError('Bad definition of datasets driver')
+        dset_collections_dynamic_in = self.dset_collections_dynamic
+
+        obj_dset_base = swap_dict_keys(reader_dataset.dset_obj)
+        fx_dset_base = swap_dict_keys(reader_dataset.dset_fx)
+
+        vars_dataset = reader_dataset.dset_vars
+
+        dset_collections_dynamic_out = {}
+        for (run_key, obj_ts_step), obj_ti_step, obj_dset_step in zip(obj_time_series.items(), obj_time_info.values(),
+                                                                      obj_dynamic_datasets.values()):
+            # info
+            log_stream.info(' -----> Run ' + run_key + ' ... ')
+
+            if (dset_collections_dynamic_in is not None) and (run_key in list(dset_collections_dynamic_in.keys())):
+                dset_collections_dynamic_tmp = deepcopy(dset_collections_dynamic_in[run_key])
+            else:
+                dset_collections_dynamic_tmp = None
+
+            obj_ts_select = obj_ts_step.loc[obj_ts_step['File_Type'] == tag_datatype]
+            id_ts_select = list(set(obj_ts_select['File_Group'].values))
+
+            dset_model_dyn = obj_dset_step[self.tag_model]
+            dset_source_dyn = obj_dset_step[self.tag_datasets]
+
+            dset_model_base = obj_dset_base[self.tag_model]
+            dset_source_base = obj_dset_base[self.tag_datasets]
+            fx_source_base = fx_dset_base[self.tag_datasets]
+
+            if dset_collections_dynamic_tmp is None:
+                index_ts_expected = obj_ts_step.index
+                values_ts_expected = {'File_Type': obj_ts_step['File_Type'].values}
+                dset_collections_dynamic_tmp = pd.DataFrame(values_ts_expected, index=index_ts_expected)
+                dset_collections_dynamic_tmp.index.name = 'time'
+
+            for id_ts_step in id_ts_select:
+
+                obj_ts_subselect = obj_ts_select.loc[obj_ts_select['File_Group'] == int(id_ts_step)]
+                idx_ts_subselect = obj_ts_subselect.index
+
+                start_idx_subselect = idx_ts_subselect[0]
+                end_idx_subselect = idx_ts_subselect[-1]
+
+                for file_type in list(dset_source_dyn.keys()):
+
+                    # Info
+                    log_stream.info(' ------> Datasets ' + file_type + ' ... ')
+
+                    # Selection based on type and indexes
+                    dset_model_type_dyn = dset_model_dyn[file_type]
+                    dset_source_type_dyn = dset_source_dyn[file_type]
+
+                    dset_source_subset_base = dset_source_base[file_type][tag_datatype]
+                    fx_source_subset_base = fx_source_base[file_type][tag_datatype]
+
+                    dset_model_subset_dyn = dset_model_type_dyn[start_idx_subselect:end_idx_subselect]
+                    dset_source_subset_dyn = dset_source_type_dyn[start_idx_subselect:end_idx_subselect]
+
+                    # Validate selected flag
+                    reader_dataset.validate_flag(tag_datadriver, fx_source_subset_base)
+
+                    # Collect data
+                    dset_source_frame_raw_base = reader_dataset.collect_data(
+                        dset_model_subset_dyn, dset_source_subset_dyn, dset_source_subset_base,
+                        dset_static_info=obj_static_datasets,
+                        dset_time_info=obj_ti_step,
+                        dset_time_start=start_idx_subselect, dset_time_end=end_idx_subselect,
+                        plant_name_list=obj_static_datasets[self.tag_plant_list])
+
+                    # Check collected data
+                    if dset_source_frame_raw_base[self.tag_datasets] is not None:
+
+                        # Get analysis vars
+                        if self.vars_forcing_analysis is not None:
+                            if file_type in list(self.vars_forcing_analysis.keys()):
+                                vars_analysis = self.vars_forcing_analysis[file_type]
+                            else:
+                                vars_analysis = None
+                        else:
+                            vars_analysis = None
+
+                        # Organize data
+                        dset_source_frame_values_def, dset_source_frame_ts_def = reader_dataset.organize_data(
+                            idx_ts_subselect, dset_source_frame_raw_base, dset_variable_selected=vars_analysis)
+                        # Freeze data
+                        dset_collections_dynamic_tmp = reader_dataset.freeze_data(
+                            deepcopy(dset_collections_dynamic_tmp), dset_source_frame_ts_def)
+
+                        # Dump or copy data
+                        if fx_source_subset_base['dump']:
+                            reader_dataset.dump_data(dset_model_subset_dyn, idx_ts_subselect, dset_source_frame_values_def)
+                        elif fx_source_subset_base['copy']:
+                            reader_dataset.copy_data(dset_model_subset_dyn, dset_source_subset_dyn,
+                                                     vars_selected=vars_dataset)
                         else:
                             log_stream.error(' ===> Source datasets operation not permitted')
                             raise NotImplementedError('Case not implemented yet')
@@ -462,6 +622,8 @@ class ModelSource:
             reader_dataset = self.reader_restart
         elif tag_datadriver == 'forcing':
             reader_dataset = self.reader_forcing
+        elif tag_datadriver == 'updating':
+            reader_dataset = self.reader_updating
         else:
             log_stream.error(' ===> Source datasets driver is not allowed')
             raise RuntimeError('Bad definition of datasets driver')

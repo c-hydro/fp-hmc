@@ -2,6 +2,16 @@
 Changelog
 =========
 
+Version 3.1.4 (20210308)
+========================
+- Codes and package based on HMC Fortran codes version 3.1.4;
+- Add the reader for the geotiff datasets in the forcing part;
+- Add the reader for the ascii file of the lakes in the static part; 
+- Fix bugs in managing/reading/saving the updating datasets;
+- Fix bugs in interpolating methods in case of not equal dimensions between terrain and forcing datasets;
+- Fix bugs in reading the section and the intake info static files;
+- Fix bugs in case of the lacking of static information (dam/joint/intake/lakes). 
+
 Version 3.1.3 (20201028)
 ========================
 

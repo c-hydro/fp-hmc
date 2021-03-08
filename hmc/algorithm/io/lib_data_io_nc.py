@@ -221,11 +221,12 @@ def read_data(file_name_list, var_name=None, var_time_start=None, var_time_end=N
                 coord_name_geo_x_list = ['Longitude', 'longitude', 'lon', 'Lon', 'LON']
                 for coord_name_geo_x_tmp in coord_name_geo_x_list:
                     if coord_name_geo_x_tmp in dst_list_coords:
-                        log_stream.warning(' ===> GeoX coord name used ' + coord_name_geo_x +
-                                           ' but found ' + coord_name_geo_x_tmp + ' in collected datasets')
+                        log_stream.warning(' ===> GeoX coord name used "' + coord_name_geo_x +
+                                           '" but found "' + coord_name_geo_x_tmp + '" in collected datasets')
                         coord_name_geo_x = coord_name_geo_x_tmp
                         break
 
+            da_geo_x = None
             if coord_name_geo_x in dst_list_coords:
                 da_geo_x_tmp = dst[coord_name_geo_x]
                 if dim_name_time in list(da_geo_x_tmp.dims):
@@ -240,11 +241,12 @@ def read_data(file_name_list, var_name=None, var_time_start=None, var_time_end=N
                 coord_name_geo_y_list = ['Latitude', 'latitude', 'lat', 'Lat', 'LAT']
                 for coord_name_geo_y_tmp in coord_name_geo_y_list:
                     if coord_name_geo_y_tmp in dst_list_coords:
-                        log_stream.warning(' ===> GeoY coord name used ' + coord_name_geo_y +
-                                           ' but found ' + coord_name_geo_y_tmp + ' in collected datasets')
+                        log_stream.warning(' ===> GeoY coord name used "' + coord_name_geo_y +
+                                           '" but found "' + coord_name_geo_y_tmp + '" in collected datasets')
                         coord_name_geo_y = coord_name_geo_y_tmp
                         break
 
+            da_geo_y = None
             if coord_name_geo_y in dst_list_coords:
                 da_geo_y_tmp = dst[coord_name_geo_y]
                 if dim_name_time in list(da_geo_y_tmp.dims):
@@ -254,6 +256,25 @@ def read_data(file_name_list, var_name=None, var_time_start=None, var_time_end=N
             else:
                 log_stream.error(' ===> GeoY dimension name is not in the variables list of nc file')
                 raise IOError(' ===> Check the GeoY dimension!')
+
+            # Check the dimensions of GeoX and GeoY
+            if (da_geo_x is not None) and (da_geo_y is not None):
+
+                values_geo_x_tmp = da_geo_x.values
+                values_geo_y_tmp = da_geo_y.values
+
+                if (values_geo_x_tmp.shape.__len__() == 1) and (values_geo_y_tmp.shape.__len__() == 1):
+                    log_stream.warning(' ===> GeoX and GeoY are in 1D format. Meshgrid will be applied to define 2D')
+                    values_geo_x_def, values_geo_y_def = np.meshgrid(values_geo_x_tmp, values_geo_y_tmp)
+                elif (values_geo_x_tmp.shape.__len__() == 2) and (values_geo_y_tmp.shape.__len__() == 2):
+                    values_geo_x_def = values_geo_x_tmp
+                    values_geo_y_def = values_geo_y_tmp
+                else:
+                    log_stream.error(' ===> GeoX and GeoY are available but in a unsupported format')
+                    raise NotImplemented(' ===> GeoX and GeoY format not implemented yet')
+            else:
+                log_stream.error(' ===> GeoX or GeoY datasets are unavailable')
+                raise IOError(' ===> GeoX and GeoY datasets must be in the data workspace')
 
             if da_time is not None:
                 time_stamp_period = []
@@ -267,11 +288,11 @@ def read_data(file_name_list, var_name=None, var_time_start=None, var_time_end=N
 
             if var_name == 'ALL':
 
-                geo_y_upper = da_geo_y.values[0, 0]
-                geo_y_lower = da_geo_y.values[-1, 0]
+                geo_y_upper = values_geo_y_def[0, 0]
+                geo_y_lower = values_geo_y_def[-1, 0]
                 if geo_y_lower > geo_y_upper:
-                    values_geo_y = np.flipud(da_geo_y.values)
-                    values_geo_x = da_geo_x.values
+                    values_geo_y = np.flipud(values_geo_y_def)
+                    values_geo_x = values_geo_x_def
 
                     da_var = None
                     dim_name_select = None
@@ -360,8 +381,8 @@ def read_data(file_name_list, var_name=None, var_time_start=None, var_time_end=N
 
                 else:
 
-                    values_geo_y = da_geo_y.values
-                    values_geo_x = da_geo_x.values
+                    values_geo_y = values_geo_y_def
+                    values_geo_x = values_geo_x_def
                     da_var = dst
 
             else:
@@ -385,16 +406,16 @@ def read_data(file_name_list, var_name=None, var_time_start=None, var_time_end=N
                             log_stream.error(' ===> Time idx ' + str(time_idx) + ' is not allowed in 3d variables')
                             raise NotImplementedError(' ===> Case not implemented')
 
-                        geo_y_upper = da_geo_y.values[0, 0]
-                        geo_y_lower = da_geo_y.values[-1, 0]
+                        geo_y_upper = values_geo_y_def[0, 0]
+                        geo_y_lower = values_geo_y_def[-1, 0]
                         if geo_y_lower > geo_y_upper:
                             values_reshape_flip = np.flipud(values_reshape)
-                            values_geo_y = np.flipud(da_geo_y.values)
-                            values_geo_x = da_geo_x.values
+                            values_geo_y = np.flipud(values_geo_y_def)
+                            values_geo_x = values_geo_x_def
                         else:
                             values_reshape_flip = values_reshape
-                            values_geo_y = da_geo_y.values
-                            values_geo_x = da_geo_x.values
+                            values_geo_y = values_geo_y_def
+                            values_geo_x = values_geo_x_def
 
                         da_var = create_darray_3d(values_reshape_flip,
                                                   datetime_idx, values_geo_x, values_geo_y,
@@ -405,8 +426,8 @@ def read_data(file_name_list, var_name=None, var_time_start=None, var_time_end=N
                                                   dims_order=[dim_name_geo_y, dim_name_geo_x, dim_name_time])
                     else:
                         # da_var = da_raw
-                        # values_geo_y = da_geo_y.values
-                        # values_geo_x = da_geo_x.values
+                        # values_geo_y = values_geo_y_def
+                        # values_geo_x = values_geo_x_def
 
                         log_stream.error(' ===> Time dimension is not defined')
                         raise IOError(' ===> Case not implemented yet!')
@@ -415,16 +436,16 @@ def read_data(file_name_list, var_name=None, var_time_start=None, var_time_end=N
 
                     values_raw = da_raw.values
 
-                    geo_y_upper = da_geo_y.values[0, 0]
-                    geo_y_lower = da_geo_y.values[-1, 0]
+                    geo_y_upper = values_geo_y_def[0, 0]
+                    geo_y_lower = values_geo_y_def[-1, 0]
                     if geo_y_lower > geo_y_upper:
                         values_flip = np.flipud(values_raw)
-                        values_geo_y = np.flipud(da_geo_y.values)
-                        values_geo_x = da_geo_x.values
+                        values_geo_y = np.flipud(values_geo_y_def)
+                        values_geo_x = values_geo_x_def
                     else:
                         values_flip = values_raw
-                        values_geo_y = da_geo_y.values
-                        values_geo_x = da_geo_x.values
+                        values_geo_y = values_geo_y_def
+                        values_geo_x = values_geo_x_def
 
                     if values_flip.shape.__len__() == 2:
                         values_reshape_flip = np.reshape(
