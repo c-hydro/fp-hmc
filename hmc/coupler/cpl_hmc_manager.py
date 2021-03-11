@@ -12,7 +12,7 @@ Version:       '3.0.0'
 import logging
 import os
 
-from hmc.algorithm.utils.lib_utils_geo import get_raster
+from hmc.algorithm.io.lib_data_geo_ascii import read_data_grid, read_data_raster
 from hmc.algorithm.utils.lib_utils_dict import get_dict_nested_value, get_dict_value
 from hmc.algorithm.utils.lib_utils_string import fill_tags2string
 from hmc.algorithm.utils.lib_utils_system import delete_folder
@@ -102,7 +102,8 @@ class ModelInitializer:
         file_path_ref = os.path.join(folder_name_ref, file_name_ref)
 
         if os.path.exists(file_path_ref):
-            dset_ref = get_raster(file_path_ref)
+            dset_ref = read_data_grid(file_path_ref, output_format='dictionary')
+            # dset_ref = read_data_raster(file_path_ref)
         else:
             log_stream.error(' ===> Reference static datasets is not available')
             raise IOError(' ===> File "' + file_path_ref + '" is not found in the selected folder')

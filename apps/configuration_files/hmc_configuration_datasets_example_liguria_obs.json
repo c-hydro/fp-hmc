@@ -3,8 +3,8 @@
   "Flags": {
     "__comment": " --- Flags configuration --- ",
     "cleaning_ancillary_data_static": true,
-    "cleaning_ancillary_data_dynamic_source": true,
-    "cleaning_ancillary_data_dynamic_execution": true,
+    "cleaning_ancillary_data_dynamic_source": false,
+    "cleaning_ancillary_data_dynamic_execution": false,
     "cleaning_ancillary_data_dynamic_outcome": true,
     "cleaning_run_execution": false,
     "cleaning_run_logging": false,
@@ -101,7 +101,9 @@
         "Vegetation_Height"       : {"var_name": "Hveg",              "check": true,   "mandatory": false },
         "Coeff_Resistance_Canopy" : {"var_name": "Gd",                "check": true,   "mandatory": false },
         "Bare_Soil"               : {"var_name": "BareSoil",          "check": true,   "mandatory": false },
-        "Watertable_Volume_Max"   : {"var_name": "wt_max",            "check": true,   "mandatory": false }
+        "Watertable_Volume_Max"   : {"var_name": "wt_max",            "check": true,   "mandatory": false },
+        "Longitude"               : {"var_name": "lon",               "check": true,   "mandatory": true  },
+        "Latitude"                : {"var_name": "lat",               "check": true,   "mandatory": true  }
       }
     },
     "Point": {
@@ -118,8 +120,8 @@
       }
     },
     "Shapefile": {
-      "hmc_file_name"     : "fp_sections_liguria.shp",
-      "hmc_file_folder"   : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_static/{run_domain}/shapefile/",
+      "hmc_file_name"     : null,
+      "hmc_file_folder"   : null,
       "hmc_file_format"   : "shapefile",
       "hmc_file_frequency": null,
       "hmc_file_variable" : {

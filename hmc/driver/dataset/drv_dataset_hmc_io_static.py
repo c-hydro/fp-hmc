@@ -17,11 +17,11 @@ import pandas as pd
 
 from copy import deepcopy
 
-from hmc.algorithm.utils.lib_utils_geo import get_raster
+from hmc.algorithm.io.lib_data_geo_ascii import read_data_raster, read_data_grid
 from hmc.algorithm.utils.lib_utils_dict import get_dict_nested_value, get_dict_value, lookup_dict_keys
 from hmc.algorithm.utils.lib_utils_string import fill_tags2string
 
-from hmc.driver.dataset.drv_dataset_hmc_io_type import DSetReader, DSetWriter
+from hmc.driver.dataset.drv_dataset_hmc_io_type import DSetReader, DSetWriter, DSetComposer
 
 from hmc.algorithm.default.lib_default_args import logger_name
 
@@ -112,7 +112,8 @@ class DSetManager:
         file_path_ref = os.path.join(folder_name_ref, file_name_ref)
 
         if os.path.exists(file_path_ref):
-            self.dset_static_ref = get_raster(file_path_ref)
+            # self.dset_static_ref = read_data_raster(file_path_ref)
+            self.dset_static_ref = read_data_grid(file_path_ref, output_format='dictionary')
         else:
             log_stream.error(' ===> Reference static datasets is not available')
             raise IOError('File is not found in the selected folder')
@@ -131,45 +132,85 @@ class DSetManager:
         file_check_list = dset_source_static['file_check'].values
         file_mandatory_list = dset_source_static['file_mandatory'].values
         file_format_list = dset_source_static['file_format'].values
+        file_var_list = dset_source_static['file_var'].values
 
         var_frame = {}
         dset_source = None
-        for var_name, file_name, file_check, file_mandatory, file_format in zip(
-                var_name_list, file_name_list, file_check_list, file_mandatory_list, file_format_list):
+        for var_name, file_name, file_check, file_mandatory, file_format, file_var in zip(
+                var_name_list, file_name_list, file_check_list, file_mandatory_list, file_format_list, file_var_list):
 
-            file_info = {'var_format': file_format, 'var_mandatory': file_mandatory, 'var_check': file_check}
+            file_info = {'var_format': file_format, 'var_mandatory':
+                         file_mandatory, 'var_check': file_check, 'var_file': file_var}
 
             var_data = data_source_static[var_name]
 
+            log_stream.info(' ------> Variable ' + var_name + ' ... ')
+
             if var_data is None:
 
-                if os.path.exists(file_name):
-                    driver_hmc_parser = DSetReader(file_name, file_info, None, time_src_info=None)
-                    obj_var = driver_hmc_parser.read_filename_static(var_name)
+                if (file_name is not None) and (os.path.exists(file_name)):
+                    driver_hmc_reader = DSetReader(file_name, file_info, None, time_src_info=None)
+                    obj_var = driver_hmc_reader.read_filename_static(var_name)
+
+                elif ((file_name is not None) and (not os.path.exists(file_name))) and \
+                        (var_name == 'Longitude' or var_name == 'Latitude'):
+
+                    log_stream.warning(' ===> Static datasets for variable ' +
+                                       var_name + ' not found. Datasets will be created using the terrain reference.')
+
+                    driver_hmc_writer = DSetWriter(file_name, file_info, None, time_dst_info=None)
+                    obj_var = driver_hmc_writer.write_filename_static(var_name, self.dset_static_ref)
+
+                elif ((file_name is not None) and (not os.path.exists(file_name))) and (var_name == 'Cell_Area'):
+
+                    log_stream.warning(' ===> Static datasets for variable ' +
+                                       var_name + ' not found. Datasets will be created using a default method.')
+
+                    driver_hmc_composer = DSetComposer(file_name, file_info, None, time_dst_info=None)
+                    obj_var = driver_hmc_composer.compute_data_static(var_name, self.dset_static_ref)
+
                 else:
+
                     if file_mandatory:
                         log_stream.error(' ===> Static datasets for variable ' +
                                          var_name + ' in ' + file_format + ' format is mandatory. Exit.')
-                        raise IOError('File ' + file_name + ' not found!')
+                        if file_name is not None:
+                            raise IOError('File ' + file_name + ' not found!')
+                        else:
+                            raise IOError('File is declared using a None value!')
                     else:
                         log_stream.warning(' ===> Static datasets for variable ' +
                                            var_name + ' in ' + file_format + ' format is ancillary')
-                        log_stream.warning(' ===> File ' + file_name +
-                                           ' not found! Datasets will be initialized to None.')
 
-                        driver_hmc_parser = DSetReader(file_name, file_info, None, time_src_info=None)
-                        driver_hmc_parser.write_filename_undefined(file_name, var_name)
-                        obj_var = None
+                        if file_format == 'shapefile':
+                            log_stream.warning(' ===> Static datasets for shapefile case will be initialized to None.')
+                            obj_var = None
+                        elif file_format == 'ascii_point':
+                            if file_name is not None:
+                                log_stream.warning(' ===> Static datasets for ascii point case will be initialized '
+                                                   'using a default method.')
+                                driver_hmc_reader = DSetReader(file_name, file_info, None, time_src_info=None)
+                                driver_hmc_reader.write_filename_undefined(file_name, var_name)
+                            else:
+                                log_stream.warning(' ===> Filename for ascii point case is declared '
+                                                   'using a None value!')
+                            obj_var = None
+                        elif file_format == 'ascii_grid':
+                            log_stream.warning(' ===> Static datasets for ascii grid case will be initialized to None.')
+                            obj_var = None
+                        else:
+                            log_stream.error(' ===> Static format ' + file_format + ' is not allowed. Exit.')
+                            raise NotImplementedError('Case not implemented yet')
 
             elif var_data is not None:
 
                 if not os.path.exists(file_name):
-                    driver_hmc_parser = DSetWriter(file_name, file_info, None, time_dst_info=None)
-                    obj_var = driver_hmc_parser.write_filename_static(var_name, var_data)
+                    driver_hmc_writer = DSetWriter(file_name, file_info, None, time_dst_info=None)
+                    obj_var = driver_hmc_writer.write_filename_static(var_name, var_data)
                 else:
 
-                    driver_hmc_parser = DSetReader(file_name, file_info, None, time_src_info=None)
-                    check_data = driver_hmc_parser.read_filename_static(var_name)
+                    driver_hmc_reader = DSetReader(file_name, file_info, None, time_src_info=None)
+                    check_data = driver_hmc_reader.read_filename_static(var_name)
 
                     log_stream.info(' ------> Check variable ' + var_name + ' ... ')
                     log_stream.info(' -------> File name ' + file_name + 'for variable ' + var_name +
@@ -210,6 +251,8 @@ class DSetManager:
             else:
                 dset_source[var_name] = obj_var
 
+            log_stream.info(' ------> Variable ' + var_name + ' ... DONE')
+
         var_frame[self.datasets_tag] = dset_source
 
         # Ending information
@@ -232,12 +275,17 @@ class DSetManager:
         ws_vars = {}
         for dset_format, dset_workspace in dset_obj.items():
 
+            log_stream.info(' ------> Type ' + dset_format + ' ... ')
+
             dset_key_list = []
             file_path_list = []
             file_format_list = []
             file_check_list = []
             file_mandatory_list = []
+            file_var_list = []
             for dset_key, dset_item in dset_workspace.items():
+
+                log_stream.info(' -------> Variable ' + dset_key + ' ... ')
 
                 folder_name_raw = dset_item[self.folder_name_tag]
                 file_name_raw = dset_item[self.file_name_tag]
@@ -254,15 +302,22 @@ class DSetManager:
                 template_filled_tmp = dict.fromkeys(list(template_tmp.keys()), file_var)
                 template_filled_merge = {**template_filled_run, **template_filled_tmp}
 
-                folder_name_tmp = fill_tags2string(folder_name_raw, template_ref, template_filled_merge)
-                file_name_tmp = fill_tags2string(file_name_raw, template_ref, template_filled_merge)
+                if (folder_name_raw is not None) and (file_name_raw is not None):
+                    folder_name_tmp = fill_tags2string(folder_name_raw, template_ref, template_filled_merge)
+                    file_name_tmp = fill_tags2string(file_name_raw, template_ref, template_filled_merge)
+                    file_path_list.append(os.path.join(folder_name_tmp, file_name_tmp))
+                else:
+                    file_path_list.append(None)
+                    log_stream.warning(' ===> Folder or/and filename is/are undefined. Initialize fields with null')
 
-                file_path_list.append(os.path.join(folder_name_tmp, file_name_tmp))
                 file_format_list.append(file_format)
                 file_check_list.append(file_check)
                 file_mandatory_list.append(file_mandatory)
+                file_var_list.append(file_var)
 
                 dset_key_list.append(dset_key)
+
+                log_stream.info(' -------> Variable ' + dset_key + ' ... DONE')
 
             df_vars = pd.DataFrame(
                 {'dset_name': dset_key_list,
@@ -270,12 +325,15 @@ class DSetManager:
                  'file_format': file_format_list,
                  'file_check': file_check_list,
                  'file_mandatory': file_mandatory_list,
+                 'file_var': file_var_list,
                  })
 
             df_vars = df_vars.reset_index()
             df_vars = df_vars.set_index('dset_name')
 
             ws_vars[dset_format] = df_vars
+
+            log_stream.info(' ------> Type ' + dset_format + ' ... DONE')
 
         # Ending information
         log_stream.info(' -----> Collect static filename ... DONE')

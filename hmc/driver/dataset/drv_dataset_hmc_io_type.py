@@ -12,6 +12,7 @@ Version:       '3.0.0'
 import logging
 import os
 
+import numpy as np
 import pandas as pd
 
 from hmc.algorithm.io.lib_data_io_nc import read_data as read_data_nc
@@ -20,13 +21,14 @@ from hmc.algorithm.io.lib_data_io_tiff import read_data as read_data_tiff
 from hmc.algorithm.io.lib_data_io_ascii import read_data_point, read_data_time_series, read_state_point, \
     read_outcome_point, read_outcome_time_series
 from hmc.algorithm.io.lib_data_io_generic import store_file
-from hmc.algorithm.io.lib_data_geo_ascii import read_data_vector, read_data_grid
+from hmc.algorithm.io.lib_data_geo_ascii import read_data_vector, read_data_grid, write_data_grid
 from hmc.algorithm.io.lib_data_geo_ascii import read_data_point_dam, read_data_point_intake, \
     read_data_point_joint, read_data_point_lake, \
     read_data_point_section, write_data_point_section, write_data_point_undefined
 from hmc.algorithm.io.lib_data_geo_shapefile import read_data_shapefile_section
 from hmc.algorithm.io.lib_data_zip_gzip import unzip_filename
 
+from hmc.algorithm.utils.lib_utils_geo import compute_cell_area
 
 from hmc.algorithm.utils.lib_utils_zip import remove_zip_extension
 from hmc.algorithm.default.lib_default_args import logger_name, zip_extension
@@ -466,8 +468,24 @@ class DSetWriter(DSetReader):
 
         if self.file_src_format == 'ascii_grid':
 
-            log_stream.error(' ===> ASCII grid format is not valid in writing method')
-            raise IOError('File format is not allowed')
+            if var_name == 'Longitude' or var_name == 'Latitude':
+
+                if var_name == 'Longitude':
+                    lons_data = np.float32(var_data['longitude'])
+                    write_data_grid(file_path, lons_data, file_ancillary=var_data)
+                elif var_name == 'Latitude':
+                    lats_data = np.float32(var_data['latitude'])
+                    write_data_grid(file_path, lats_data, file_ancillary=var_data)
+
+            elif var_name == 'Cell_Area':
+                call_area_data = np.float32(var_data['cell_area'])
+                write_data_grid(file_path, call_area_data, file_ancillary=var_data)
+            else:
+                log_stream.error(' ===> Grid static variable "' + var_name + '" is not valid in writing method')
+                raise IOError('Grid variable name is not allowed')
+
+            # Call method from super-class
+            obj_var = self.read_filename_static(file_path)
 
         elif self.file_src_format == 'ascii_point':
 
@@ -476,7 +494,7 @@ class DSetWriter(DSetReader):
                 # Call method from super-class
                 obj_var = self.read_filename_static(var_name)
             else:
-                log_stream.error(' ===> Point static variable is not valid in writing method')
+                log_stream.error(' ===> Point static variable "' + var_name + '" is not valid in writing method')
                 raise IOError('Point variable name is not allowed')
 
         else:
@@ -487,13 +505,77 @@ class DSetWriter(DSetReader):
         if obj_var is None:
             if self.file_src_mandatory:
                 log_stream.error(' ===> File static ' + file_path + ' is mandatory! Execution exit.')
-                log_stream.info(' ------> Write variable ' + var_name + ' ... FAILED')
+                log_stream.info(' ------> Write variable "' + var_name + '" ... FAILED')
                 raise IOError('File not found')
             else:
-                log_stream.warning(' ===> File static ' + file_path + ' is ancillary! Execution continue.')
-                log_stream.info(' ------> Write variable ' + var_name + ' ... SKIPPED')
+                log_stream.warning(' ===> File static "' + file_path + '" is ancillary! Execution continue.')
+                log_stream.info(' ------> Write variable "' + var_name + '" ... SKIPPED')
         else:
             log_stream.info(' ------> Write variable ' + var_name + ' ... DONE')
+
+        return obj_var
+
+# -------------------------------------------------------------------------------------
+
+
+# -------------------------------------------------------------------------------------
+# Class to compose datasets
+class DSetComposer(DSetWriter):
+
+    # -------------------------------------------------------------------------------------
+    # Method to initialize class
+    def __init__(self, file_dst_path, file_dst_info, file_dst_time, time_dst_info):
+        super(DSetComposer, self).__init__(file_dst_path, file_dst_info, file_dst_time, time_dst_info)
+    # -------------------------------------------------------------------------------------
+
+    # -------------------------------------------------------------------------------------
+    # Method to write filename for static datasets
+    def compute_data_static(self, var_name, var_data):
+
+        # Info
+        log_stream.info(' ------> Compute variable ' + var_name + ' ... ')
+
+        file_path = self.file_src_path
+
+        if isinstance(file_path, list):
+            file_path = file_path[0]
+
+        if self.file_src_format == 'ascii_grid':
+
+            if var_name == 'Cell_Area':
+
+                var_data['cell_area'] = compute_cell_area(var_data['longitude'], var_data['latitude'],
+                                                          var_data['res_lon'], var_data['res_lat'])
+
+                # Call methods from super-class
+                self.write_filename_static(var_name, var_data)
+                # Call methods from super-class
+                obj_var = self.read_filename_static(file_path)
+
+            else:
+                log_stream.error(' ===> Grid static variable "' + var_name + '" is not valid in computing method')
+                raise IOError('Grid variable name is not allowed')
+
+        elif self.file_src_format == 'ascii_point':
+
+            log_stream.error(' ===> Point static variable "' + var_name + '" is not valid in computing method')
+            raise IOError('Point variable name is not allowed')
+
+        else:
+            log_stream.error(' ===> File static type is not allowed in computing method! Check your datasets!')
+            raise IOError('File type not allowed')
+
+        # Check mandatory variable status
+        if obj_var is None:
+            if self.file_src_mandatory:
+                log_stream.error(' ===> File static ' + file_path + ' is mandatory! Execution exit.')
+                log_stream.info(' ------> Compute variable "' + var_name + '" ... FAILED')
+                raise IOError('File not found')
+            else:
+                log_stream.warning(' ===> File static "' + file_path + '" is ancillary! Execution continue.')
+                log_stream.info(' ------> Compute variable "' + var_name + '" ... SKIPPED')
+        else:
+            log_stream.info(' ------> Compute variable ' + var_name + ' ... DONE')
 
         return obj_var
 

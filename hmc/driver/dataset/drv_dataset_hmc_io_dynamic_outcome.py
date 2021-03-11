@@ -35,6 +35,7 @@ from hmc.driver.dataset.drv_dataset_hmc_io_type import DSetReader
 log_stream = logging.getLogger(logger_name)
 
 # Debug
+import matplotlib.pylab as plt
 #######################################################################################
 
 
@@ -572,7 +573,7 @@ class DSetManager:
 
                                     # Get variable, data, time and attributes of expected data
                                     var_data_expected = np.zeros(
-                                        [var_da_step.shape[dim_idx_geo_x], var_da_step.shape[dim_idx_geo_y],
+                                        [var_da_step.shape[dim_idx_geo_y], var_da_step.shape[dim_idx_geo_x],
                                          dset_time.shape[0]])
 
                                     # Check datasets dimensions for trying a correction
@@ -586,6 +587,15 @@ class DSetManager:
                                                             'the automatic detection')
                                         log_stream.warning(' ===> Use terrain dimensions to try datasets analysis')
 
+                                        active_interp_method = True
+
+                                    elif var_data_expected.shape[:2] != da_terrain.shape:
+                                        var_data_expected = np.zeros([geo_x_values.shape[0], geo_y_values.shape[1],
+                                                                     dset_time.shape[0]])
+                                        log_stream.info(' --------> ' + var_name_step +
+                                                        ' datasets and terrain datasets have not the same dimensions'
+                                                        ' found by using the automatic detection')
+                                        log_stream.warning(' ===> Use datasets dimensions to try datasets analysis')
                                         active_interp_method = True
 
                                     elif var_data_expected.shape[:2] == da_terrain.shape:
@@ -635,14 +645,16 @@ class DSetManager:
                                     else:
                                         var_da_interp = deepcopy(var_da_selected)
 
-                                    var_da_masked = var_da_interp.where(self.da_terrain != -9999)
+                                    var_da_masked = var_da_interp.where((self.da_terrain != -9999) &
+                                                                        (var_da_interp != -9999))
 
                                 else:
 
                                     if isinstance(dset_time, pd.Timestamp):
                                         dset_time = pd.DatetimeIndex([dset_time])
 
-                                    var_da_masked = var_da_step.where(self.da_terrain != -9999)
+                                    var_da_masked = var_da_step.where((self.da_terrain != -9999) &
+                                                                        (var_da_step != -9999))
 
                                     if var_da_masked.ndim == 3:
                                         list_dims = list(var_da_masked.dims)

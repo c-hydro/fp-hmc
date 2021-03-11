@@ -33,6 +33,10 @@ zip_extension = 'gz'
 # Definition of path delimiter
 path_delimiter = '$'
 
+# Definition of wkt for projections
+proj_wkt = 'GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4326"]]'
+proj_epsg = 'EPSG:4326'
+
 # Definition of tmp filename(s)
 file_tmp_builder = 'builder.workspace'
 file_tmp_runner = 'runner.workspace'

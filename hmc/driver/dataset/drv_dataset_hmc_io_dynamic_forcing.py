@@ -792,7 +792,8 @@ class DSetManager:
                                         var_da_interp = deepcopy(var_da_selected)
 
                                     # Mask the data array variable over the terrain reference data array
-                                    var_da_masked = var_da_interp.where(self.da_terrain != -9999)
+                                    var_da_masked = var_da_interp.where((self.da_terrain != -9999) &
+                                                                        (var_da_interp != -9999))
 
                                 else:
 
@@ -800,7 +801,8 @@ class DSetManager:
                                         dset_time = pd.DatetimeIndex([dset_time])
 
                                     # Mask the data array variable over the terrain reference data array
-                                    var_da_masked = var_da_step.where(self.da_terrain != -9999)
+                                    var_da_masked = var_da_step.where((self.da_terrain != -9999) &
+                                                                        (var_da_step != -9999))
 
                                     if var_da_masked.ndim == 3:
                                         list_dims = list(var_da_masked.dims)

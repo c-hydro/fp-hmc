@@ -24,58 +24,67 @@ log_stream = logging.getLogger(logger_name)
 #################################################################################
 
 
+# --------------------------------------------------------------------------------
+# Method to convert curve number to maximum volume
+def compute_cn2vmax(curve_number):
+
+    # Initialize volume max
+    volume_max = np.zeros([curve_number.shape[0], curve_number.shape[1]])
+    volume_max[:, :] = np.nan
+
+    # Compute volume max starting from curve number values
+    volume_max = (1000/curve_number - 10) * 25.4
+
+    return volume_max
+
+# --------------------------------------------------------------------------------
+
+
 # -------------------------------------------------------------------------------------
-# Method to get a raster ascii file
-def get_raster(filename_reference):
+# Method to compute cell area in m^2
+def compute_cell_area(geo_x, geo_y, cell_size_x, cell_size_y):
 
-    dset = rasterio.open(filename_reference)
-    bounds = dset.bounds
-    res = dset.res
-    transform = dset.transform
-    data = dset.read()
-    values = data[0, :, :]
+    # Method constant(s)
+    r = 6378388  # (Radius)
+    e = 0.00672267  # (Ellipsoid)
 
-    decimal_round = 7
+    # dx = (R * cos(lat)) / (sqrt(1 - e2 * sqr(sin(lat)))) * PI / 180
+    dx_2d = (r * np.cos(np.abs(geo_y) * np.pi / 180)) / \
+            (np.sqrt(1 - e * np.sqrt(np.sin(np.abs(geo_y) * np.pi / 180)))) * np.pi / 180
+    # dy = (R * (1 - e2)) / pow((1 - e2 * sqr(sin(lat))),1.5) * PI / 180
+    dy_2d = (r * (1 - e)) / np.power((1 - e * np.sqrt(np.sin(np.abs(geo_y) / 180))), 1.5) * np.pi / 180
 
-    center_right = bounds.right - (res[0] / 2)
-    center_left = bounds.left + (res[0] / 2)
-    center_top = bounds.top - (res[1] / 2)
-    center_bottom = bounds.bottom + (res[1] / 2)
+    # area cell  in m^2
+    area_cell = ((dx_2d / (1 / cell_size_x)) * (dy_2d / (1 / cell_size_y)))  # [m^2]
 
-    lon = np.arange(center_left, center_right + np.abs(res[0] / 2), np.abs(res[0]), float)
-    lat = np.arange(center_bottom, center_top + np.abs(res[0] / 2), np.abs(res[1]), float)
-    lons, lats = np.meshgrid(lon, lat)
+    return area_cell
 
-    min_lon_round = round(np.min(lons), decimal_round)
-    max_lon_round = round(np.max(lons), decimal_round)
-    min_lat_round = round(np.min(lats), decimal_round)
-    max_lat_round = round(np.max(lats), decimal_round)
+# -------------------------------------------------------------------------------------
 
-    center_right_round = round(center_right, decimal_round)
-    center_left_round = round(center_left, decimal_round)
-    center_bottom_round = round(center_bottom, decimal_round)
-    center_top_round = round(center_top, decimal_round)
 
-    assert min_lon_round == center_left_round
-    assert max_lon_round == center_right_round
-    assert min_lat_round == center_bottom_round
-    assert max_lat_round == center_top_round
+# -------------------------------------------------------------------------------------
+# Method to compute drainage area in m^2 or Km^2
+def compute_drainage_area(terrain, cell_area, no_data=-9999, units='Km^2'):
 
-    lats = np.flipud(lats)
+    cell_n = np.where(terrain.ravel() != no_data)[0].size
+    drainage_area = cell_n * cell_area
 
-    obj = {'values': values, 'longitude': lons, 'latitude': lats,
-           'transform': transform, 'bbox': [bounds.left, bounds.bottom, bounds.right, bounds.top],
-           'bb_left': bounds.left, 'bb_right': bounds.right,
-           'bb_top': bounds.top, 'bb_bottom': bounds.bottom,
-           'res_lon': res[0], 'res_lat': res[1]}
+    if units == 'Km^2':
+        drainage_area = drainage_area / 1000000
+    elif units == 'm^2':
+        pass
+    else:
+        log_stream.error(' ===> Drainage area units are not allowed')
+        raise IOError('Drainage area units are wrongly defined. Check your settings.')
 
-    return obj
+    return drainage_area
+
 # -------------------------------------------------------------------------------------
 
 
 # -------------------------------------------------------------------------------------
 # Method to compute corrivation time
-def compute_corrivation_time(geo_values, geo_x, geo_y, cellsize_x, cellsize_y):
+def compute_corrivation_time(geo_values, geo_x, geo_y, cell_size_x, cell_size_y):
 
     # Dynamic values
     r = 6378388  # (Radius)
@@ -88,12 +97,12 @@ def compute_corrivation_time(geo_values, geo_x, geo_y, cellsize_x, cellsize_y):
     # dy = (R * (1 - e2)) / pow((1 - e2 * sqr(sin(lat))),1.5) * PI / 180
     dy_2d = (r * (1 - e)) / np.power((1 - e * np.sqrt(np.sin(np.abs(geo_y) / 180))), 1.5) * np.pi / 180
 
-    # Area in m^2
-    area_2d = ((dx_2d / (1 / cellsize_x)) * (dy_2d / (1 / cellsize_y)))  # [m^2]
+    # area cell in m^2
+    area_cell = ((dx_2d / (1 / cell_size_x)) * (dy_2d / (1 / cell_size_y)))  # [m^2]
 
     # Area, Mean Dx and Dy values (meters)
-    dx_avg = np.sqrt(np.nanmean(area_2d))
-    dy_avg = np.sqrt(np.nanmean(area_2d))
+    dx_avg = np.sqrt(np.nanmean(area_cell))
+    dy_avg = np.sqrt(np.nanmean(area_cell))
 
     # Compute domain pixels and area
     pixels_n = np.sum(np.isfinite(geo_values))

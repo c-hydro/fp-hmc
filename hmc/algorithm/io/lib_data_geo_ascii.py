@@ -15,7 +15,9 @@ import os
 
 import numpy as np
 
+from rasterio.crs import CRS
 from collections import OrderedDict
+from decimal import Decimal
 
 from hmc.algorithm.io.lib_data_io_generic import create_darray_2d
 
@@ -23,6 +25,7 @@ from hmc.algorithm.utils.lib_utils_system import create_folder
 from hmc.algorithm.utils.lib_utils_list import pad_or_truncate_list
 from hmc.algorithm.utils.lib_utils_string import parse_row2string
 from hmc.algorithm.default.lib_default_args import logger_name
+from hmc.algorithm.default.lib_default_args import proj_epsg as proj_epsg_default
 
 # Logging
 log_stream = logging.getLogger(logger_name)
@@ -97,7 +100,8 @@ def read_data_point_section(file_name, section_cols_expected=8):
 
                 if section_cols.__len__() > string_parts:
                     log_stream.error(' ===> Parse section filename failed for filename ' + os.path.split(file_name)[1])
-                    raise IOError(' ===> Section file in wrong format at line: [' + section_row + ']')
+                    raise IOError(' ===> Section file in wrong format: [fields: "'
+                                  + section_row + '" at line ' + str(row_id + 1) + ']')
 
                 if section_cols.__len__() < section_cols_expected:
                     section_cols = pad_or_truncate_list(section_cols, section_cols_expected)
@@ -122,6 +126,11 @@ def read_data_point_section(file_name, section_cols_expected=8):
                 point_frame[section_key]['section_drained_area'] = section_drained_area
                 point_frame[section_key]['section_discharge_thr_alert'] = section_discharge_thr_alert
                 point_frame[section_key]['section_discharge_thr_alarm'] = section_discharge_thr_alarm
+
+            else:
+                log_stream.error(' ===> Parse section filename failed for filename ' + os.path.split(file_name)[1])
+                raise IOError(' ===> Section file in empty format: [fields: "'
+                              + section_row + '" at line ' + str(row_id + 1) + ']')
 
     else:
 
@@ -378,8 +387,69 @@ def write_data_point_undefined(file_path, element_n=2, element_init=0):
 
 
 # -------------------------------------------------------------------------------------
-# Method to load an ascii grid file
-def read_data_grid(file_name):
+# Method to write an ascii grid file
+def write_data_grid(file_name, file_data, file_ancillary=None):
+
+    if 'bb_left' in list(file_ancillary.keys()):
+        bb_left = file_ancillary['bb_left']
+    else:
+        log_stream.error(' ===> Geographical info "bb_left" for writing ascii grid file is undefined.')
+        raise IOError('Geographical info is mandatory. Check your static datasets.')
+    if 'bb_bottom' in list(file_ancillary.keys()):
+        bb_bottom = file_ancillary['bb_bottom']
+    else:
+        log_stream.error(' ===> Geographical info "bb_bottom" for writing ascii grid file is undefined.')
+        raise IOError('Geographical info is mandatory. Check your static datasets.')
+    if 'res_lon' in list(file_ancillary.keys()):
+        res_lon = file_ancillary['res_lon']
+    else:
+        log_stream.error(' ===> Geographical info "res_lon" for writing ascii grid file is undefined.')
+        raise IOError('Geographical info is mandatory. Check your static datasets.')
+    if 'res_lat' in list(file_ancillary.keys()):
+        res_lat = file_ancillary['res_lat']
+    else:
+        log_stream.error(' ===> Geographical info "res_lat" for writing ascii grid file is undefined.')
+        raise IOError('Geographical info is mandatory. Check your static datasets.')
+    if 'transform' in list(file_ancillary.keys()):
+        transform = file_ancillary['transform']
+    else:
+        log_stream.error(' ===> Geographical info "transform" for writing ascii grid file is undefined.')
+        raise IOError('Geographical info is mandatory. Check your static datasets.')
+    if 'no_data' in list(file_ancillary.keys()):
+        no_data = file_ancillary['no_data']
+    else:
+        no_data = -9999
+    if 'espg' in list(file_ancillary.keys()):
+        epsg = file_ancillary['epsg']
+    else:
+        epsg = proj_epsg_default
+    if 'decimal_precision' in list(file_ancillary.keys()):
+        decimal_precision = int(file_ancillary['decimal_precision'])
+    else:
+        decimal_num = Decimal(str(file_data[0][0]))
+        decimal_precision = abs(decimal_num.as_tuple().exponent)
+
+    if isinstance(epsg, int):
+        crs = CRS.from_epsg(epsg)
+    elif isinstance(epsg, str):
+        crs = CRS.from_string(epsg)
+    else:
+        log_stream.error(' ===> Geographical info "epsg" defined by using an unsupported format.')
+        raise IOError('Geographical EPSG must be in string format "EPSG:4326" or integer format "4326".')
+
+    dset_meta = dict(driver='AAIGrid', height=file_data.shape[0], width=file_data.shape[1], crs=crs,
+                     count=1, dtype=str(file_data.dtype), transform=transform, nodata=no_data,
+                     decimal_precision=decimal_precision)
+
+    with rasterio.open(file_name, 'w', **dset_meta) as dset_handle:
+        dset_handle.write(file_data, 1)
+
+# -------------------------------------------------------------------------------------
+
+
+# -------------------------------------------------------------------------------------
+# Method to read an ascii grid file
+def read_data_grid(file_name, output_format='data_array', output_dtype='float32'):
 
     try:
         dset = rasterio.open(file_name)
@@ -417,16 +487,30 @@ def read_data_grid(file_name):
 
         lats = np.flipud(lats)
 
-        da_frame = create_darray_2d(values, lons, lats,
-                                    coord_name_x='west_east', coord_name_y='south_north',
-                                    dim_name_x='west_east', dim_name_y='south_north')
+        if output_format == 'data_array':
+
+            data_obj = create_darray_2d(values, lons, lats,
+                                        coord_name_x='west_east', coord_name_y='south_north',
+                                        dim_name_x='west_east', dim_name_y='south_north')
+
+        elif output_format == 'dictionary':
+
+            data_obj = {'values': values, 'longitude': lons, 'latitude': lats,
+                        'transform': transform, 'bbox': [bounds.left, bounds.bottom, bounds.right, bounds.top],
+                        'bb_left': bounds.left, 'bb_right': bounds.right,
+                        'bb_top': bounds.top, 'bb_bottom': bounds.bottom,
+                        'res_lon': res[0], 'res_lat': res[1]}
+        else:
+            log_stream.error(' ===> File static "' + file_name + '" output format not allowed')
+            raise NotImplementedError('Case not implemented yet')
+
     except IOError as io_error:
 
-        da_frame = None
-        log_stream.warning(' ===> File static in ascii grid was not correctly open with error ' + str(io_error))
-        log_stream.warning(' ===> Filename ' + os.path.split(file_name)[1])
+        data_obj = None
+        log_stream.warning(' ===> File static in ascii grid was not correctly open with error "' + str(io_error) + '"')
+        log_stream.warning(' ===> Filename "' + os.path.split(file_name)[1] + '"')
 
-    return da_frame
+    return data_obj
 # -------------------------------------------------------------------------------------
 
 
@@ -442,4 +526,53 @@ def read_data_vector(file_name):
 
     return vector_frame
 
+# -------------------------------------------------------------------------------------
+
+
+# -------------------------------------------------------------------------------------
+# Method to read a raster ascii file
+def read_data_raster(filename_reference):
+
+    dset = rasterio.open(filename_reference)
+    bounds = dset.bounds
+    res = dset.res
+    transform = dset.transform
+    data = dset.read()
+    values = data[0, :, :]
+
+    decimal_round = 7
+
+    center_right = bounds.right - (res[0] / 2)
+    center_left = bounds.left + (res[0] / 2)
+    center_top = bounds.top - (res[1] / 2)
+    center_bottom = bounds.bottom + (res[1] / 2)
+
+    lon = np.arange(center_left, center_right + np.abs(res[0] / 2), np.abs(res[0]), float)
+    lat = np.arange(center_bottom, center_top + np.abs(res[0] / 2), np.abs(res[1]), float)
+    lons, lats = np.meshgrid(lon, lat)
+
+    min_lon_round = round(np.min(lons), decimal_round)
+    max_lon_round = round(np.max(lons), decimal_round)
+    min_lat_round = round(np.min(lats), decimal_round)
+    max_lat_round = round(np.max(lats), decimal_round)
+
+    center_right_round = round(center_right, decimal_round)
+    center_left_round = round(center_left, decimal_round)
+    center_bottom_round = round(center_bottom, decimal_round)
+    center_top_round = round(center_top, decimal_round)
+
+    assert min_lon_round == center_left_round
+    assert max_lon_round == center_right_round
+    assert min_lat_round == center_bottom_round
+    assert max_lat_round == center_top_round
+
+    lats = np.flipud(lats)
+
+    obj = {'values': values, 'longitude': lons, 'latitude': lats,
+           'transform': transform, 'bbox': [bounds.left, bounds.bottom, bounds.right, bounds.top],
+           'bb_left': bounds.left, 'bb_right': bounds.right,
+           'bb_top': bounds.top, 'bb_bottom': bounds.bottom,
+           'res_lon': res[0], 'res_lat': res[1]}
+
+    return obj
 # -------------------------------------------------------------------------------------
