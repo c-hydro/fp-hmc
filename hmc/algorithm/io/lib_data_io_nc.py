@@ -14,6 +14,7 @@ import os
 import netCDF4
 import time
 import re
+import warnings
 
 import numpy as np
 import xarray as xr
@@ -118,9 +119,28 @@ def read_data(file_name_list, var_name=None, var_time_start=None, var_time_end=N
 
         if file_n == 1:
 
+            datetime_tmp = pd.date_range(start=var_time_start, end=var_time_end, freq=var_time_freq)
+            datetime_idx_select = pd.DatetimeIndex(datetime_tmp)
+
             if os.path.exists(file_name_list[0]):
                 try:
+
                     dst_tmp = xr.open_dataset(file_name_list[0])
+
+                    if ('time' not in list(dst_tmp.coords)) and ('time' not in list(dst_tmp.dims)):
+
+                        log_stream.warning(
+                            ' ===> Time dimensions and coordinates are not included in filename \n "' +
+                            file_name_list[0] + '". \n Time dimensions and coordinates will be assigned '
+                                                'using the first step of the reference time period "' +
+                            str(datetime_idx_select[0]) + '".\n')
+
+                        datetime_idx_tmp = pd.DatetimeIndex([datetime_idx_select[0]])
+                        dst_tmp['time'] = datetime_idx_tmp
+                        dst_tmp = dst_tmp.set_coords('time')
+                        if 'time' not in list(dst_tmp.dims):
+                            dst_tmp = dst_tmp.expand_dims('time')
+
                 except BaseException as base_exp:
                     log_stream.warning(' ===> Exception ' + str(base_exp) + ' occurred in reading netcdf file list')
                     dst_tmp = xr.open_dataset(file_name_step, decode_times=False)
@@ -145,8 +165,29 @@ def read_data(file_name_list, var_name=None, var_time_start=None, var_time_end=N
                     var_list = list(dst_tmp.data_vars)
                     dst = dst_tmp
                 elif var_name in list(dst_tmp.data_vars):
+
                     var_list = [var_name]
                     dst = dst_tmp[var_list]
+
+                    # case for time_step equal to 1
+                    if dst_tmp['time'].shape[0] == 1:
+                        # force time coordinates and dimensions definition
+                        if ('time' not in list(dst.coords)) and ('time' not in list(dst.dims)):
+                            datetime_value_select = dst_tmp['time'].values
+                            datetime_idx_select = pd.DatetimeIndex([datetime_value_select])
+                            dst['time'] = datetime_idx_select
+                            dst = dst_tmp.set_coords('time')
+                            if 'time' not in list(dst.dims):
+                                dst = dst.expand_dims('time')
+                        elif ('time' in list(dst.coords)) and ('time' in list(dst.dims)):
+                            pass
+                        else:
+                            log_stream.error(' ===> Time dimensions and coordinates mode is not allowed.')
+                            raise NotImplementedError('Case not implemented yet')
+                    else:
+                        log_stream.error(' ===> Time shape is wrongly defined')
+                        raise NotImplemented('Case not implemented yet')
+
                 else:
                     log_stream.warning(' ===> Variable ' + var_name + ' not available in loaded datasets!')
                     var_list = None
@@ -161,7 +202,9 @@ def read_data(file_name_list, var_name=None, var_time_start=None, var_time_end=N
             datetime_idx_select = pd.DatetimeIndex(datetime_tmp)
 
             try:
-                dst_tmp = xr.open_mfdataset(file_name_list, combine='by_coords')
+                with warnings.catch_warnings():
+                    warnings.simplefilter("ignore")
+                    dst_tmp = xr.open_mfdataset(file_name_list, combine='by_coords')
             except BaseException as base_exp:
 
                 log_stream.warning(' ===> Exception ' + str(base_exp) + ' occurred in reading netcdf file list')
@@ -278,7 +321,16 @@ def read_data(file_name_list, var_name=None, var_time_start=None, var_time_end=N
 
             if da_time is not None:
                 time_stamp_period = []
-                for time_step in da_time.values:
+
+                if da_time.values.size == 1:
+                    time_list = [da_time.values]
+                elif da_time.values.size > 1:
+                    time_list = da_time.values
+                else:
+                    log_stream.error(' ===> Time values are not greater than 0')
+                    raise NotImplemented(' ===> Case not implemented yet')
+
+                for time_step in time_list:
                     timestamp_step = pd.to_datetime(time_step, format='%Y-%m-%d_%H:%M:%S')
                     timestamp_step = timestamp_step.round('H')
                     time_stamp_period.append(timestamp_step)

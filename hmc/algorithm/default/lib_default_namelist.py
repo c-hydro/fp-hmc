@@ -60,6 +60,7 @@ link_namelist_default = dict(
         'iFlagFrac': {'algorithm': ['HMC_Info', 'hmc_flags', 'flag_phys_fracturation']},
         'iFlagDynVeg': {'algorithm': ['HMC_Info', 'hmc_flags', 'flag_phys_dynamic_vegetation']},
         'iFlagFlood': {'algorithm': ['HMC_Info', 'hmc_flags', 'flag_phys_flooding']},
+        'iFlagEnergyBalance': {'algorithm': ['HMC_Info', 'hmc_flags', 'flag_phys_energy_balance']},
 
         'a1dGeoForcing': [-9999.0, -9999.0],
         'a1dResForcing': [-9999.0, -9999.0],
@@ -228,6 +229,7 @@ structure_namelist_default = dict(
         'iFlagFrac': 0,
         'iFlagDynVeg': 0,
         'iFlagFlood': 0,
+        'iFlagEnergyBalance': 1,
 
         'a1dGeoForcing': [-9999.0, -9999.0],
         'a1dResForcing': [-9999.0, -9999.0],
@@ -342,9 +344,9 @@ structure_namelist_default = dict(
     },
 
     HMC_Info={
-        'sReleaseVersion': "3.1.3",
-        'sAuthorNames': "Delogu F., Silvestro F., Gabellani S., Basso V., Libertino A., Ercolani G.",
-        'sReleaseDate': "2020/10/28",
+        'sReleaseVersion': "3.1.4",
+        'sAuthorNames': "Delogu F., Silvestro F., Gabellani S., Libertino A., Ercolani G.",
+        'sReleaseDate': "2021/03/08",
     },
 )
 # -------------------------------------------------------------------------------------

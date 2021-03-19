@@ -28,6 +28,8 @@
       "dset_sub_path_forcing_obs": "%Y/%m/%d/",
       "dset_datetime_forcing_for": "%Y%m%d0000",
       "dset_sub_path_forcing_for": "%Y/%m/%d/",
+      "dset_datetime_forcing_clim": "%m%d",
+      "dset_sub_path_forcing_clim": "%m/%d/",
       "dset_datetime_outcome": "%Y%m%d%H%M",
       "dset_sub_path_outcome": "%Y/%m/%d/%H/",
       "dset_datetime_state": "%Y%m%d%H%M",
@@ -68,8 +70,8 @@
     "run_type": {
       "run_mp": false,
       "run_cpu": 1,
-      "run_domain": "Po",
-      "run_name": "dte_obs_reference",
+      "run_domain": "IGAD_D10",
+      "run_name": "igad_obs",
       "run_mode": {
         "ens_active": false,
         "ens_variable": {
@@ -82,13 +84,13 @@
     },
     "run_location": {
       "executable": {
-        "file_folder": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/dte_hydrology/run/{run_name}/{run_mode}/exec/",
+        "file_folder": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_igad/run/{run_name}/{run_mode}/exec/",
         "file_name": "HMC_Model_V3_{run_name}.x",
         "arguments": "{run_domain}.info.txt",
         "namelist": "{run_domain}.info.txt"
       },
       "tmp": {
-        "file_folder": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/dte_hydrology/run/{run_name}/{run_mode}/temp/",
+        "file_folder": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_igad/run/{run_name}/{run_mode}/temp/",
         "file_name": null
       },
       "library": {
@@ -97,7 +99,7 @@
         "dependencies": ["/home/fabio/fp_libs_system/nc4/lib/"]
       },
       "log": {
-        "file_folder": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/dte_hydrology/log/",
+        "file_folder": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_igad/log/",
         "file_name": "hmc_logging_{run_name}_{run_domain}.txt"
       }
     }
@@ -105,8 +107,8 @@
   "Time_Info": {
     "time_run": null,
     "time_forecast_period": 0,
-    "time_observed_period": 48,
-    "time_check_period": 4,
+    "time_observed_period": 72,
+    "time_check_period": 2,
     "time_restart_period": 24,
     "time_forecast_frequency": "H",
     "time_observed_frequency": "H",
@@ -151,7 +153,7 @@
       "flag_phys_dynamic_vegetation": 0,
       "flag_phys_flooding": 0,
       "flag_phys_energy_balance": 1,
-      "flag_datasets_lai": 0,
+      "flag_datasets_lai": 1,
       "flag_datasets_albedo": 0,
       "flag_debug_set": 0,
       "flag_debug_level": 3

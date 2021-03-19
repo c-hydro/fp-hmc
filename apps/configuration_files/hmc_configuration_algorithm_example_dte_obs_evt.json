@@ -69,7 +69,7 @@
       "run_mp": false,
       "run_cpu": 1,
       "run_domain": "Po",
-      "run_name": "dte_obs_reference",
+      "run_name": "dte_obs_et",
       "run_mode": {
         "ens_active": false,
         "ens_variable": {

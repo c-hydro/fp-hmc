@@ -15,6 +15,8 @@ import os
 import numpy as np
 import pandas as pd
 
+from copy import deepcopy
+
 from hmc.algorithm.io.lib_data_io_nc import read_data as read_data_nc
 from hmc.algorithm.io.lib_data_io_tiff import read_data as read_data_tiff
 
@@ -28,6 +30,7 @@ from hmc.algorithm.io.lib_data_geo_ascii import read_data_point_dam, read_data_p
 from hmc.algorithm.io.lib_data_geo_shapefile import read_data_shapefile_section
 from hmc.algorithm.io.lib_data_zip_gzip import unzip_filename
 
+from hmc.algorithm.utils.lib_utils_variable import convert_fx_interface
 from hmc.algorithm.utils.lib_utils_geo import compute_cell_area
 
 from hmc.algorithm.utils.lib_utils_zip import remove_zip_extension
@@ -526,6 +529,96 @@ class DSetComposer(DSetWriter):
     # Method to initialize class
     def __init__(self, file_dst_path, file_dst_info, file_dst_time, time_dst_info):
         super(DSetComposer, self).__init__(file_dst_path, file_dst_info, file_dst_time, time_dst_info)
+
+        self.var_info = file_dst_info
+
+        self.tag_var_file_units = 'var_file_units'
+        self.tag_var_file_limits = 'var_file_limits'
+
+    # -------------------------------------------------------------------------------------
+
+    # -------------------------------------------------------------------------------------
+    # Method to check data units (with default reference)
+    def validate_data_units(self, var_name, var_data, var_info_default):
+
+        # Info
+        log_stream.info(' ---------> Validate ' + var_name + ' units ... ')
+
+        # Get dataset info
+        var_info = self.var_info
+
+        var_info_valid = deepcopy(var_info)
+        var_data_valid = deepcopy(var_data)
+        if var_info_default is not None:
+
+            if self.tag_var_file_units in list(var_info_default.keys()):
+                var_units_default = var_info_default[self.tag_var_file_units]
+            else:
+                var_units_default = None
+            if 'var_units' in list(var_info.keys()):
+                var_units = var_info['var_units']
+            else:
+                var_units = None
+
+            if self.tag_var_file_limits in list(var_info_default.keys()):
+                var_limits_default = var_info_default[self.tag_var_file_limits]
+            else:
+                var_limits_default = None
+
+            if (var_units is not None) and (var_units_default is not None):
+
+                if var_units_default == var_units:
+                    log_stream.info(' ---------> Validate ' +
+                                    var_name + ' units ... DONE. Default units [' + var_units_default +
+                                    '] and datasets units [' + var_units + '] are equal')
+                elif var_units_default != var_units:
+
+                    if var_name == 'AirTemperature':
+
+                        var_data_valid, var_info_valid = convert_fx_interface(var_name, var_data, var_info,
+                                                                              var_units, var_units_default,
+                                                                              var_limits_default)
+                    else:
+                        log_stream.info(' ---------> Validate ' + var_name + ' units ... FAILED')
+                        log_stream.error(' ===> Default units [' + var_units +
+                                         '] and datasets units [' + var_units + '] are different. \n'
+                                         'Method to convert units is not provided. ')
+                        raise NotImplementedError('Case not implemented yet')
+
+                else:
+                    log_stream.info(' ---------> Validate ' + var_name + ' units ... FAILED')
+                    log_stream.error(' ===> Variable units and default units are found in wrong format')
+                    raise NotImplementedError('Case not implemented yet')
+
+            elif (var_units is None) and (var_units_default is None):
+                log_stream.info(' ---------> Validate ' +
+                                var_name + ' units ... SKIPPED. Default and dataset units are defined by [None]')
+                log_stream.warning(' ===> Set units in "lib_default_variables.py" default file or in the settings file')
+            elif (var_units is not None) and (var_units_default is None):
+                log_stream.info(' ---------> Validate ' +
+                                var_name + ' units ... SKIPPED. Default units are [None]'
+                                ' and datasets units are [' + var_units + ']. Use datasets units in the variable obj')
+                log_stream.warning(' ===> Set units in "lib_default_variables.py" default file')
+            elif (var_units is None) and (var_units_default is not None):
+                log_stream.info(' ---------> Validate ' +
+                                var_name + ' units ... SKIPPED. Default units are [' + var_units_default +
+                                '] and datasets units are [None]. Use default units in the variable obj')
+                log_stream.warning(' ===> Set units in the settings file')
+            else:
+                log_stream.info(' ---------> Validate ' + var_name + ' units ... FAILED')
+                log_stream.error(' ===> Variable units and default units are found in wrong type')
+                raise NotImplementedError('Case not implemented yet')
+
+        else:
+            log_stream.info(' ---------> Validate ' + var_name + ' units ... SKIPPED')
+            log_stream.warning(' ===> Variable "' + var_name +
+                               '" is not defined in default dictionary. Add it in the "lib_default_variables.py"')
+
+        # Update class variable(s)
+        self.var_info = var_info_valid
+
+        return var_data_valid
+
     # -------------------------------------------------------------------------------------
 
     # -------------------------------------------------------------------------------------

@@ -30,9 +30,10 @@ from hmc.algorithm.utils.lib_utils_string import fill_tags2string
 from hmc.algorithm.utils.lib_utils_list import flat_list
 from hmc.algorithm.utils.lib_utils_zip import add_zip_extension
 
+from hmc.algorithm.default.lib_default_variables import variable_default_fields as dset_default_base
 from hmc.algorithm.default.lib_default_args import logger_name, time_format_algorithm, time_format_datasets
 
-from hmc.driver.dataset.drv_dataset_hmc_io_type import DSetReader
+from hmc.driver.dataset.drv_dataset_hmc_io_type import DSetReader, DSetComposer
 
 # Log
 log_stream = logging.getLogger(logger_name)
@@ -500,9 +501,29 @@ class DSetManager:
         file_path_list_zip = []
         for time_step in dset_time:
 
+            log_stream.info(' --------> TimeStep ' + str(time_step)  + ' ... ')
+
             if time_step in list(dset_source[self.dim_name_time].values):
 
+                # Check dataset
+                log_stream.info(' ---------> Verify datasets structure ... ')
+
                 dset_step = dset_source.sel(time=time_step)
+
+                dset_var_list = list(dset_step.data_vars)
+                for dset_var_name in dset_var_list:
+                    da_array = dset_step[dset_var_name]
+
+                    log_stream.info(' ----------> Variable ' + dset_var_name + ' ... ')
+                    if np.isnan(da_array).all().values:
+                        log_stream.info(' ----------> Variable ' + dset_var_name + ' ... IS EMPTY. REMOVE FROM DATASET')
+                        dset_step = dset_step.drop_vars([dset_var_name])
+                    elif not np.isnan(da_array).all().values:
+                        log_stream.info(' ----------> Variable ' + dset_var_name + ' ... IS NOT EMPTY. PASS')
+
+                log_stream.info(' ---------> Verify datasets structure ... DONE')
+
+                # Prepare dataset
                 dset_file_path_step = dset_model.loc[time_step][self.model_tag]
 
                 dset_file_folder_step, dset_file_name_step = split_path(dset_file_path_step)
@@ -526,22 +547,22 @@ class DSetManager:
                 dset_file_path_step_zip = os.path.join(dset_file_folder_step, dset_file_name_step_zip)
                 dset_file_path_step_unzip = os.path.join(dset_file_folder_step, dset_file_name_step_unzip)
 
-                # Write dset
-                log_stream.info(' --------> Filename ' + dset_file_name_step_unzip + ' ... ')
-
+                # Write dataset
+                log_stream.info(' ---------> Write datasets to filename "' + dset_file_name_step_unzip + '" ... ')
                 dset_attrs = self.file_attributes_dict
                 write_dset(dset_file_path_step_unzip,
                            dset_data=dset_step, dset_attrs=dset_attrs, dset_format=self.dset_write_format,
                            dset_compression=self.dset_write_compression_level, dset_engine=self.dset_write_engine)
-                log_stream.info(' --------> Filename ' + dset_file_name_step_unzip + ' ... DONE')
+                log_stream.info(' ---------> Write datasets to filename "' + dset_file_name_step_unzip + '" ... DONE')
 
                 file_path_list_unzip.append(dset_file_path_step_unzip)
                 file_path_list_zip.append(dset_file_path_step_zip)
 
                 dump_status_list.append(True)
-
+                log_stream.info(' --------> TimeStep ' + str(time_step) + ' ... DONE')
             else:
-                log_stream.warning(' ===> Dump time step ' + str(time_step) + ' skipped. Time step is not in datasets')
+                log_stream.info(' --------> TimeStep ' + str(time_step) + ' ... SKIPPED')
+                log_stream.warning(' ===> Dump time step ' + str(time_step) + ' is not in datasets time period')
 
         # Ending info
         log_stream.info(' -------> Dump data ... DONE')
@@ -936,6 +957,8 @@ class DSetManager:
         if 'plant_name_list' in kwargs:
             var_args['plant_name_list'] = kwargs['plant_name_list']
 
+        da_terrain = self.da_terrain
+
         file_source_vars_tmp = list(dset_source_dyn.columns)
         file_source_vars_def = [elem for elem in file_source_vars_tmp if elem not in columns_excluded]
 
@@ -951,6 +974,11 @@ class DSetManager:
 
                     dset_source_var_base = dset_source_base[var_name]
                     dset_source_var_dyn = dset_source_dyn[var_name]
+
+                    if var_name in list(dset_default_base.keys()):
+                        dset_default_var_base = dset_default_base[var_name]
+                    else:
+                        dset_default_var_base = None
 
                     dset_datetime_idx = dset_source_var_dyn.index
                     dset_filename = dset_source_var_dyn.values
@@ -981,15 +1009,13 @@ class DSetManager:
 
                     if obj_var is not None:
                         if isinstance(obj_var, xr.Dataset):
-                            if self.coord_name_geo_x not in list(var_frame.keys()):
-                                var_frame[self.coord_name_geo_x] = geo_x
-                            if self.coord_name_geo_y not in list(var_frame.keys()):
-                                var_frame[self.coord_name_geo_y] = geo_y
 
+                            # Organize datasets name
+                            log_stream.info(' --------> Organize ' + var_name + ' dataset name ... ')
                             obj_var_name_list = list(obj_var.data_vars)
                             if obj_var_name_list.__len__() == 1:
 
-                                log_stream.info(' --------> Variable list: ' + str(obj_var_name_list) +
+                                log_stream.info(' ---------> Variable list: ' + str(obj_var_name_list) +
                                                 ' with 1 item')
 
                                 obj_var_name = obj_var_name_list[0]
@@ -1000,13 +1026,89 @@ class DSetManager:
                                                        obj_var_name + '" to "' + var_name + '"')
 
                             else:
-                                log_stream.info(' --------> Variable list: ' + str(obj_var_name_list) +
+                                log_stream.info(' ---------> Variable list: ' + str(obj_var_name_list) +
                                                 ' with ' + str(obj_var_name_list.__len__()) + ' items')
+
+                            log_stream.info(' --------> Organize ' + var_name + ' dataset name ... DONE')
+
+                            # Organize datasets units
+                            log_stream.info(' --------> Organize ' + var_name + ' dataset units ... ')
+
+                            driver_hmc_composer = DSetComposer(dset_filename, dset_source_var_base,
+                                                               dset_datetime_idx, time_dst_info=dset_time_info)
+                            obj_var = driver_hmc_composer.validate_data_units(var_name, obj_var, dset_default_var_base)
+
+                            log_stream.info(' --------> Organize ' + var_name + ' dataset units ... ')
+
+                            # Organize datasets geographical domain
+                            log_stream.info(' --------> Organize ' + var_name + ' dataset geographical domain  ... ')
+                            if ((obj_var['west_east'].shape[0] != da_terrain['west_east'].shape[0]) or
+                                    (obj_var['south_north'].shape[0] != da_terrain['south_north'].shape[0])):
+
+                                # Interpolation info start
+                                log_stream.info(' ---------> Interpolate ' + var_name + ' datasets ... ')
+
+                                # Configure data array with longitude/latitude coordinates
+                                var_da_src = create_darray_3d(
+                                    obj_var[var_name].values, da_time, geo_x, geo_y,
+                                    coord_name_time=self.coord_name_time,
+                                    coord_name_x='Longitude', coord_name_y='Latitude',
+                                    dim_name_time=self.dim_name_time,
+                                    dim_name_x='Longitude', dim_name_y='Latitude',
+                                    dims_order=['Latitude', 'Longitude', self.dim_name_time])
+
+                                if self.var_interp == 'nearest':
+                                    # Interpolation method info start
+                                    log_stream.info(' -----------> Apply ' + self.var_interp + ' method ... ')
+
+                                    # Apply the interpolation method
+                                    var_da_interp_tmp = var_da_src.interp(
+                                        Latitude=da_terrain['Latitude'],
+                                        Longitude=da_terrain['Longitude'], method='nearest')
+
+                                    # Interpolation method info end
+                                    log_stream.info(' -----------> Apply ' + self.var_interp + ' method ... DONE')
+                                else:
+                                    # Ending info for undefined function
+                                    log_stream.error(' ===> Interpolation method ' +
+                                                     self.var_interp + ' not available')
+                                    raise NotImplemented('Interpolation method not implemented yet')
+
+                                # Configure the data array with west_east/south_north coordinates
+                                var_da_interp = create_darray_3d(
+                                    var_da_interp_tmp, da_time,
+                                    da_terrain['Longitude'].values, da_terrain['Latitude'].values,
+                                    coord_name_time=self.coord_name_time,
+                                    coord_name_x=self.coord_name_geo_x, coord_name_y=self.coord_name_geo_y,
+                                    dim_name_time=self.dim_name_time,
+                                    dim_name_x=self.dim_name_geo_x, dim_name_y=self.dim_name_geo_y,
+                                    dims_order=[self.dim_name_geo_y, self.dim_name_geo_x,
+                                                self.dim_name_time])
+
+                                var_da_masked = var_da_interp.where((da_terrain != -9999))
+
+                                obj_var = var_da_masked.to_dataset(name=var_name)
+                                geo_x = da_terrain['Longitude'].values
+                                geo_y = da_terrain['Latitude'].values
+
+                                # Interpolation info end
+                                log_stream.info(' ---------> Interpolate ' + var_name + ' datasets ... DONE')
+
+                            log_stream.info(' --------> Organize ' + var_name + ' dataset geographical domain  ... DONE')
+
+                            # Organize a common dataset for all variable(s)
+                            log_stream.info(' --------> Organize ' + var_name + ' dataset in a common dataset ... ')
+                            if self.coord_name_geo_x not in list(var_frame.keys()):
+                                var_frame[self.coord_name_geo_x] = geo_x
+                            if self.coord_name_geo_y not in list(var_frame.keys()):
+                                var_frame[self.coord_name_geo_y] = geo_y
 
                             if dset_source is None:
                                 dset_source = obj_var
                             else:
                                 dset_source = dset_source.combine_first(obj_var)
+                            log_stream.info(' --------> Organize ' + var_name + ' dataset in a common dataset ... DONE')
+
                         elif isinstance(obj_var, dict):
                             if dset_source is None:
                                 dset_source = {}
