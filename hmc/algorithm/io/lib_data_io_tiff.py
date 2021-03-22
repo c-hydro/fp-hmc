@@ -37,7 +37,7 @@ proj_default_wkt = 'GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,2
 def read_data(file_name_list, var_name=None, var_time_start=None, var_time_end=None, var_time_freq='H',
               coord_name_time='time', coord_name_geo_x='Longitude', coord_name_geo_y='Latitude',
               dim_name_time='time', dim_name_geo_x='west_east', dim_name_geo_y='south_north',
-              dims_order_3d=None):
+              dims_order_3d=None, decimal_round_data=3, decimal_round_geo=7):
 
     if not isinstance(file_name_list, list):
         file_name_list = [file_name_list]
@@ -63,6 +63,9 @@ def read_data(file_name_list, var_name=None, var_time_start=None, var_time_end=N
             file_data = file_handle.read()
             file_values = file_data[0, :, :]
 
+            # decimal_round_data = 3
+            file_values = file_values.round(decimal_round_data)
+
             if file_handle.crs is None:
                 file_proj = proj_default_wkt
                 log_stream.warning(' ===> Projection of tiff ' + file_name_step + ' not defined. Use default settings.')
@@ -70,7 +73,7 @@ def read_data(file_name_list, var_name=None, var_time_start=None, var_time_end=N
                 file_proj = file_handle.crs.wkt
             file_geotrans = file_handle.transform
 
-            decimal_round = 7
+            # decimal_round_geo = 7
 
             file_dims = file_values.shape
             file_high = file_dims[0]
@@ -94,15 +97,15 @@ def read_data(file_name_list, var_name=None, var_time_start=None, var_time_end=N
                 lat = np.arange(center_bottom, center_top + np.abs(file_res[1] / 2), np.abs(file_res[1]), float)
                 lons, lats = np.meshgrid(lon, lat)
 
-                min_lon_round = round(np.min(lons), decimal_round)
-                max_lon_round = round(np.max(lons), decimal_round)
-                min_lat_round = round(np.min(lats), decimal_round)
-                max_lat_round = round(np.max(lats), decimal_round)
+                min_lon_round = round(np.min(lons), decimal_round_geo)
+                max_lon_round = round(np.max(lons), decimal_round_geo)
+                min_lat_round = round(np.min(lats), decimal_round_geo)
+                max_lat_round = round(np.max(lats), decimal_round_geo)
 
-                center_right_round = round(center_right, decimal_round)
-                center_left_round = round(center_left, decimal_round)
-                center_bottom_round = round(center_bottom, decimal_round)
-                center_top_round = round(center_top, decimal_round)
+                center_right_round = round(center_right, decimal_round_geo)
+                center_left_round = round(center_left, decimal_round_geo)
+                center_bottom_round = round(center_bottom, decimal_round_geo)
+                center_top_round = round(center_top, decimal_round_geo)
 
                 assert min_lon_round == center_left_round
                 assert max_lon_round == center_right_round
