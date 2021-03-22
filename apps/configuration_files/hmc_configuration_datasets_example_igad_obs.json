@@ -3,8 +3,8 @@
   "Flags": {
     "__comment": " --- Flags configuration --- ",
     "cleaning_ancillary_data_static": true,
-    "cleaning_ancillary_data_dynamic_source": true,
-    "cleaning_ancillary_data_dynamic_execution": true,
+    "cleaning_ancillary_data_dynamic_source": false,
+    "cleaning_ancillary_data_dynamic_execution": false,
     "cleaning_ancillary_data_dynamic_outcome": true,
     "cleaning_run_execution": false,
     "cleaning_run_logging": false,
@@ -155,7 +155,7 @@
               "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_igad/data/data_dynamic/outcome/obs/nwp/gfs025/domain/{dset_sub_path_forcing_obs}",
               "var_file_dset"	: "air_temperature_data",
               "var_file_format"	: "netcdf",
-              "var_file_limits"	: [-20, 40],
+              "var_file_limits"	: [-250, 340],
               "var_file_units"  : "K"
             },
             "Wind"            : {

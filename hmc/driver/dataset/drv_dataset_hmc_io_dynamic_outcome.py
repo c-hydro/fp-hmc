@@ -299,19 +299,29 @@ class DSetManager:
 
                 if file_tmp_select and file_destination_select:
 
-                    for file_path_tmp_step, file_path_destination_step in zip(file_tmp_select, file_destination_select):
+                    file_tmp_null = True
+                    for file_tmp_check in file_tmp_select:
+                        if os.path.exists(file_tmp_check):
+                            file_tmp_null = False
+                            break
 
-                        folder_name_destination_step, file_name_destination_step = split_path(file_path_destination_step)
-                        folder_name_tmp_step, file_name_tmp_step = split_path(file_path_tmp_step)
+                    if not file_tmp_null:
+                        for file_path_tmp_step, file_path_destination_step in zip(file_tmp_select, file_destination_select):
 
-                        if os.path.exists(file_path_tmp_step):
-                            create_folder(folder_name_destination_step)
-                            copy_file(file_path_tmp_step, file_path_destination_step)
-                        else:
-                            log_stream.warning(' ===> Copy file: ' + file_path_tmp_step +
-                                               ' FAILED. File does not exist!')
+                            folder_name_destination_step, file_name_destination_step = split_path(file_path_destination_step)
+                            folder_name_tmp_step, file_name_tmp_step = split_path(file_path_tmp_step)
+
+                            if os.path.exists(file_path_tmp_step):
+                                create_folder(folder_name_destination_step)
+                                copy_file(file_path_tmp_step, file_path_destination_step)
+                            else:
+                                log_stream.warning(' ===> Copy file for variable "' + var_destination_step + '"'
+                                                   ' FAILED. File "' + file_path_tmp_step + '" does not exist!')
+                    else:
+                        log_stream.warning(' ===> Copy file for variable "' + var_destination_step + '"'
+                                           ' FAILED. ALL files do not exist!')
             else:
-                log_stream.warning(' ===> Copy file: ... FAILED. All files do not exist')
+                log_stream.warning(' ===> Copy file: ... FAILED. ALL files do not exist')
 
             log_stream.info(' --------> Variable ' + var_destination_step + ' ... DONE')
 
@@ -551,6 +561,15 @@ class DSetManager:
                                     time_stamp_period = []
                                     for time_step in var_da_step['time'].values:
                                         timestamp_step = pd.to_datetime(time_step, format='%Y-%m-%d_%H:%M:%S')
+
+                                        if isinstance(timestamp_step, pd.DatetimeIndex):
+                                            timestamp_step = timestamp_step[0]
+                                        elif isinstance(timestamp_step, pd.Timestamp):
+                                            pass
+                                        else:
+                                            log_stream.error(' ===> Time type is not allowed')
+                                            raise NotImplementedError('Case not implemented yet')
+
                                         timestamp_step = timestamp_step.round('H')
                                         time_stamp_period.append(timestamp_step)
                                     dset_time_step = pd.DatetimeIndex(time_stamp_period)
@@ -615,14 +634,16 @@ class DSetManager:
                                     # Get variable, data, time and attributes of expected data
                                     var_da_expected = create_darray_3d(
                                         var_data_expected, dset_time, geo_x_values, geo_y_values,
-                                        coord_name_time=self.coord_name_time,
+                                        coord_name_time=self.coord_name_time, var_name=var_name_step,
                                         coord_name_x=self.coord_name_geo_x, coord_name_y=self.coord_name_geo_y,
                                         dim_name_time=self.dim_name_time,
                                         dim_name_x=self.dim_name_geo_x, dim_name_y=self.dim_name_geo_y,
                                         dims_order=[self.dim_name_geo_y, self.dim_name_geo_x, self.dim_name_time])
 
                                     # Combine raw and expected data arrays
-                                    var_da_combined = var_da_expected.combine_first(var_da_step)
+                                    # var_da_combined = var_da_expected.combine_first(var_da_step)
+                                    var_da_combined = var_da_expected.combine_first(var_da_step.values)
+
                                     # Select only selected time-steps
                                     dset_time_intersect = dset_time_step.intersection(dset_time)
                                     if dset_time_intersect.shape == dset_time.shape:

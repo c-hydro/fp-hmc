@@ -177,7 +177,7 @@ def create_darray_2d(data, geo_x, geo_y, geo_1d=True, time=None,
 
 # -------------------------------------------------------------------------------------
 # Method to create a data array
-def create_darray_3d(data, time, geo_x, geo_y, geo_1d=True,
+def create_darray_3d(data, time, geo_x, geo_y, geo_1d=True, var_name=None,
                      coord_name_x='west_east', coord_name_y='south_north', coord_name_time='time',
                      dim_name_x='west_east', dim_name_y='south_north', dim_name_time='time',
                      dims_order=None):
@@ -192,6 +192,7 @@ def create_darray_3d(data, time, geo_x, geo_y, geo_1d=True,
             geo_y = geo_y[:, 0]
 
         data_da = xr.DataArray(data,
+                               name=var_name,
                                dims=dims_order,
                                coords={coord_name_time: (dim_name_time, time),
                                        coord_name_x: (dim_name_x, geo_x),

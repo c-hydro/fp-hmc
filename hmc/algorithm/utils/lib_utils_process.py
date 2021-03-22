@@ -50,12 +50,19 @@ def exec_process(command_line=None):
         while True:
             string_out = process_handle.stdout.readline()
             if isinstance(string_out, bytes):
-                string_out = string_out.decode('UTF-8')
+                try:
+                    string_out = string_out.decode('UTF-8')
+                except BaseException as BExp:
+                    log_stream.warning(' ===> StdOut returns some non-ascii character. Get exception: ' + str(BExp))
+                    log_stream.warning(' ===> Some string variables have a wrong initialization')
+                    string_out = string_out.strip()
+            else:
+                print(string_out)
 
             if string_out == '' and process_handle.poll() is not None:
 
                 if process_handle.poll() == 0:
-                    log_stream.warning(' ===> Process POOL = ' + str(process_handle.poll()) + ' KILLED!')
+                    log_stream.info(' -------> Process POOL = ' + str(process_handle.poll()) + ' KILLED!')
                     break
                 else:
                     log_stream.error(' ===> Run failed! Check command-line settings!')
