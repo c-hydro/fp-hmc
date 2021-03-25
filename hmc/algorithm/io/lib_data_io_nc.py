@@ -141,6 +141,32 @@ def read_data(file_name_list, var_name=None, var_time_start=None, var_time_end=N
                         if 'time' not in list(dst_tmp.dims):
                             dst_tmp = dst_tmp.expand_dims('time')
 
+                    # Check the time steps of datasets and expected and in case of nan's, fill with nearest values
+                    datetime_idx_dst_tmp = pd.DatetimeIndex(dst_tmp['time'].values)
+                    datetime_idx_dst_sel = datetime_idx_dst_tmp[(datetime_idx_dst_tmp >= datetime_idx_select[0]) &
+                                                                (datetime_idx_dst_tmp <= datetime_idx_select[-1])]
+
+                    if not datetime_idx_select.equals(datetime_idx_dst_sel):
+                        if datetime_idx_select.shape[0] > datetime_idx_dst_sel.shape[0]:
+                            log_stream.warning(
+                                ' ===> Datetime detection revealed a different number of time-steps between \n'
+                                'datasets (' + str(datetime_idx_dst_sel.shape[0]) + ' steps) and expected (' +
+                                str(datetime_idx_select.shape[0]) +
+                                ' steps) time-series. To avoid undefined values in the datasets time-series procedure '
+                                'automatically filled steps with nearest values. \n')
+
+                            dst_filled = dst_tmp.reindex({"time": datetime_idx_select}, method="nearest")
+
+                        else:
+                            log_stream.warning(
+                                ' ===> Datetime detection revealed a different number of time-steps between \n'
+                                'datasets (' + str(datetime_idx_dst_sel.shape[0]) + ' steps) and expected (' +
+                                str(datetime_idx_select.shape[0]) + ' steps) time-series. Exit \n')
+                            raise NotImplementedError('Case not implemented yet')
+
+                        # Update the tmp datasets
+                        dst_tmp = deepcopy(dst_filled)
+
                 except BaseException as base_exp:
                     log_stream.warning(' ===> Exception ' + str(base_exp) + ' occurred in reading netcdf file list')
                     dst_tmp = xr.open_dataset(file_name_step, decode_times=False)
@@ -184,6 +210,8 @@ def read_data(file_name_list, var_name=None, var_time_start=None, var_time_end=N
                         else:
                             log_stream.error(' ===> Time dimensions and coordinates mode is not allowed.')
                             raise NotImplementedError('Case not implemented yet')
+                    elif dst_tmp['time'].shape[0] > 1:
+                        pass
                     else:
                         log_stream.error(' ===> Time shape is wrongly defined')
                         raise NotImplemented('Case not implemented yet')
@@ -299,6 +327,31 @@ def read_data(file_name_list, var_name=None, var_time_start=None, var_time_end=N
             else:
                 log_stream.error(' ===> GeoY dimension name is not in the variables list of nc file')
                 raise IOError(' ===> Check the GeoY dimension!')
+
+            # Check dimensions not allowed in the datasets (for example: "height")
+            dst_list_coords_expected = [coord_name_geo_x, coord_name_geo_y, coord_name_time]
+            dst_list_coords_tmp = deepcopy(dst_list_coords)
+            for coord_name in dst_list_coords_expected:
+                if coord_name in dst_list_coords:
+                    dst_list_coords_tmp.remove(coord_name)
+            if dst_list_coords_tmp.__len__() > 0:
+                log_stream.warning(' ===> Datasets coordinates "' + ','.join(dst_list_coords_tmp) + '" are not allowed')
+                dst_tmp = deepcopy(dst)
+                for coord_name_tmp in dst_list_coords_tmp:
+                    log_stream.warning(' ===> Coordinate "' + coord_name_tmp + '" is not expected in dataset')
+                    if dst_tmp.coords[coord_name_tmp].shape[0] == 1:
+                        log_stream.warning(' ===> Coordinate "' + coord_name_tmp +
+                                           '" dimension equal to 1. Try to correct the dataset')
+                        dst_tmp = dst_tmp.squeeze(coord_name_tmp)
+                        dst_tmp = dst_tmp.drop(coord_name_tmp)
+                        dst_tmp_list_coords = list(dst_tmp.coords)
+                    else:
+                        log_stream.error(' ===> Coordinate "' + coord_name_tmp +
+                                         '" dimension greater than 1. Dataset cannot be correct ')
+                        raise NotImplementedError('Case not implemented yet')
+                dst = deepcopy(dst_tmp)
+                dst_list_coords = deepcopy(dst_tmp_list_coords)
+                log_stream.warning(' ===> Datasets coordinates were corrected but errors could be found')
 
             # Check the dimensions of GeoX and GeoY
             if (da_geo_x is not None) and (da_geo_y is not None):

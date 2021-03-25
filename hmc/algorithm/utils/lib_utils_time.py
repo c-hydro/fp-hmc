@@ -38,3 +38,13 @@ def convert_timestamp_to_timestring(time_stamp, time_format='%Y-%m-%d %H:%M'):
     time_string = time_stamp.strftime(time_format)
     return time_string
 # -------------------------------------------------------------------------------------
+
+
+# -------------------------------------------------------------------------------------
+# Method to convert frequency string to frequency seconds
+def convert_freqstr_to_freqsecs(time_frequency_string):
+    if not time_frequency_string[0].isdigit():
+        time_frequency_string = '1' + time_frequency_string
+    time_frequency_seconds = int(pd.Timedelta(time_frequency_string).total_seconds())
+    return time_frequency_seconds
+# -------------------------------------------------------------------------------------

@@ -112,7 +112,7 @@ def get_dict_value(d, key, value=[]):
                     vf_end = vf.tolist()
                 else:
                     vf_end = vf
-                if vf_end not in value:
+                if (isinstance(value, list)) and (vf_end not in value):
 
                     if not isinstance(vf_end, bool):
                         if vf_end:

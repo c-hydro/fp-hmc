@@ -16,6 +16,7 @@ import pandas as pd
 from copy import deepcopy
 
 from hmc.algorithm.utils.lib_utils_dict import set_dict_values, lookup_dict_keys
+from hmc.algorithm.utils.lib_utils_geo import compute_section_mask
 from hmc.algorithm.default.lib_default_args import logger_name
 
 from hmc.driver.dataset.drv_dataset_hmc_io_static import DSetManager as DSetManager_Static
@@ -77,6 +78,7 @@ class ModelSource:
         self.tag_basin_list = 'basin_name_list'
         self.tag_section_list = 'section_name_list'
         self.tag_outlet_list = 'outlet_name_list'
+        self.tag_mask_list = 'mask_name_list'
 
         self.list_sep = ':'
 
@@ -197,7 +199,7 @@ class ModelSource:
                 dam_list = None
                 plant_list = None
         else:
-            logging.error(' ===> Dam key in static collections does not exist')
+            logging.error(' ===> "Dam" key in static collections does not exist')
             raise NotImplementedError('Key not available in data collections')
 
         if 'Section' in list(dset_collections_static.keys()):
@@ -208,15 +210,30 @@ class ModelSource:
             for basin, section in zip(section_parts[0], section_parts[1]):
                 outlet_step = self.list_sep.join([basin, section])
                 outlet_list.append(outlet_step)
+
         else:
-            logging.error(' ===> Dam key in static collections does not exist')
+            logging.error(' ===> "Section" key in static collections does not exist')
             raise NotImplementedError('Key not available in data collections')
+
+        if ('Section' in list(dset_collections_static.keys())) and (
+                'Flow_Directions' in list(dset_collections_static.keys())):
+
+            geo_fdir_values = dset_collections_static['Flow_Directions'].values
+            section_reference = dset_collections_static['Section']
+            geo_reference = self.reader_geo.dset_static_ref
+
+            mask_obj = compute_section_mask(geo_fdir_values, geo_reference=geo_reference, section_reference=section_reference)
+
+        else:
+            mask_obj = None
+            logging.warning(' ===> "Section" or/and "Flow_Directions" keys in static collections does not exist')
 
         dset_collections_static[self.tag_dam_list] = dam_list
         dset_collections_static[self.tag_plant_list] = plant_list
         dset_collections_static[self.tag_basin_list] = section_parts[0]
         dset_collections_static[self.tag_section_list] = section_parts[1]
         dset_collections_static[self.tag_outlet_list] = outlet_list
+        dset_collections_static[self.tag_mask_list] = mask_obj
 
         # Dump data in class environment
         self.dset_collections_static = dset_collections_static

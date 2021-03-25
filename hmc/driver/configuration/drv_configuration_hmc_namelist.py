@@ -13,6 +13,7 @@ import logging
 
 from copy import deepcopy
 
+from hmc.algorithm.utils.lib_utils_time import convert_freqstr_to_freqsecs
 from hmc.algorithm.utils.lib_utils_string import fill_tags2string
 from hmc.algorithm.utils.lib_utils_dict import get_dict_value, get_dict_nested_value
 from hmc.algorithm.namelist.lib_namelist import convert_template_date
@@ -52,6 +53,57 @@ class ModelNamelist:
 
         self.line_indent = 4 * ' '
 
+        self.lut_dt = {'iDtData_Forcing': 'DataForcing', 'iDtData_Updating': 'DataUpdating',
+                       'iDtData_Output_Gridded': 'DataOutcome', 'iDtData_Output_Point': 'DataOutcome',
+                       'iDtData_State_Gridded': 'DataState', 'iDtData_State_Point': 'DataState'}
+
+        self.defined_dt = self.search_dt(self.lut_dt)
+
+    # -------------------------------------------------------------------------------------
+
+    # -------------------------------------------------------------------------------------
+    # Method to search datasets frequency
+    def search_dt(self, lut_dt, key_dt='hmc_file_frequency'):
+
+        obj_datasets = self.obj_datasets
+
+        obj_dt = {}
+        for lut_key, lut_value in lut_dt.items():
+
+            if lut_value in list(obj_datasets.keys()):
+                obj_structure = obj_datasets[lut_value]
+
+                if isinstance(obj_structure, dict):
+                    collections_dt = []
+                    for dataset_key, fields_structure in obj_structure.items():
+                        if isinstance(fields_structure, dict):
+                            list_dt = get_dict_value(fields_structure, key_dt, [])
+                            if list_dt.__len__() > 0:
+                                string_dt = list_dt[0]
+                                if isinstance(string_dt, str):
+                                    num_dt = convert_freqstr_to_freqsecs(string_dt)
+                                    collections_dt.append(num_dt)
+                                else:
+                                    log_stream.error(' ==> Datasets dt is defined by unsupported format')
+                                    raise NotImplementedError('Case not implemented yet')
+                    if collections_dt.__len__() > 0:
+
+                        collections_dt = list(set(collections_dt))
+                        if collections_dt.__len__() > 1:
+                            log_stream.error(' ==> Datasets dd for "' + lut_value + '" is not defined by unique value')
+                            value_dt = min(collections_dt)
+                        elif collections_dt.__len__() == 1:
+                            value_dt = collections_dt[0]
+                        else:
+                            log_stream.error(' ==> Datasets dt is not defined')
+                            raise NotImplementedError('Case not implemented yet')
+                    else:
+                        log_stream.error(' ==> Datasets dt is not correctly defined')
+                        raise NotImplementedError('Case not implemented yet')
+
+                    obj_dt[lut_key] = value_dt
+
+        return obj_dt
     # -------------------------------------------------------------------------------------
 
     # -------------------------------------------------------------------------------------
@@ -104,7 +156,10 @@ class ModelNamelist:
                             log_stream.error(' ==> Namelist type is not correctly defined')
                             raise ValueError('Dictionary key is wrong')
 
-                        value_raw = get_dict_nested_value(obj_tmp, link_tags)
+                        if link_key in list(self.defined_dt.keys()):
+                            value_raw = self.defined_dt[link_key]
+                        else:
+                            value_raw = get_dict_nested_value(obj_tmp, link_tags)
 
                         if isinstance(value_raw, str):
                             template_merge_ref = {**template_run_ref, **template_time_ref}

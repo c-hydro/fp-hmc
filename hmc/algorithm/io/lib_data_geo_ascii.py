@@ -457,6 +457,12 @@ def read_data_grid(file_name, output_format='data_array', output_dtype='float32'
         res = dset.res
         transform = dset.transform
         data = dset.read()
+
+        if dset.crs is None:
+            crs = CRS.from_string(proj_epsg_default)
+        else:
+            crs = dset.crs
+
         values = data[0, :, :]
 
         decimal_round = 7
@@ -496,7 +502,8 @@ def read_data_grid(file_name, output_format='data_array', output_dtype='float32'
         elif output_format == 'dictionary':
 
             data_obj = {'values': values, 'longitude': lons, 'latitude': lats,
-                        'transform': transform, 'bbox': [bounds.left, bounds.bottom, bounds.right, bounds.top],
+                        'transform': transform, 'crs': crs,
+                        'bbox': [bounds.left, bounds.bottom, bounds.right, bounds.top],
                         'bb_left': bounds.left, 'bb_right': bounds.right,
                         'bb_top': bounds.top, 'bb_bottom': bounds.bottom,
                         'res_lon': res[0], 'res_lat': res[1]}

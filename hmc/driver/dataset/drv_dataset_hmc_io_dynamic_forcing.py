@@ -228,23 +228,24 @@ class DSetManager:
         if flag_key_expected is None:
             flag_key_expected = ['merge', 'split', 'dump', 'copy', 'analyze']
 
-        for flag_key, flag_value in data_flag.items():
-            if flag_key not in flag_key_expected:
-                log_stream.error(' ===> Datasets flag key "' + flag_key + '" is not allowed.')
-                raise KeyError('Flag key is not in the list of authorized flag keys')
-            if flag_value not in flag_values_expected:
-                log_stream.error(' ===> Datasets flag value "' + str(flag_value) + '" is not allowed.')
-                raise KeyError('Flag value is not in the list of authorized flag values')
+        if data_flag is not None:
+            for flag_key, flag_value in data_flag.items():
+                if flag_key not in flag_key_expected:
+                    log_stream.error(' ===> Datasets flag key "' + flag_key + '" is not allowed.')
+                    raise KeyError('Flag key is not in the list of authorized flag keys')
+                if flag_value not in flag_values_expected:
+                    log_stream.error(' ===> Datasets flag value "' + str(flag_value) + '" is not allowed.')
+                    raise KeyError('Flag value is not in the list of authorized flag values')
 
-        if 'copy' in list(data_flag.keys()) and 'dump' in list(data_flag.keys()):
-            if data_flag['copy'] and data_flag['dump']:
-                log_stream.error(' ===> Flags "dump" and "copy" cannot be concurrently selected.')
-                raise RuntimeError('Flags have to be different using the allowed values' + str(flag_values_expected))
+            if 'copy' in list(data_flag.keys()) and 'dump' in list(data_flag.keys()):
+                if data_flag['copy'] and data_flag['dump']:
+                    log_stream.error(' ===> Flags "dump" and "copy" cannot be concurrently selected.')
+                    raise RuntimeError('Flags have to be different using the allowed values' + str(flag_values_expected))
 
-        if 'merge' in list(data_flag.keys()) and 'split' in list(data_flag.keys()):
-            if data_flag['merge'] and data_flag['split']:
-                log_stream.error(' ===> Flags "merge" and "split" cannot be concurrently selected.')
-                raise RuntimeError('Flags have to be different using the allowed values' + str(flag_values_expected))
+            # if 'merge' in list(data_flag.keys()) and 'split' in list(data_flag.keys()):
+            #   if data_flag['merge'] and data_flag['split']:
+            #        log_stream.error(' ===> Flags "merge" and "split" cannot be concurrently selected.')
+            #        raise RuntimeError('Flags have to be different using the allowed values' + str(flag_values_expected))
 
     @staticmethod
     def rename_filename(file_path_tmpl, file_path_ref):

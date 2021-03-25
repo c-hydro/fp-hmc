@@ -12,17 +12,120 @@ Version:       '3.0.0'
 import logging
 import rasterio
 
+import pyproj
+from pysheds.grid import Grid
+
 import numpy as np
 
+#from hmc.algorithm.io.lib_data_io_generic import create_darray_2d
 from hmc.algorithm.default.lib_default_args import logger_name
 
 # Logging
 log_stream = logging.getLogger(logger_name)
 
 # Debug
-# import matplotlib.pylab as plt
+import matplotlib.pylab as plt
 #################################################################################
 
+
+# --------------------------------------------------------------------------------
+# Method to define section mask
+def compute_section_mask(fdir_values, fdir_map=None, fdir_nodata=0, geo_reference=None, section_reference=None):
+
+    if fdir_map is None:
+        fdir_map = [8, 9, 6, 3, 2, 1, 4, 7]
+
+    geo_values = geo_reference['values']
+    geo_longitude = geo_reference['longitude']
+    geo_latitude = geo_reference['latitude']
+    geo_transform = geo_reference['transform']
+    geo_crs = geo_reference['crs']
+
+    mask_values = np.zeros([fdir_values.shape[0], fdir_values.shape[1]], dtype=bool)
+    mask_values[:, :] = True
+
+    grid = Grid()
+    grid.add_gridded_data(data=fdir_values, data_name='fdir',
+                          affine=geo_transform,
+                          crs=pyproj.Proj(geo_crs),
+                          nodata=fdir_nodata)
+    grid.add_gridded_data(data=mask_values, data_name='mask',
+                          affine=geo_transform,
+                          crs=pyproj.Proj(geo_crs),
+                          nodata=False)
+
+    section_obj = {}
+    for section_tag, section_fields in section_reference.items():
+        section_idx_ji = section_fields['section_idx_ji']
+        section_j = section_idx_ji[0] - 1
+        section_i = section_idx_ji[1] - 1
+        section_mask = 'section_mask'
+
+        grid.catchment(data=grid.fdir, x=section_i, y=section_j,
+                       dirmap=fdir_map, out_name=section_mask,
+                       recursionlimit=15000, nodata_out=0, ytype='index')
+        section_mask = np.array(grid.section_mask).astype(np.float32)
+
+        section_mask[section_mask == 0] = np.nan
+        section_mask[geo_values < 0] = np.nan
+        section_mask[section_mask >= 1] = 1
+
+        section_da = create_darray_2d(section_mask, geo_longitude, geo_latitude,
+                                      coord_name_x='Longitude', coord_name_y='Latitude',
+                                      dim_name_x='west_east', dim_name_y='south_north',
+                                      dims_order=['south_north', 'west_east'])
+
+        section_obj[section_tag] = {}
+        section_obj[section_tag] = section_da
+
+    return section_obj
+
+# --------------------------------------------------------------------------------
+
+
+# -------------------------------------------------------------------------------------
+# Method to create a data array
+def create_darray_2d(data, geo_x, geo_y, geo_1d=True, time=None,
+                     coord_name_x='west_east', coord_name_y='south_north', coord_name_time='time',
+                     dim_name_x='west_east', dim_name_y='south_north', dim_name_time='time',
+                     dims_order=None):
+    import xarray as xr
+    if dims_order is None:
+        dims_order = [dim_name_y, dim_name_x]
+    if time is not None:
+        dims_order = [dim_name_y, dim_name_x, dim_name_time]
+
+    if geo_1d:
+        if geo_x.shape.__len__() == 2:
+            geo_x = geo_x[0, :]
+        if geo_y.shape.__len__() == 2:
+            geo_y = geo_y[:, 0]
+
+        if time is None:
+            data_da = xr.DataArray(data,
+                                   dims=dims_order,
+                                   coords={coord_name_x: (dim_name_x, geo_x),
+                                           coord_name_y: (dim_name_y, geo_y)})
+        elif isinstance(time, pd.DatetimeIndex):
+
+            if data.shape.__len__() == 2:
+                data = np.expand_dims(data, axis=-1)
+
+            data_da = xr.DataArray(data,
+                                   dims=dims_order,
+                                   coords={coord_name_x: (dim_name_x, geo_x),
+                                           coord_name_y: (dim_name_y, geo_y),
+                                           coord_name_time: (dim_name_time, time)})
+        else:
+            log_stream.error(' ===> Time obj is in wrong format')
+            raise IOError('Variable time format not valid')
+
+    else:
+        log_stream.error(' ===> Longitude and Latitude must be 1d')
+        raise IOError('Variable shape is not valid')
+
+    return data_da
+# -------------------------------------------------------------------------------------
 
 # --------------------------------------------------------------------------------
 # Method to convert curve number to maximum volume
