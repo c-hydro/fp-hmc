@@ -601,12 +601,20 @@ class DSetManager:
             # Ending info
             log_stream.info(' -------> Zip data ... SKIPPED. Zip not activated')
 
-    def organize_data(self, dset_time, dset_source, dset_variable_selected='ALL'):
+    def organize_data(self, dset_time, dset_source, dset_static=None, dset_variable_selected='ALL'):
 
         # Get variable(s)
         dset_vars = dset_source[self.datasets_tag]
         # Get terrain reference
         da_terrain = self.da_terrain
+
+        if dset_static is not None:
+            if 'mask_name_list' in list(dset_static.keys()):
+                mask_name_obj = dset_static['mask_name_list']
+            else:
+                mask_name_obj = None
+        else:
+            mask_name_obj = None
 
         if dset_vars is not None:
             if (self.coord_name_geo_x in list(dset_source.keys())) and (self.coord_name_geo_x in list(dset_source.keys())):
@@ -874,6 +882,22 @@ class DSetManager:
 
                             # Compute average values
                             var_dset_ts_step = var_dset_grid_step.mean(dim=['south_north', 'west_east'])
+
+                            #for key_mask, da_mask in mask_name_obj.items():
+
+                           #     var_section_grid_step = var_dset_grid_step.where(da_mask.values==1, np.nan)
+                           #     var_section_ts_step = var_section_grid_step.mean(dim=['south_north', 'west_east'])
+
+                            #    data = var_section_grid_step['Rain'].values[:, :, 1]
+                            #    plt.figure()
+                            #    plt.imshow(da_mask.values)
+                            #    plt.figure()
+                            #    plt.imshow(data)
+                            #    plt.show()
+
+                            #    print('ciao')
+
+
 
                             if var_dset_out is None:
                                 var_dset_out = var_dset_grid_step

@@ -142,30 +142,31 @@ def read_data(file_name_list, var_name=None, var_time_start=None, var_time_end=N
                             dst_tmp = dst_tmp.expand_dims('time')
 
                     # Check the time steps of datasets and expected and in case of nan's, fill with nearest values
-                    datetime_idx_dst_tmp = pd.DatetimeIndex(dst_tmp['time'].values)
-                    datetime_idx_dst_sel = datetime_idx_dst_tmp[(datetime_idx_dst_tmp >= datetime_idx_select[0]) &
-                                                                (datetime_idx_dst_tmp <= datetime_idx_select[-1])]
+                    if dst_tmp['time'].__len__() > 1:
+                        datetime_idx_dst_tmp = pd.DatetimeIndex(dst_tmp['time'].values)
+                        datetime_idx_dst_sel = datetime_idx_dst_tmp[(datetime_idx_dst_tmp >= datetime_idx_select[0]) &
+                                                                    (datetime_idx_dst_tmp <= datetime_idx_select[-1])]
 
-                    if not datetime_idx_select.equals(datetime_idx_dst_sel):
-                        if datetime_idx_select.shape[0] > datetime_idx_dst_sel.shape[0]:
-                            log_stream.warning(
-                                ' ===> Datetime detection revealed a different number of time-steps between \n'
-                                'datasets (' + str(datetime_idx_dst_sel.shape[0]) + ' steps) and expected (' +
-                                str(datetime_idx_select.shape[0]) +
-                                ' steps) time-series. To avoid undefined values in the datasets time-series procedure '
-                                'automatically filled steps with nearest values. \n')
+                        if not datetime_idx_select.equals(datetime_idx_dst_sel):
+                            if datetime_idx_select.shape[0] > datetime_idx_dst_sel.shape[0]:
+                                log_stream.warning(
+                                    ' ===> Datetime detection revealed a different number of time-steps between \n'
+                                    'datasets (' + str(datetime_idx_dst_sel.shape[0]) + ' steps) and expected (' +
+                                    str(datetime_idx_select.shape[0]) +
+                                    ' steps) time-series. To avoid undefined values in the datasets time-series procedure '
+                                    'automatically filled steps with nearest values. \n')
 
-                            dst_filled = dst_tmp.reindex({"time": datetime_idx_select}, method="nearest")
+                                dst_filled = dst_tmp.reindex({"time": datetime_idx_select}, method="nearest")
 
-                        else:
-                            log_stream.warning(
-                                ' ===> Datetime detection revealed a different number of time-steps between \n'
-                                'datasets (' + str(datetime_idx_dst_sel.shape[0]) + ' steps) and expected (' +
-                                str(datetime_idx_select.shape[0]) + ' steps) time-series. Exit \n')
-                            raise NotImplementedError('Case not implemented yet')
+                            else:
+                                log_stream.warning(
+                                    ' ===> Datetime detection revealed a different number of time-steps between \n'
+                                    'datasets (' + str(datetime_idx_dst_sel.shape[0]) + ' steps) and expected (' +
+                                    str(datetime_idx_select.shape[0]) + ' steps) time-series. Exit \n')
+                                raise NotImplementedError('Case not implemented yet')
 
-                        # Update the tmp datasets
-                        dst_tmp = deepcopy(dst_filled)
+                            # Update the tmp datasets
+                            dst_tmp = deepcopy(dst_filled)
 
                 except BaseException as base_exp:
                     log_stream.warning(' ===> Exception ' + str(base_exp) + ' occurred in reading netcdf file list')

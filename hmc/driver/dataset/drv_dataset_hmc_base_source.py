@@ -458,7 +458,8 @@ class ModelSource:
 
                         # Organize data
                         dset_source_frame_values_def,  dset_source_frame_ts_def = reader_dataset.organize_data(
-                            idx_ts_subselect, dset_source_frame_raw_base, dset_variable_selected=vars_analysis)
+                            idx_ts_subselect, dset_source_frame_raw_base,
+                            dset_static=obj_static_datasets, dset_variable_selected=vars_analysis)
                         # Freeze data
                         dset_collections_dynamic_tmp = reader_dataset.freeze_data(
                             deepcopy(dset_collections_dynamic_tmp), dset_source_frame_ts_def)
