@@ -66,9 +66,11 @@ def compute_section_mask(fdir_values, fdir_map=None, fdir_nodata=0, geo_referenc
                        recursionlimit=15000, nodata_out=0, ytype='index')
         section_mask = np.array(grid.section_mask).astype(np.float32)
 
-        section_mask[section_mask == 0] = np.nan
-        section_mask[geo_values < 0] = np.nan
+        section_mask[section_mask == 0] = 0
+        section_mask[geo_values < 0] = 0
         section_mask[section_mask >= 1] = 1
+
+        geo_latitude = np.flipud(geo_latitude)
 
         section_da = create_darray_2d(section_mask, geo_longitude, geo_latitude,
                                       coord_name_x='Longitude', coord_name_y='Latitude',

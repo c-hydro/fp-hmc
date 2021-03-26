@@ -651,8 +651,18 @@ class DSetManager:
                                     time_stamp_period = []
                                     for time_step in var_da_step['time'].values:
                                         timestamp_step = pd.to_datetime(time_step, format='%Y-%m-%d_%H:%M:%S')
+
+                                        if isinstance(timestamp_step, pd.DatetimeIndex):
+                                            timestamp_step = timestamp_step[0]
+                                        elif isinstance(timestamp_step, pd.Timestamp):
+                                            pass
+                                        else:
+                                            log_stream.error(' ===> Time type is not allowed')
+                                            raise NotImplementedError('Case not implemented yet')
+
                                         timestamp_step = timestamp_step.round('H')
                                         time_stamp_period.append(timestamp_step)
+
                                     dset_time_step = pd.DatetimeIndex(time_stamp_period)
 
                                     if isinstance(dset_time, pd.Timestamp):
@@ -690,10 +700,17 @@ class DSetManager:
                                         log_stream.error(' ===> Errors occurred for unknown reason')
                                         raise NotImplementedError('Case not implemented yet')
 
-                                    dset_time_step = dset_time_step[index_start_step_tmp:index_end_step_tmp]
-                                    var_da_step = var_da_step[:, :, index_start_step_tmp:index_end_step_tmp]
-
-                                    dset_time = dset_time[index_start_tmp:index_end_tmp]
+                                    if dset_time_step.shape[0] == 1:
+                                        dset_time_step = pd.DatetimeIndex([dset_time_step[0]])
+                                        #var_da_step = var_da_step
+                                        dset_time = pd.DatetimeIndex([dset_time[0]])
+                                    elif dset_time_step.shape[0] > 1:
+                                        dset_time_step = dset_time_step[index_start_step_tmp:index_end_step_tmp]    # datatimeindex
+                                        var_da_step = var_da_step[:, :, index_start_step_tmp:index_end_step_tmp]    # dataarray 3d
+                                        dset_time = dset_time[index_start_tmp:index_end_tmp]                        # datatimeindex
+                                    else:
+                                        log_stream.error(' ===> Expected time-series with length >= 1')
+                                        raise NotImplementedError('Case not implemented yet')
 
                                     # Search index of longitude and latitude
                                     if self.dim_name_geo_x in dims_list:
@@ -759,16 +776,29 @@ class DSetManager:
                                     # Swap data arrays dimensions (is needed for mismatching in data input)
                                     var_da_step = swap_darray_dims(var_da_expected, var_da_step, da_terrain)
                                     # Combine raw and expected data arrays
-                                    var_da_combined = var_da_expected.combine_first(var_da_step)
+                                    if dset_time.shape[0] > 1:
+                                        var_da_combined = var_da_expected.combine_first(var_da_step) # dataarray 3d
+                                    elif dset_time.shape[0] == 1:
+                                        var_da_combined = deepcopy(var_da_step)
+                                        var_da_combined.name = None
+                                    else:
+                                        log_stream.error(' ===> Expected datasets with length >= 1')
+                                        raise NotImplementedError('Case not implemented yet')
 
                                     # Select only selected time-steps
-                                    dset_time_intersect = dset_time_step.intersection(dset_time)
-                                    if dset_time_intersect.shape == dset_time.shape:
-                                        var_da_selected = var_da_combined.sel(time=dset_time)
+                                    if dset_time.shape[0] > 1:
+                                        dset_time_intersect = dset_time_step.intersection(dset_time)
+                                        if dset_time_intersect.shape == dset_time.shape:
+                                            var_da_selected = var_da_combined.sel(time=dset_time)
+                                        else:
+                                            log_stream.error(
+                                                ' ===> All/some selected time-steps are not available in source data.')
+                                            raise IOError('Datasets are not on the same period or sub-period.')
+                                    elif dset_time.shape[0] == 1:
+                                        var_da_selected = deepcopy(var_da_combined)
                                     else:
-                                        log_stream.error(
-                                            ' ===> All/some selected time-steps are not available in source data.')
-                                        raise IOError('Datasets are not on the same period or sub-period.')
+                                        log_stream.error(' ===> Expected datasets with length >= 1')
+                                        raise NotImplementedError('Case not implemented yet')
 
                                     # Perform interpolation and masking of datasets
                                     if active_interp_method:
@@ -870,6 +900,58 @@ class DSetManager:
                                     dim_name_x=self.dim_name_geo_x, dim_name_y=self.dim_name_geo_y,
                                     dims_order=[self.dim_name_geo_y, self.dim_name_geo_x, self.dim_name_time])
 
+
+                            """
+                            # Time-series analysis
+                            var_dset_ts_step = var_da_masked.mean(dim=['south_north', 'west_east'])
+                            
+                            for key_mask, da_mask in mask_name_obj.items():
+                                var_section_grid_step = deepcopy(var_da_masked)
+                                var_section_grid_step['mask'] = da_mask
+                                tmp = var_section_grid_step.where(da_mask == 1)
+
+                                plt.figure()
+                                plt.imshow(var_da_masked.values[:, :, 2])
+                                plt.figure()
+                                plt.imshow(tmp.values[:, :, 2])
+
+                                plt.show()
+
+                                print('cioa')
+                                                            for key_mask, da_mask in mask_name_obj.items():
+                                var_section_grid_step = deepcopy(var_dset_grid_step)
+                                var_section_grid_step['mask'] = da_mask
+
+                                plt.figure()
+                                plt.imshow(var_dset_grid_step[var_name_step].values[:, :, 2])
+                                plt.figure()
+                                plt.imshow(var_section_grid_step['mask'].values)
+                                plt.figure()
+                                plt.imshow(var_section_grid_step['latitude'].values)
+                                plt.colorbar()
+                                plt.figure()
+                                plt.imshow(self.da_terrain.values)
+                                plt.show()
+
+                                tmp = var_section_grid_step[var_name_step].where(var_section_grid_step.mask == 1)
+
+                                var_section_ts_step = var_section_grid_step.mean(dim=['south_north', 'west_east'])
+
+                                if var_name_step == 'AirTemperature':
+
+                                    plt.figure()
+                                    plt.imshow(var_dset_grid_step[var_name_step].values[:,:,2])
+                                    plt.figure()
+                                    plt.imshow(var_section_grid_step['mask'].values )
+                                    plt.figure()
+                                    plt.imshow(self.da_terrain.values)
+                                    plt.show()
+
+                                    print('ciao')
+
+
+                                
+                            """
                             # Organize data in a common datasets
                             var_dset_grid_step = create_dset(var_data_time=dset_time,
                                                              var_data_name=var_name_step, var_data_values=var_da_masked,
@@ -882,22 +964,6 @@ class DSetManager:
 
                             # Compute average values
                             var_dset_ts_step = var_dset_grid_step.mean(dim=['south_north', 'west_east'])
-
-                            #for key_mask, da_mask in mask_name_obj.items():
-
-                           #     var_section_grid_step = var_dset_grid_step.where(da_mask.values==1, np.nan)
-                           #     var_section_ts_step = var_section_grid_step.mean(dim=['south_north', 'west_east'])
-
-                            #    data = var_section_grid_step['Rain'].values[:, :, 1]
-                            #    plt.figure()
-                            #    plt.imshow(da_mask.values)
-                            #    plt.figure()
-                            #    plt.imshow(data)
-                            #    plt.show()
-
-                            #    print('ciao')
-
-
 
                             if var_dset_out is None:
                                 var_dset_out = var_dset_grid_step

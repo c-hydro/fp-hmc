@@ -137,7 +137,7 @@
     },
     "hmc_flags": {
       "flag_model_os": 10,
-      "flag_model_restart": 1,
+      "flag_model_restart": 0,
       "flag_phys_flow_deep": 1,
       "flag_phys_convolution_dt": 1,
       "flag_phys_snow": 0,
