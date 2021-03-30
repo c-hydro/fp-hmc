@@ -33,7 +33,7 @@ class DSetManager(DSetManager_Outcome):
                  dset_list_format=None,
                  dset_list_type=None,
                  dset_list_group=None,
-                 template_time=None,
+                 template_time=None, template_analysis_def=None,
                  model_tag='hmc', datasets_tag='datasets',
                  coord_name_geo_x='Longitude', coord_name_geo_y='Latitude', coord_name_time='time',
                  dim_name_geo_x='west_east', dim_name_geo_y='south_north', dim_name_time='time',
@@ -48,12 +48,14 @@ class DSetManager(DSetManager_Outcome):
         if dset_list_group is None:
             dset_list_group = ['ALL']
 
+        self.list_variable_selected = []
+
         super(DSetManager, self).__init__(dset,
                                           terrain_values, terrain_geo_x, terrain_geo_y, terrain_transform,
                                           dset_list_format=dset_list_format,
                                           dset_list_type=dset_list_type,
                                           dset_list_group=dset_list_group,
-                                          template_time=template_time,
+                                          template_time=template_time, template_analysis_def=template_analysis_def,
                                           model_tag=model_tag, datasets_tag=datasets_tag,
                                           coord_name_geo_x=coord_name_geo_x, coord_name_geo_y=coord_name_geo_y,
                                           coord_name_time=coord_name_time,

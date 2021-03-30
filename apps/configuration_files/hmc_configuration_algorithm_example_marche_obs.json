@@ -65,6 +65,11 @@
     }
   },
   "Run_Info": {
+    "run_analysis": {
+      "analysis_catchments": true,
+      "analysis_mp": true,
+      "analysis_cpu": 10
+    },
     "run_type": {
       "run_mp": true,
       "run_cpu": 1,

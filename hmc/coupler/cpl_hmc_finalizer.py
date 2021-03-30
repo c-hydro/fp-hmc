@@ -48,6 +48,7 @@ class ModelFinalizer:
             template_time=self.obj_args.obj_template_time_ref,
             template_run_def=self.obj_run.obj_template_run_filled,
             template_run_ref=self.obj_args.obj_template_run_ref,
+            template_analysis_def=self.obj_run.obj_template_analysis_filled,
             template_static=self.obj_args.obj_template_dset_static_ref,
             template_outcome=self.obj_args.obj_template_dset_outcome_ref)
 

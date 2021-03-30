@@ -44,6 +44,7 @@ class ModelDestination:
                  template_time=None,
                  template_run_def=None,
                  template_run_ref=None,
+                 template_analysis_def=None,
                  template_static=None,
                  template_outcome=None,
                  **kwargs):
@@ -61,6 +62,7 @@ class ModelDestination:
         self.obj_template_time = template_time
         self.obj_template_run_def = template_run_def
         self.obj_template_run_ref = template_run_ref
+        self.obj_template_analysis_def = template_analysis_def
         self.obj_template_dset_static_ref = template_static
         self.obj_template_dset_outcome_ref = template_outcome
 
@@ -74,7 +76,8 @@ class ModelDestination:
             terrain_geo_y=self.geo_obj['latitude'],
             terrain_transform=self.geo_obj['transform'],
             dset_list_type=['ARCHIVE'],
-            model_tag=self.tag_model, datasets_tag=self.tag_datasets, template_time=self.obj_template_time,
+            model_tag=self.tag_model, datasets_tag=self.tag_datasets,
+            template_time=self.obj_template_time, template_analysis_def=self.obj_template_analysis_def,
             file_compression_mode=True)
 
         self.vars_outcome_analysis = {'Gridded': ['LST', 'SM'],
@@ -232,7 +235,7 @@ class ModelDestination:
                             # Organize data
                             dset_destination_frame_values_def, dset_destination_frame_ts_def = writer_dataset.organize_data(
                                 idx_ts_subselect, dset_destination_frame_raw,
-                                dset_variable_selected=vars_analysis)
+                                dset_static=obj_static_datasets, dset_variable_selected=vars_analysis)
 
                             # Freeze data
                             dset_collections_dynamic_tmp = writer_dataset.freeze_data(

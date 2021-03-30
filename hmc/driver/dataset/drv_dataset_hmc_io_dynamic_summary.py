@@ -186,6 +186,10 @@ class DSetManager:
         self.tag_discharge_section_ts_obs = 'Discharge:section_discharge_obs:{:}'
         self.tag_discharge_section_ts_sim = 'Discharge:section_discharge_sim:{:}'
 
+        self.tag_rain_section_ts_forcing = 'Rain:hmc_forcing_datasets:{:}'
+        self.tag_airt_section_ts_forcing = 'AirTemperature:hmc_forcing_datasets:{:}'
+        self.tag_sm_section_ts_outcome = 'SM:hmc_outcome_datasets:{:}'
+
     # Method to dump data
     def dump_data(self, file_list, file_data, file_time, file_format=None,
                   obj_time=None, obj_static=None, obj_run=None, no_data=-9999.0, no_attr='NA'):
@@ -251,6 +255,10 @@ class DSetManager:
                     var_name_obs = self.tag_discharge_section_ts_obs.format(outlet_name)
                     var_name_sim = self.tag_discharge_section_ts_sim.format(outlet_name)
 
+                    var_name_rain = self.tag_rain_section_ts_forcing.format(outlet_name)
+                    var_name_airt = self.tag_airt_section_ts_forcing.format(outlet_name)
+                    var_name_sm = self.tag_sm_section_ts_outcome.format(outlet_name)
+
                     if var_name_sim in list(file_data.keys()):
                         outlet_data_sim = list(file_data[var_name_sim].values())
                     else:
@@ -266,6 +274,28 @@ class DSetManager:
                         else:
                             outlet_data_obs = None
 
+                    if var_name_rain in list(file_data.keys()):
+                        rain_data_tmp = list(file_data[var_name_rain].values())
+                        rain_data_obs = ['%.1f' % elem for elem in rain_data_tmp]
+                    else:
+                        log_stream.warning(' ===> Rain datasets is null. Use array with ' +
+                                           str(no_data) + ' values')
+                        rain_data_obs = [no_data] * outlet_data_sim.__len__()
+                    if var_name_airt in list(file_data.keys()):
+                        airt_data_tmp = list(file_data[var_name_airt].values())
+                        airt_data_obs = ['%.1f' % elem for elem in airt_data_tmp]
+                    else:
+                        log_stream.warning(' ===> AirTemperature datasets is null. Use array with ' +
+                                           str(no_data) + ' values')
+                        airt_data_obs = [no_data] * outlet_data_sim.__len__()
+                    if var_name_sm in list(file_data.keys()):
+                        sm_data_tmp = list(file_data[var_name_sm].values())
+                        sm_data_sim = ['%.1f' % elem for elem in sm_data_tmp]
+                    else:
+                        log_stream.warning(' ===> SoilMoisture datasets is null. Use array with ' +
+                                           str(no_data) + ' values')
+                        sm_data_sim = [no_data] * outlet_data_sim.__len__()
+
                     if (outlet_data_obs is not None) and (outlet_data_sim is not None):
                         outlet_time = []
                         for time_stamp in file_time:
@@ -275,6 +305,9 @@ class DSetManager:
                         outlet_workspace_data = {
                             'time_series_discharge_observed': outlet_data_obs,
                             'time_series_discharge_simulated': outlet_data_sim,
+                            'time_series_rain_observed': rain_data_obs,
+                            'time_series_air_temperature_observed': airt_data_obs,
+                            'time_series_soil_moisture_simulated': sm_data_sim,
                             'time_period': outlet_time,
                             'time_run': file_attrs['time_run'],
                             'time_start': file_attrs['time_start'],

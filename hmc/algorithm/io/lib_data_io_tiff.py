@@ -37,7 +37,7 @@ proj_default_wkt = 'GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,2
 def read_data(file_name_list, var_name=None, var_time_start=None, var_time_end=None, var_time_freq='H',
               coord_name_time='time', coord_name_geo_x='Longitude', coord_name_geo_y='Latitude',
               dim_name_time='time', dim_name_geo_x='west_east', dim_name_geo_y='south_north',
-              dims_order_3d=None, decimal_round_data=3, decimal_round_geo=7):
+              dims_order_3d=None, decimal_round_data=2, decimal_round_geo=7):
 
     if not isinstance(file_name_list, list):
         file_name_list = [file_name_list]
@@ -63,7 +63,6 @@ def read_data(file_name_list, var_name=None, var_time_start=None, var_time_end=N
             file_data = file_handle.read()
             file_values = file_data[0, :, :]
 
-            # decimal_round_data = 3
             file_values = file_values.round(decimal_round_data)
 
             if file_handle.crs is None:

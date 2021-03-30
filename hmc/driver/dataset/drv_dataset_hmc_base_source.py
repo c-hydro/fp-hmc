@@ -45,6 +45,7 @@ class ModelSource:
                  template_time=None,
                  template_run_ref=None,
                  template_run_def=None,
+                 template_analysis_def=None,
                  template_static=None, template_dynamic=None, **kwargs):
 
         self.dset_obj = datasets_obj
@@ -67,6 +68,7 @@ class ModelSource:
         self.obj_template_time = template_time
         self.obj_template_run_def = template_run_def
         self.obj_template_run_ref = template_run_ref
+        self.obj_template_analysis_def = template_analysis_def
         self.obj_template_dset_static_ref = template_static
         self.obj_template_dset_dynamic_ref = template_dynamic
 
@@ -95,7 +97,8 @@ class ModelSource:
             terrain_transform=self.reader_geo.dset_static_ref['transform'],
             terrain_bbox=self.reader_geo.dset_static_ref['bbox'],
             dset_list_type=['ARCHIVE'],
-            model_tag=self.tag_model, datasets_tag=self.tag_datasets, template_time=self.obj_template_time)
+            model_tag=self.tag_model, datasets_tag=self.tag_datasets,
+            template_time=self.obj_template_time, template_analysis_def=self.obj_template_analysis_def)
 
         self.vars_restart_analysis = {
             'Gridded': ['DFE', 'HydroLevelC', 'HydroLevelH', 'Qup', 'LST', 'VTot', 'VRet', 'Routing', 'WTLevel'],
@@ -110,7 +113,8 @@ class ModelSource:
             terrain_transform=self.reader_geo.dset_static_ref['transform'],
             terrain_bbox=self.reader_geo.dset_static_ref['bbox'],
             dset_list_type=['OBS', 'FOR'],
-            model_tag=self.tag_model, datasets_tag=self.tag_datasets, template_time=self.obj_template_time,
+            model_tag=self.tag_model, datasets_tag=self.tag_datasets,
+            template_time=self.obj_template_time, template_analysis_def=self.obj_template_analysis_def,
             file_compression_mode=True)
 
         self.vars_forcing_analysis = {
@@ -125,7 +129,8 @@ class ModelSource:
             terrain_transform=self.reader_geo.dset_static_ref['transform'],
             terrain_bbox=self.reader_geo.dset_static_ref['bbox'],
             dset_list_type=['OBS'],
-            model_tag=self.tag_model, datasets_tag=self.tag_datasets, template_time=self.obj_template_time,
+            model_tag=self.tag_model, datasets_tag=self.tag_datasets,
+            template_time=self.obj_template_time, template_analysis_def=self.obj_template_analysis_def,
             file_compression_mode=True)
 
         self.vars_updating_analysis = {}

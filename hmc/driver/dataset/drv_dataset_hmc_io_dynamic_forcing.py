@@ -25,6 +25,8 @@ from hmc.algorithm.io.lib_data_io_generic import swap_darray_dims, create_darray
     write_dset, create_dset
 from hmc.algorithm.io.lib_data_zip_gzip import zip_filename
 
+from hmc.algorithm.utils.lib_utils_analysis import compute_domain_mean, \
+    compute_catchment_mean_serial, compute_catchment_mean_parallel_sync, compute_catchment_mean_parallel_async
 from hmc.algorithm.utils.lib_utils_system import split_path, create_folder, copy_file
 from hmc.algorithm.utils.lib_utils_string import fill_tags2string
 from hmc.algorithm.utils.lib_utils_list import flat_list
@@ -39,7 +41,7 @@ from hmc.driver.dataset.drv_dataset_hmc_io_type import DSetReader, DSetComposer
 log_stream = logging.getLogger(logger_name)
 
 # Debug
-import matplotlib.pylab as plt
+# import matplotlib.pylab as plt
 #######################################################################################
 
 
@@ -54,7 +56,7 @@ class DSetManager:
                  dset_list_format=None,
                  dset_list_type=None,
                  dset_list_group=None,
-                 template_time=None,
+                 template_time=None, template_analysis_def=None,
                  model_tag='hmc', datasets_tag='datasets',
                  coord_name_geo_x='Longitude', coord_name_geo_y='Latitude', coord_name_time='time',
                  dim_name_geo_x='west_east', dim_name_geo_y='south_north', dim_name_time='time',
@@ -219,6 +221,39 @@ class DSetManager:
 
         self.column_sep = ';'
         self.list_sep = ':'
+
+        self.template_analysis_def = template_analysis_def
+        if self.template_analysis_def is not None:
+
+            self.list_variable_selected = ['Rain', 'AirTemperature']
+            self.tag_variable_fields = '{var_name}:hmc_forcing_datasets:{domain_name}'
+
+            self.flag_analysis_ts_domain = True
+
+            if 'analysis_catchment' in list(self.template_analysis_def.keys()):
+                self.flag_analysis_ts_catchment = self.template_analysis_def['analysis_catchment']
+            else:
+                self.flag_analysis_ts_catchment = False
+
+            if 'analysis_mp' in list(self.template_analysis_def.keys()):
+                self.flag_analysis_ts_catchment_mode = self.template_analysis_def['analysis_mp']
+            else:
+                self.flag_analysis_ts_catchment_mode = False
+
+            if 'analysis_cpu' in list(self.template_analysis_def.keys()):
+                self.flag_analysis_ts_catchment_cpu = self.template_analysis_def['analysis_cpu']
+            else:
+                self.flag_analysis_ts_catchment_cpu = 1
+
+        else:
+            self.list_variable_selected = ['Rain', 'AirTemperature']
+            self.tag_variable_fields = '{var_name}:hmc_forcing_datasets:{domain_name}'
+
+            self.flag_analysis_ts_domain = True
+            self.flag_analysis_ts_catchment = False
+
+            self.flag_analysis_ts_catchment_mode = False
+            self.flag_analysis_ts_catchment_cpu = 1
 
     @staticmethod
     def validate_flag(data_name, data_flag, flag_key_expected=None, flag_values_expected=None):
@@ -431,7 +466,7 @@ class DSetManager:
 
                     if dset_check:
 
-                        if dset_var_step != 'terrain':
+                        if dset_var_step not in ['terrain', 'mask']:
 
                             values_nan = np.zeros([dset_expected.index.__len__()])
                             values_nan[:] = np.nan
@@ -900,58 +935,6 @@ class DSetManager:
                                     dim_name_x=self.dim_name_geo_x, dim_name_y=self.dim_name_geo_y,
                                     dims_order=[self.dim_name_geo_y, self.dim_name_geo_x, self.dim_name_time])
 
-
-                            """
-                            # Time-series analysis
-                            var_dset_ts_step = var_da_masked.mean(dim=['south_north', 'west_east'])
-                            
-                            for key_mask, da_mask in mask_name_obj.items():
-                                var_section_grid_step = deepcopy(var_da_masked)
-                                var_section_grid_step['mask'] = da_mask
-                                tmp = var_section_grid_step.where(da_mask == 1)
-
-                                plt.figure()
-                                plt.imshow(var_da_masked.values[:, :, 2])
-                                plt.figure()
-                                plt.imshow(tmp.values[:, :, 2])
-
-                                plt.show()
-
-                                print('cioa')
-                                                            for key_mask, da_mask in mask_name_obj.items():
-                                var_section_grid_step = deepcopy(var_dset_grid_step)
-                                var_section_grid_step['mask'] = da_mask
-
-                                plt.figure()
-                                plt.imshow(var_dset_grid_step[var_name_step].values[:, :, 2])
-                                plt.figure()
-                                plt.imshow(var_section_grid_step['mask'].values)
-                                plt.figure()
-                                plt.imshow(var_section_grid_step['latitude'].values)
-                                plt.colorbar()
-                                plt.figure()
-                                plt.imshow(self.da_terrain.values)
-                                plt.show()
-
-                                tmp = var_section_grid_step[var_name_step].where(var_section_grid_step.mask == 1)
-
-                                var_section_ts_step = var_section_grid_step.mean(dim=['south_north', 'west_east'])
-
-                                if var_name_step == 'AirTemperature':
-
-                                    plt.figure()
-                                    plt.imshow(var_dset_grid_step[var_name_step].values[:,:,2])
-                                    plt.figure()
-                                    plt.imshow(var_section_grid_step['mask'].values )
-                                    plt.figure()
-                                    plt.imshow(self.da_terrain.values)
-                                    plt.show()
-
-                                    print('ciao')
-
-
-                                
-                            """
                             # Organize data in a common datasets
                             var_dset_grid_step = create_dset(var_data_time=dset_time,
                                                              var_data_name=var_name_step, var_data_values=var_da_masked,
@@ -961,23 +944,71 @@ class DSetManager:
                                                              var_geo_name='terrain', var_geo_values=self.terrain_values,
                                                              var_geo_x=self.terrain_geo_x, var_geo_y=self.terrain_geo_y,
                                                              var_geo_attrs=None)
-
-                            # Compute average values
-                            var_dset_ts_step = var_dset_grid_step.mean(dim=['south_north', 'west_east'])
-
+                            # Organize data in merged datasets
                             if var_dset_out is None:
                                 var_dset_out = var_dset_grid_step
                             else:
                                 var_dset_out = var_dset_out.merge(var_dset_grid_step, join='right')
 
-                            if var_dset_collections is None:
-                                var_dset_collections = var_dset_ts_step
-                            else:
-                                var_dset_collections = var_dset_collections.merge(var_dset_ts_step, join='right')
-
                         else:
                             log_stream.info(' --------> Organize ' + var_name_step +
                                             ' datasets ... SKIPPED. Variable is not selected for analysis.')
+
+                    # Time-Series Analysis
+                    log_stream.info(' --------> Compute time-series analysis over domain ... ')
+                    if self.flag_analysis_ts_domain:
+                        var_dset_ts_domain = compute_domain_mean(
+                            var_dset_out, tag_variable_fields=self.tag_variable_fields,
+                            template_variable_domain='DomainAverage')
+
+                        if var_dset_collections is None:
+                            var_dset_collections = var_dset_ts_domain
+                        else:
+                            var_dset_collections = var_dset_collections.merge(var_dset_ts_domain, join='right')
+
+                        log_stream.info(' --------> Compute time-series analysis over domain ... DONE')
+                    else:
+                        log_stream.info(' --------> Compute time-series analysis over domain ... SKIPPED. '
+                                        'Analysis not activated')
+
+                    log_stream.info(' --------> Compute time-series analysis over catchments ... ')
+                    if self.flag_analysis_ts_catchment:
+
+                        if mask_name_obj is not None:
+
+                            if not self.flag_analysis_ts_catchment_mode:
+                                var_dset_ts_catchment = compute_catchment_mean_serial(
+                                    var_dset_out, mask_name_obj,
+                                    variable_domain_fields=self.tag_variable_fields,
+                                    variable_selected_list=self.list_variable_selected)
+                            elif self.flag_analysis_ts_catchment_mode:
+                                # var_dset_ts_catchment = compute_catchment_mean_parallel_sync(
+                                #    var_dset_out, mask_name_obj,
+                                #    cpu_n=self.flag_analysis_ts_catchment_cpu,
+                                #    variable_domain_fields=self.tag_variable_fields,
+                                #    variable_selected_list=self.list_variable_selected)
+                                var_dset_ts_catchment = compute_catchment_mean_parallel_async(
+                                    var_dset_out, mask_name_obj,
+                                    cpu_n=self.flag_analysis_ts_catchment_cpu,
+                                    variable_domain_fields=self.tag_variable_fields,
+                                    variable_selected_list=self.list_variable_selected)
+                            else:
+                                log_stream.error(' ===> Catchments analysis mode not allowed')
+                                raise RuntimeError('Unexpected catchments analysis condition')
+
+                            if var_dset_collections is None:
+                                var_dset_collections = var_dset_ts_catchment
+                            else:
+                                var_dset_collections = var_dset_collections.merge(var_dset_ts_catchment, join='right')
+
+                            log_stream.info(' --------> Compute time-series analysis over catchments ... DONE')
+
+                        else:
+                            log_stream.info(' --------> Compute time-series analysis over catchments ... SKIPPED.'
+                                            ' Catchment mask obj not defined')
+                    else:
+                        log_stream.info(' --------> Compute time-series analysis over catchments ... SKIPPED.'
+                                        ' Analysis not activated')
 
                     log_stream.info(' -------> Organize gridded datasets ... DONE')
 

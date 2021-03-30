@@ -29,7 +29,7 @@ def read_data_shapefile_section(file_name, columns_name_expected=None, columns_n
     if columns_name_expected is None:
         columns_name_expected = ['HMC_X', 'HMC_Y', 'BASIN', 'SEC_NAME', 'SEC_RS', 'AREA', 'Q_THR1', 'Q_THR2']
     if columns_name_type is None:
-        columns_name_type = ['int', 'int', 'str', 'str', 'str', 'float', 'float', 'float']
+        columns_name_type = ['int', 'int', 'str', 'str', 'int', 'float', 'float', 'float']
 
     file_dframe_raw = gpd.read_file(file_name)
     file_rows = file_dframe_raw.shape[0]

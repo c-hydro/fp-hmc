@@ -9,6 +9,7 @@ Version 3.1.4 (20210308)
 - Add the reader for the ascii file of the lakes in the static part; 
 - Add the routines to compute the latitude, longitude and cell area ascii grid to avoid the blocking of the run; 
 - Add the routines to compute the catchments mask;
+- Add the routines to compute the average time-series over the catchments mask;
 - Add the controls to avoid not allowed dimensions and undefined values in the forcing datasets in netcdf format: 
 - Fix bugs in managing/reading/saving the updating datasets;
 - Fix bugs in interpolating methods in case of not equal dimensions between terrain and forcing datasets;

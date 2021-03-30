@@ -16,6 +16,7 @@ import os
 import pickle
 import json
 import glob
+import tempfile
 
 import pandas as pd
 import xarray as xr
@@ -385,6 +386,19 @@ def store_file(file_name, file_ext='.old.{}', file_max=1):
                 os.rename(file_name, file_loop)
 
     return file_loop
+# -------------------------------------------------------------------------------------
+
+
+# -------------------------------------------------------------------------------------
+# Method to create a temporary filename
+def create_filename_tmp(prefix='tmp_', suffix='.tiff', folder=None):
+
+    if folder is None:
+        folder = '/tmp'
+
+    with tempfile.NamedTemporaryFile(dir=folder, prefix=prefix, suffix=suffix, delete=False) as tmp:
+        temp_file_name = tmp.name
+    return temp_file_name
 # -------------------------------------------------------------------------------------
 
 

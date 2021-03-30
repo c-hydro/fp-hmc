@@ -67,6 +67,8 @@ class ModelRun:
         self.obj_run_info_filled, self.obj_run_path = self.set_run_path()
         self.obj_run_info_filled, self.obj_run_args = self.set_run_arguments()
 
+        self.obj_template_analysis_filled = self.set_run_analysis()
+
         self.line_indent = 4 * ' '
 
     # -------------------------------------------------------------------------------------
@@ -238,6 +240,55 @@ class ModelRun:
     # -------------------------------------------------------------------------------------
 
     # -------------------------------------------------------------------------------------
+    # Method to set run analysis
+    def set_run_analysis(self, tag_type='run_analysis'):
+
+        analysis_obj = {}
+
+        if tag_type in list(self.obj_run_info_ref.keys()):
+            obj_type = self.obj_run_info_ref[tag_type]
+
+            if 'analysis_mp' in obj_type:
+                analysis_mp = obj_type['analysis_mp']
+            else:
+                log_stream.warning(' ===> "Analysis multiprocessing" is not set. Default configuration is false')
+                analysis_mp = False
+
+            if 'analysis_cpu' in obj_type:
+                analysis_cpu = obj_type['analysis_cpu']
+            else:
+                log_stream.warning(' ===> "Analysis CPU" is not callable! CPUs used by processes will be 1')
+                analysis_cpu = 1
+
+            if 'analysis_catchments' in obj_type:
+                analysis_catchment = obj_type['analysis_catchments']
+            else:
+                log_stream.warning(' ===> "Analysis catchments" is not callable! Catchments analysis will be disabled')
+                analysis_catchment = False
+
+        else:
+            log_stream.warning(' ===> "Analysis settings" are not defined in the algorithm file. Use default settings.')
+            log_stream.warning(' ===> Users are strongly invited to define "Analysis settings" dictionary \n'
+                               'in the "Run_Info" section with key "run_analysis" and fields: \n'
+                               '[1] "analysis_catchments" with values "false" or "true \n'
+                               '[2] "analysis_cpu" with values greater than 1 \n'
+                               '[3] "analysis_mp" with values "false" or "true" \n')
+            analysis_cpu = 1
+            analysis_mp = False
+            analysis_catchment = False
+
+        if not analysis_mp:
+            analysis_cpu = 1
+
+        analysis_obj['analysis_catchment'] = analysis_catchment
+        analysis_obj['analysis_cpu'] = analysis_cpu
+        analysis_obj['analysis_mp'] = analysis_mp
+
+        return analysis_obj
+
+    # -------------------------------------------------------------------------------------
+
+    # -------------------------------------------------------------------------------------
     # Method to set run mode
     def set_run_mode(self, tag_type='run_type'):
 
@@ -247,19 +298,19 @@ class ModelRun:
             run_mp = obj_type['run_mp']
             obj_type.pop('run_mp')
         else:
-            log_stream.warning(' ===> Run Multiprocessing is not set. Default configuration is false')
+            log_stream.warning(' ===> "Run multiprocessing" is not set. Default configuration is false')
             run_mp = False
 
         if 'run_mode' in obj_type:
             obj_mode = obj_type['run_mode']
         else:
-            log_stream.error(' ===> Run Mode is not callable! Check your algorithm file!')
+            log_stream.error(' ===> "Run mode" is not callable! Check your algorithm file!')
             raise ValueError('Value not valid')
 
         if 'run_cpu' in obj_type:
             run_cpu = obj_type['run_cpu']
         else:
-            log_stream.error(' ===> Run CPU is not callable! CPUs used by processes will be 1')
+            log_stream.warning(' ===> "Run CPU" is not callable! CPUs used by processes will be 1')
             run_cpu = 1
 
         if obj_mode['ens_active']:
