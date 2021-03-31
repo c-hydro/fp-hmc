@@ -15,6 +15,8 @@ Version 3.1.4 (20210308)
 - Fix bugs in interpolating methods in case of not equal dimensions between terrain and forcing datasets;
 - Fix bugs in reading the section and the intake info static files;
 - Fix bugs in computing the average time-series for the outcome datasets;
+- Fix bugs in defining the frequency of the datasets;
+- Fix bugs in computing the time slices to organize the run and the collections of the source and destination datasets;
 - Fix bugs in case of the lacking of static information (dam/joint/intake/lakes). 
 
 Version 3.1.3 (20201028)

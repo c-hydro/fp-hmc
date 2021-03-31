@@ -126,10 +126,15 @@ class ModelTime:
     # -------------------------------------------------------------------------------------
     # Method to slice time series obj
     @staticmethod
-    def set_time_slice(time_info, time_ts, time_subset='File_Group', time_type_excluded=None, time_type_split='CORR'):
+    def set_time_slice_NOT_USED(time_info, time_ts, time_subset='File_Group', type_subset='File_Type',
+                       time_type_excluded=None, time_type_split='CORR'):
 
         time_dict = {}
         for (run_tag, time_ts_step), time_info_step in zip(time_ts.items(), time_info.values()):
+
+            type_list_all = list(time_ts_step[type_subset].values)
+
+            type_idx_all = time_ts_step[type_subset].values
 
             time_idx_all = time_ts_step.index
             time_idx_days = time_idx_all.map(pd.Timestamp.date).unique()
@@ -145,10 +150,15 @@ class ModelTime:
                                                (time_idx_all.month == month_idx_step) &
                                                (time_idx_all.day == day_idx_step)]
 
+                type_idx_select = type_idx_all[(time_idx_all.year == year_idx_step) &
+                                               (time_idx_all.month == month_idx_step) &
+                                               (time_idx_all.day == day_idx_step)]
+
                 time_ts_step.loc[time_idx_select, time_subset] = idx_step
 
             time_run_step = time_info_step['time_run']
             group_ts_step = int(time_ts_step.loc[time_run_step][time_subset])
+            type_ts_step = time_ts_step.loc[time_run_step][type_subset]
 
             time_ts_step.loc[time_idx_all > time_run_step, time_subset] = group_ts_step + 1
 
@@ -161,6 +171,57 @@ class ModelTime:
                 with warnings.catch_warnings():
                     warnings.simplefilter("ignore")
                     time_ts_step[time_subset].loc[time_ts_step['File_Type'] == time_type_split] = group_ts_step + 2
+
+            time_dict[run_tag] = time_ts_step
+
+        return time_dict
+
+    # -------------------------------------------------------------------------------------
+
+    # -------------------------------------------------------------------------------------
+    # Method to slice time series obj
+    @staticmethod
+    def set_time_slice(time_info, time_ts, time_subset='File_Group', type_subset='File_Type', eta_subset='File_ETA',
+                       time_type_excluded=None, time_type_split='CORR'):
+
+        index_ts_max = 24
+
+        time_dict = {}
+        for (run_tag, time_ts_step), time_info_step in zip(time_ts.items(), time_info.values()):
+
+            type_list_all = list(time_ts_step[type_subset].values)
+            type_list_used = set()
+            type_list_unique = [x for x in type_list_all if x not in type_list_used and (type_list_used.add(x) or True)]
+
+            id_group = None
+            for id_type, type_step in enumerate(type_list_unique):
+                index_ts_step = time_ts_step[time_ts_step['File_Type'] == type_step].index
+
+                if id_group is None:
+                    id_group = 0
+
+                if index_ts_step.shape[0] <= index_ts_max:
+                    time_ts_step.loc[index_ts_step, time_subset] = id_group
+                    id_group += 1
+                elif index_ts_step.shape[0] > index_ts_max:
+
+                    index_chunks = [index_ts_step[x:x + index_ts_max] for x in range(0, len(index_ts_step), index_ts_max)]
+
+                    multiple_eta = False
+                    for index_chunks_step in index_chunks:
+
+                        eta_chunks = list(time_ts_step[eta_subset][index_chunks_step].unique())
+                        if eta_chunks.__len__() > 1:
+                            time_ts_step.loc[index_chunks_step, time_subset] = id_group
+                            multiple_eta = True
+                            id_group += 1
+
+                        elif eta_chunks.__len__() == 1:
+                            time_ts_step.loc[index_chunks_step, time_subset] = id_group
+                            multiple_eta = False
+
+                    if not multiple_eta:
+                        id_group += 1
 
             time_dict[run_tag] = time_ts_step
 

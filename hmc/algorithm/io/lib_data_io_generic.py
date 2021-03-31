@@ -316,9 +316,9 @@ def create_dset(var_data_values,
 def write_dset(file_name,
                dset_data, dset_attrs=None,
                dset_mode='w', dset_engine='h5netcdf', dset_compression=0, dset_format='NETCDF4',
-               dim_key_time='time', fill_data=-9999.0):
+               dim_key_time='time', fill_data=-9999.0, dset_type='float32'):
 
-    dset_encoded = dict(zlib=True, complevel=dset_compression, _FillValue=fill_data)
+    dset_encoded = dict(zlib=True, complevel=dset_compression, _FillValue=fill_data, dtype=dset_type)
 
     dset_encoding = {}
     for var_name in dset_data.data_vars:

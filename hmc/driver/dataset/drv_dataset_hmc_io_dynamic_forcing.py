@@ -60,7 +60,7 @@ class DSetManager:
                  model_tag='hmc', datasets_tag='datasets',
                  coord_name_geo_x='Longitude', coord_name_geo_y='Latitude', coord_name_time='time',
                  dim_name_geo_x='west_east', dim_name_geo_y='south_north', dim_name_time='time',
-                 dset_write_engine='netcdf4', dset_write_compression_level=9, dset_write_format='NETCDF4',
+                 dset_write_engine='netcdf4', dset_write_compression_level=9, dset_write_format='NETCDF4_CLASSIC',
                  file_compression_mode=False, file_compression_ext='.gz',
                  **kwargs):
 

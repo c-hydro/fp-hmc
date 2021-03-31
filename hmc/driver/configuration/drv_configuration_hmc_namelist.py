@@ -13,7 +13,7 @@ import logging
 
 from copy import deepcopy
 
-from hmc.algorithm.utils.lib_utils_time import convert_freqstr_to_freqsecs
+from hmc.algorithm.utils.lib_utils_time import parse_timefrequency_to_timeparts, convert_freqstr_to_freqsecs
 from hmc.algorithm.utils.lib_utils_string import fill_tags2string
 from hmc.algorithm.utils.lib_utils_dict import get_dict_value, get_dict_nested_value
 from hmc.algorithm.namelist.lib_namelist import convert_template_date
@@ -79,26 +79,28 @@ class ModelNamelist:
                         if isinstance(fields_structure, dict):
                             list_dt = get_dict_value(fields_structure, key_dt, [])
                             if list_dt.__len__() > 0:
-                                string_dt = list_dt[0]
-                                if isinstance(string_dt, str):
-                                    num_dt = convert_freqstr_to_freqsecs(string_dt)
-                                    collections_dt.append(num_dt)
-                                else:
-                                    log_stream.error(' ==> Datasets dt is defined by unsupported format')
-                                    raise NotImplementedError('Case not implemented yet')
+                                digits_dt, alpha_dt = parse_timefrequency_to_timeparts(list_dt)
+                                num_dt = convert_freqstr_to_freqsecs(digits_dt, alpha_dt)
+                                collections_dt.append(num_dt)
+
                     if collections_dt.__len__() > 0:
 
                         collections_dt = list(set(collections_dt))
                         if collections_dt.__len__() > 1:
-                            log_stream.error(' ==> Datasets dd for "' + lut_value + '" is not defined by unique value')
                             value_dt = min(collections_dt)
+                            log_stream.warning(' ===> Datasets dd for "' +
+                                               lut_value +
+                                               '" is not defined by unique value. To avoid exceptions '
+                                               'procedure \n will detect the declared minimum dt "' + str(value_dt) +
+                                               '" [seconds] and will set it in the model configuration file\n')
+
                         elif collections_dt.__len__() == 1:
                             value_dt = collections_dt[0]
                         else:
-                            log_stream.error(' ==> Datasets dt is not defined')
+                            log_stream.error(' ===> Datasets dt is not defined')
                             raise NotImplementedError('Case not implemented yet')
                     else:
-                        log_stream.error(' ==> Datasets dt is not correctly defined')
+                        log_stream.error(' ===> Datasets dt is not correctly defined')
                         raise NotImplementedError('Case not implemented yet')
 
                     obj_dt[lut_key] = value_dt
@@ -153,7 +155,7 @@ class ModelNamelist:
                         elif link_type == 'time':
                             obj_tmp = obj_time_step
                         else:
-                            log_stream.error(' ==> Namelist type is not correctly defined')
+                            log_stream.error(' ===> Namelist type is not correctly defined')
                             raise ValueError('Dictionary key is wrong')
 
                         if link_key in list(self.defined_dt.keys()):

@@ -125,15 +125,12 @@ def read_data(file_name_list, var_name=None, var_time_start=None, var_time_end=N
             var_data_3d = None
 
     if var_data_3d is not None:
-        # var_dset = xr.Dataset(coords={coord_name_time: ([dim_name_time], var_datetime_idx)})
-        # var_dset.coords[coord_name_time] = var_dset.coords[coord_name_time].astype('datetime64[ns]')
 
         var_da = xr.DataArray(var_data_3d, name=var_name, dims=dims_order_3d,
                               coords={coord_name_time: ([dim_name_time], var_datetime_idx),
                                       coord_name_geo_x: ([dim_name_geo_y, dim_name_geo_x], var_geox_2d),
                                       coord_name_geo_y: ([dim_name_geo_y, dim_name_geo_x], var_geoy_2d)})
-
-        # var_dset[var_name] = var_da
+        var_da.attrs = {'proj': file_proj, 'transform':file_geotrans, 'high': file_high, 'wide': file_wide}
 
     else:
         log_stream.warning(' ===> All filenames in the selected period are not available')
