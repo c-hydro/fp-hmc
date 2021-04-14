@@ -11,6 +11,8 @@ Version 3.1.4 (20210308)
 - Add the routines to compute the catchments mask;
 - Add the routines to compute the average time-series over the catchments mask;
 - Add the controls to avoid not allowed dimensions and undefined values in the forcing datasets in netcdf format: 
+- Add tool to convert source datasets to continuum netcdf file format;
+- Add bash launcher script to configure different configuration of model run; 
 - Fix bugs in managing/reading/saving the updating datasets;
 - Fix bugs in interpolating methods in case of not equal dimensions between terrain and forcing datasets;
 - Fix bugs in reading the section and the intake info static files;
@@ -30,7 +32,7 @@ Version 3.1.3 (20201028)
 - Fix bugs in managing the variables defined as (t,y,x) or (y,x,t) to correctly find the time dimension;
 - Fix bugs in managing the orientation of gridded netcdf variables;
 - Fix bugs in saving file attributes of "x_ll_corner" and "y_ll_corner";
-- Add tool to convert binary to netcdf file;
+- Add tool to convert binary datasets to netcdf file;
 - Add tool to merge discharges in a probabilistic json output;
 - Add tool to convert json output in ascii dewetra format. 
 

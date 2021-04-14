@@ -1,0 +1,46 @@
+{
+  "algorithm": {
+    "flags":{
+      "compress_output": true
+      },
+    "general": {
+      "title": "Mosaic outputs",
+      "web-site": "",
+      "source": "Python library developed by CIMA Research Foundation",
+      "history": "1.0.0 [20210412]",
+      "project-info": "IGAD Operational Chain",
+      "algorithm": "Postprocessing tools by CIMA Research Foundation"
+    },
+    "template": {
+      "source_gridded_sub_path_time": "%Y/%m/%d/",
+      "source_gridded_datetime": "%Y%m%d%H%M",
+      "outcome_sub_path_time": "%Y/%m/%d/",
+      "outcome_datetime": "%Y%m%d%H%M"
+    }
+  },
+  "data": {
+    "input": {
+      "folder": "/home/fp/fp_igad/archive/nwp_gfs-det/{domain}/{source_gridded_sub_path_time}/00/outcome/gridded/deterministic",
+      "filename": "hmc.output-grid.{source_gridded_datetime}.nc",
+      "domains": "IGAD_D2,IGAD_D3,IGAD_D11,IGAD_D10",
+      "reference_day": "-1D",
+      "reference_hour": 23
+    },
+    "outcome": {
+      "output_grid": {
+        "xmin": 20,
+        "xmax": 54,
+        "ymin": -16,
+        "ymax": 25,
+        "res": 0.01
+      },
+      "folder": "/home/fp/fp_igad/storage/gridded/{outcome_sub_path_time}",
+      "filename_sm": "IGAD_sm_{outcome_datetime}.tif",
+      "filename_et": "IGAD_et_tot_{outcome_datetime}.tif"
+    },
+    "log": {
+      "filename": "igad_mosaic_output.txt",
+      "folder": "/home/fp/fp_igad/log/postprocessing/"
+    }
+  }
+}
