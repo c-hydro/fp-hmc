@@ -12,7 +12,7 @@ Version:       '3.0.0'
 link_namelist_default = dict(
 
     HMC_Parameters={
-        'dUc': {'algorithm': ['HMC_Info', 'hmc_parameters', 'ct']},
+        'dUc': {'algorithm': ['HMC_Info', 'hmc_parameters', 'uc']},
         'dUh': {'algorithm': ['HMC_Info', 'hmc_parameters', 'uh']},
         'dCt': {'algorithm': ['HMC_Info', 'hmc_parameters', 'ct']},
         'dCf': {'algorithm': ['HMC_Info', 'hmc_parameters', 'cf']},
