@@ -128,13 +128,13 @@ def main():
     
     with rio.open(file_out_sm,'w',height=len(lat_out), width=len(lon_out), count=1, dtype='float32', crs='+proj=latlong', transform=transform, driver='GTiff') as out:
         out.write(sm_map,1)
-        if data_settings['algorithm']['flags']['compress_output']:
-            os.system('gzip -f ' + file_out_sm)
+    if data_settings['algorithm']['flags']['compress_output']:
+        os.system('gzip -f ' + file_out_sm)
     
     with rio.open(file_out_et,'w',height=len(lat_out), width=len(lon_out), count=1, dtype='float32', crs='+proj=latlong', transform=transform, driver='GTiff') as out:
         out.write(et_map,1)
-        if data_settings['algorithm']['flags']['compress_output']:
-            os.system('gzip -f ' + file_out_et)
+    if data_settings['algorithm']['flags']['compress_output']:
+        os.system('gzip -f ' + file_out_et)
 
     # -------------------------------------------------------------------------------------
     # Info algorithm
