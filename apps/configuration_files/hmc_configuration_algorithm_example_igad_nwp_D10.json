@@ -76,7 +76,7 @@
       "run_mp": false,
       "run_cpu": 1,
       "run_domain": "IGAD_D10",
-      "run_name": "igad_nwp",
+      "run_name": "igad_nwp_d10",
       "run_mode": {
         "ens_active": false,
         "ens_variable": {

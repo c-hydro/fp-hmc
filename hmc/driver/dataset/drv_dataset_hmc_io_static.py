@@ -228,7 +228,7 @@ class DSetManager:
                     else:
                         log_stream.error(' -------> The loaded datasets and the stored datasets have different lengths')
                         log_stream.error(' -------> The instance will exit for this reason.')
-                        log_stream.info(' ------> Check variable ' + var_name + ' ... FAILED')
+                        log_stream.error(' ------> Check variable ' + var_name + ' ... FAILED')
                         raise IOError('Object static length is not valid')
             else:
                 log_stream.error(' ===> Variable data format is not allowed')

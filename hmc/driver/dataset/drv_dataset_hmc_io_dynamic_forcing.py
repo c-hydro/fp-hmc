@@ -21,7 +21,7 @@ import xarray as xr
 
 from copy import deepcopy
 
-from hmc.algorithm.io.lib_data_io_generic import swap_darray_dims, create_darray_3d, create_darray_2d, \
+from hmc.algorithm.io.lib_data_io_generic import swap_darray_dims_xy, create_darray_3d, create_darray_2d, \
     write_dset, create_dset
 from hmc.algorithm.io.lib_data_zip_gzip import zip_filename
 
@@ -809,7 +809,7 @@ class DSetManager:
                                         dims_order=[self.dim_name_geo_y, self.dim_name_geo_x, self.dim_name_time])
 
                                     # Swap data arrays dimensions (is needed for mismatching in data input)
-                                    var_da_step = swap_darray_dims(var_da_expected, var_da_step, da_terrain)
+                                    var_da_step = swap_darray_dims_xy(var_da_expected, var_da_step, da_terrain)
                                     # Combine raw and expected data arrays
                                     if dset_time.shape[0] > 1:
                                         var_da_combined = var_da_expected.combine_first(var_da_step) # dataarray 3d
@@ -855,7 +855,7 @@ class DSetManager:
                                             # Interpolation method info start
                                             log_stream.info(' ----------> Apply ' + self.var_interp + ' method ... ')
 
-                                            # Apply the interpolation methodò-...................-
+                                            # Apply the interpolation method
                                             var_da_interp_tmp = var_da_selected_tmp.interp(
                                                 Latitude=self.da_terrain['Latitude'],
                                                 Longitude=self.da_terrain['Longitude'], method='nearest')

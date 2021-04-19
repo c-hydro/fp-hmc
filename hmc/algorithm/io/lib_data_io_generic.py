@@ -32,7 +32,7 @@ from hmc.algorithm.default.lib_default_args import logger_name
 log_stream = logging.getLogger(logger_name)
 
 # Debug
-# import matplotlib.pylab as plt
+import matplotlib.pylab as plt
 # -------------------------------------------------------------------------------------
 
 # -------------------------------------------------------------------------------------
@@ -45,8 +45,63 @@ attr_missing_value = 'Missing_value'
 
 
 # -------------------------------------------------------------------------------------
-# Method to swap da dimensions
-def swap_darray_dims(da_ref, da_tmp, da_terrain, da_excluded_dims=None):
+# Method to swap da time dimensions
+def swap_darray_dims_time(da_ref, da_tmp, da_expected_dim='time'):
+
+    dims_ref = list(da_ref.dims)
+    dims_tmp = list(da_tmp.dims)
+
+    if set(dims_ref) == set(dims_tmp):
+
+        if dims_ref != dims_tmp:
+
+            if (da_expected_dim in dims_ref) and (da_expected_dim in dims_tmp):
+                log_stream.warning(' ===> Dimensions of reference "' + str(dims_ref) +
+                                   '" and variable "' + str(dims_tmp) + '" datasets are the same, \n '
+                                   'automatic detection found some differences in their order. \n '
+                                   'Try to order dimensions. \n')
+
+                idx_ref = dims_ref.index(da_expected_dim)
+                idx_tmp = dims_tmp.index(da_expected_dim)
+
+                if idx_ref == 2 and idx_tmp == 0:
+                    dims_ref_other = deepcopy(dims_ref)
+                    dims_ref_other.pop(idx_ref)
+
+                    dim_name_y = dims_ref_other[0]
+                    dim_name_x = dims_ref_other[1]
+                    dim_name_time = da_expected_dim
+                    da_order = da_tmp.transpose(dim_name_y, dim_name_x, dim_name_time)
+
+                    dims_ref = list(da_ref.dims)
+                    dims_order = list(da_order.dims)
+
+                    log_stream.warning(' ===> Dimensions of reference "' + str(dims_ref) +
+                                       '" and variable "' + str(dims_order) + '" datasets are the same, \n '
+                                       'automatic detection fixed their order. \n ')
+
+                else:
+                    log_stream.error(' ===> Ordering dimensions is not possible because \n '
+                                     '"time" dimension is not in an allowed position. \n')
+                    raise NotImplemented('Case is not implemented yet')
+
+            else:
+                da_order = deepcopy(da_tmp)
+        else:
+            da_order = deepcopy(da_tmp)
+    else:
+        log_stream.error(' ===> Ordering dimensions is not possible because dimensions ref "' + str(dims_ref) +
+                         '" and dimensions variable "' + str(dims_tmp) + '" are not defined \n'
+                         'by the same names. Try to explore datasets name dimensions to skip this error. ')
+        raise NotImplemented('Case is not implemented yet')
+
+    return da_order
+# -------------------------------------------------------------------------------------
+
+
+# -------------------------------------------------------------------------------------
+# Method to swap da x and y dimensions
+def swap_darray_dims_xy(da_ref, da_tmp, da_terrain, da_excluded_dims=None):
 
     if da_excluded_dims is None:
         da_excluded_dims = ['time']

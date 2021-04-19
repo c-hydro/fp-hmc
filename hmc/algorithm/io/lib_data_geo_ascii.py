@@ -80,7 +80,7 @@ def read_data_point_section(file_name, section_cols_expected=8):
     file_lines = file_handle.readlines()
     file_handle.close()
 
-    if file_lines.__len__() > 1:
+    if file_lines.__len__() >= 1:
 
         string_parts = None
 

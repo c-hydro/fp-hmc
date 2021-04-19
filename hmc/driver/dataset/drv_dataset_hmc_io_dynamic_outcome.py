@@ -19,7 +19,9 @@ import xarray as xr
 
 from copy import deepcopy
 
-from hmc.algorithm.io.lib_data_io_generic import create_darray_3d, create_darray_2d, write_dset, create_dset
+from hmc.algorithm.io.lib_data_io_generic import swap_darray_dims_time, swap_darray_dims_xy, \
+    create_darray_3d, create_darray_2d, \
+    write_dset, create_dset
 from hmc.algorithm.io.lib_data_zip_gzip import zip_filename
 
 from hmc.algorithm.utils.lib_utils_analysis import compute_domain_mean, \
@@ -410,13 +412,24 @@ class DSetManager:
                                 values_nan[:] = np.nan
                                 dset_expected[dset_var_step] = values_nan
 
-                            time_array = dset_def[dset_var_step].time.values
+                            if 'time' in list(dset_def[dset_var_step].dims):
+                                time_array = dset_def[dset_var_step]['time'].values
+                            else:
+                                if 'time' in list(dset_def.dims):
+                                    time_array = dset_def['time'].values
+                                else:
+                                    log_stream.error(' ===> Freeze time array is not defined for ALL variables')
+                                    raise NotImplementedError('Time array is unknown for freezing data')
+
                             time_stamp_list = []
                             for time_step in time_array:
                                 time_stamp = pd.to_datetime(time_step, format='%Y-%m-%d_%H:%M:%S')
                                 time_stamp_list.append(time_stamp)
                             dset_idx = pd.DatetimeIndex(time_stamp_list)
                             dset_values = dset_def[dset_var_step].values
+
+                            if dset_values.shape.__len__() == 0:
+                                dset_values = np.reshape(dset_values, [1])
 
                             if dset_var_step not in list(dset_expected.columns):
                                 dset_expected.loc[dset_idx, dset_var_step] = dset_values
@@ -443,13 +456,24 @@ class DSetManager:
 
                     if dset_check:
 
-                        time_array = dset_def[dset_var_step].time.values
+                        if 'time' in list(dset_def[dset_var_step].dims):
+                            time_array = dset_def[dset_var_step]['time'].values
+                        else:
+                            if 'time' in list(dset_def.dims):
+                                time_array = dset_def['time'].values
+                            else:
+                                log_stream.error(' ===> Freeze time array is not defined for variables')
+                                raise NotImplementedError('Time array is unknown for freezing data')
+
                         time_stamp_list = []
                         for time_step in time_array:
                             time_stamp = pd.to_datetime(time_step, format='%Y-%m-%d_%H:%M:%S')
                             time_stamp_list.append(time_stamp)
                         dset_idx = pd.DatetimeIndex(time_stamp_list)
                         dset_values = dset_def[dset_var_step].values
+
+                        if dset_values.shape.__len__() == 0:
+                            dset_values = np.reshape(dset_values, [1])
 
                     elif dframe_check:
 
@@ -683,9 +707,35 @@ class DSetManager:
                                         dim_name_x=self.dim_name_geo_x, dim_name_y=self.dim_name_geo_y,
                                         dims_order=[self.dim_name_geo_y, self.dim_name_geo_x, self.dim_name_time])
 
+                                    # Order data arrays dimensions (if needed for mismatching in data dims order)
+                                    var_da_step = swap_darray_dims_time(var_da_expected, var_da_step)
+
+                                    # Flip variable values (if needed according with data reference)
+                                    geo_y_values = var_da_step.Latitude.values[:, :]
+                                    geo_y_values[geo_y_values == -9999.0] = np.nan
+
+                                    idx_y_finite = np.argwhere(np.isfinite(geo_y_values.ravel()))
+                                    geo_y_upper = geo_y_values.ravel()[idx_y_finite[0][0]]
+                                    geo_y_lower = geo_y_values.ravel()[idx_y_finite[-1][0]]
+                                    if geo_y_lower > geo_y_upper:
+                                        var_data_flipped = np.flipud(var_da_step.values)
+                                        geo_y_values_flipped = np.flipud(geo_y_values)
+                                        var_da_flipped = create_darray_3d(
+                                            var_data_flipped, dset_time, geo_x_values, geo_y_values_flipped,
+                                            coord_name_time=self.coord_name_time, var_name=var_name_step,
+                                            coord_name_x=self.coord_name_geo_x, coord_name_y=self.coord_name_geo_y,
+                                            dim_name_time=self.dim_name_time,
+                                            dim_name_x=self.dim_name_geo_x, dim_name_y=self.dim_name_geo_y,
+                                            dims_order=[self.dim_name_geo_y, self.dim_name_geo_x, self.dim_name_time])
+                                    else:
+                                        var_da_flipped = deepcopy(var_da_step)
+
+                                    # Swap data arrays dimensions (is needed for mismatching in data input)
+                                    var_da_flipped = swap_darray_dims_xy(var_da_expected, var_da_flipped, da_terrain)
+
                                     # Combine raw and expected data arrays
                                     # var_da_combined = var_da_expected.combine_first(var_da_step)
-                                    var_da_combined = var_da_expected.combine_first(var_da_step.values)
+                                    var_da_combined = var_da_expected.combine_first(var_da_flipped.values)
 
                                     # Select only selected time-steps
                                     dset_time_intersect = dset_time_step.intersection(dset_time)
@@ -765,6 +815,7 @@ class DSetManager:
                                                              var_geo_name='terrain', var_geo_values=self.terrain_values,
                                                              var_geo_x=self.terrain_geo_x, var_geo_y=self.terrain_geo_y,
                                                              var_geo_attrs=None)
+
                             # Organize data in merged datasets
                             if var_dset_out is None:
                                 var_dset_out = var_dset_grid_step
@@ -785,6 +836,7 @@ class DSetManager:
                 # Time-Series Analysis
                 log_stream.info(' --------> Compute time-series analysis over domain ... ')
                 if self.flag_analysis_ts_domain:
+
                     var_dset_ts_domain = compute_domain_mean(
                         var_dset_out, tag_variable_fields=self.tag_variable_fields,
                         template_variable_domain='DomainAverage')
@@ -838,8 +890,6 @@ class DSetManager:
                                     ' Analysis not activated')
 
                 log_stream.info(' -------> Organize gridded datasets ... DONE')
-
-
 
             else:
 
