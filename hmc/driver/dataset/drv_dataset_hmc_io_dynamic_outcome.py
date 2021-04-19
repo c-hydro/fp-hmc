@@ -711,7 +711,7 @@ class DSetManager:
                                     var_da_step = swap_darray_dims_time(var_da_expected, var_da_step)
 
                                     # Flip variable values (if needed according with data reference)
-                                    geo_y_values = var_da_step.Latitude.values[:, :]
+                                    geo_y_values = deepcopy(var_da_step.Latitude.values)
                                     geo_y_values[geo_y_values == -9999.0] = np.nan
 
                                     idx_y_finite = np.argwhere(np.isfinite(geo_y_values.ravel()))
