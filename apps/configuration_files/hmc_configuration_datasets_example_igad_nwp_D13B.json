@@ -581,7 +581,7 @@
           "var_list"        : {
             "ALL"			  : {
               "var_file_name"   : "hmc.state-grid.{dset_datetime_restart}.nc.gz",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_igad/data/data_dynamic/restart/",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_igad/archive/igad_restart/{run_name}/",
               "var_file_dset"	: "ALL",
               "var_file_format"	: "netcdf",
               "var_file_limits"	: [null, null],
@@ -606,7 +606,7 @@
           "var_list"        : {
             "ALL"			  : {
               "var_file_name"   : "hmc.state-point.{dset_datetime_restart}.txt",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_igad/data/data_dynamic/restart/",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_igad/archive/igad_restart/{run_name}/",
               "var_file_dset"	: "ALL",
               "var_file_format"	: "ascii_point",
               "var_file_limits"	: [null, null],

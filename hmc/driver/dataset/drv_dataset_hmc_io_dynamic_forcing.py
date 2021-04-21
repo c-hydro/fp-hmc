@@ -472,7 +472,15 @@ class DSetManager:
                             values_nan[:] = np.nan
                             dset_expected[dset_var_step] = values_nan
 
-                            time_array = dset_def[dset_var_step].time.values
+                            if 'time' in list(dset_def[dset_var_step].dims):
+                                time_array = dset_def[dset_var_step]['time'].values
+                            else:
+                                if 'time' in list(dset_def.dims):
+                                    time_array = dset_def['time'].values
+                                else:
+                                    log_stream.error(' ===> Freeze time array is not defined for variables')
+                                    raise NotImplementedError('Time array is unknown for freezing data')
+
                             time_stamp_list = []
                             for time_step in time_array:
                                 time_stamp = pd.to_datetime(time_step, format='%Y-%m-%d_%H:%M:%S')
