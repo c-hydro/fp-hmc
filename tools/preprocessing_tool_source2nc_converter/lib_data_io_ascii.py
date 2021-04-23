@@ -38,14 +38,21 @@ map_default_fields = ['nrows', 'ncols', 'xllcorner', 'yllcorner', 'cellsize']
 
 # -------------------------------------------------------------------------------------
 # Method to extract data grid information
-def extract_data_grid(geo_data, geo_x_values, geo_y_values, geo_transform,
+def extract_data_grid(geo_data, geo_x_values, geo_y_values, geo_transform, geo_bbox=None,
                       tag_geo_values='data',
                       tag_geo_x='geo_x', tag_geo_y='geo_y',
                       tag_nodata='nodata_value', value_no_data=-9999.0):
 
-    data_grid = {'nrows': geo_y_values.shape[0], 'ncols': geo_x_values.shape[0], 'xllcorner': geo_transform[2],
-                 'yllcorner': geo_transform[5], 'cellsize': abs(geo_transform[0]), tag_geo_values: geo_data,
-                 tag_geo_x: geo_x_values, tag_geo_y: geo_y_values}
+    if geo_bbox is not None:
+        geo_bbox_xll = geo_bbox[0]
+        geo_bbox_yll = geo_bbox[1]
+        data_grid = {'nrows': geo_y_values.shape[0], 'ncols': geo_x_values.shape[0], 'xllcorner': geo_bbox_xll,
+                     'yllcorner': geo_bbox_yll, 'cellsize': abs(geo_transform[0]), tag_geo_values: geo_data,
+                     tag_geo_x: geo_x_values, tag_geo_y: geo_y_values}
+    elif geo_bbox is None:
+        data_grid = {'nrows': geo_y_values.shape[0], 'ncols': geo_x_values.shape[0], 'xllcorner': geo_transform[2],
+                     'yllcorner': geo_transform[5], 'cellsize': abs(geo_transform[0]), tag_geo_values: geo_data,
+                     tag_geo_x: geo_x_values, tag_geo_y: geo_y_values}
 
     if tag_nodata not in list(data_grid.keys()):
         data_grid[tag_nodata] = value_no_data

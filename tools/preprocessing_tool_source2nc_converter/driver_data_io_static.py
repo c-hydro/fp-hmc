@@ -78,7 +78,7 @@ class DriverStatic:
         terrain_data_src = read_data_grid(self.file_path_terrain_src, output_format='dictionary')
         terrain_grid_src = extract_data_grid(terrain_data_src['values'],
                                              terrain_data_src['longitude'], terrain_data_src['latitude'],
-                                             terrain_data_src['transform'])
+                                             terrain_data_src['transform'], terrain_data_src['bbox'])
         data_collections[self.flag_static_source][self.flag_terrain_data] = terrain_grid_src
 
         generic_grid_src = create_data_grid(self.grid_info_src)
@@ -88,7 +88,7 @@ class DriverStatic:
         terrain_data_dst = read_data_grid(self.file_path_terrain_dst, output_format='dictionary')
         terrain_grid_dst = extract_data_grid(terrain_data_dst['values'],
                                              terrain_data_dst['longitude'], terrain_data_dst['latitude'],
-                                             terrain_data_dst['transform'])
+                                             terrain_data_dst['transform'], terrain_data_dst['bbox'])
         data_collections[self.flag_static_destination][self.flag_terrain_data] = terrain_grid_dst
 
         generic_grid_dst = create_data_grid(self.grid_info_dst)
