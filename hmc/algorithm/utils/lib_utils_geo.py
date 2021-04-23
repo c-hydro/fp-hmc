@@ -10,14 +10,11 @@ Version:       '3.0.0'
 #################################################################################
 # Libraries
 import logging
-import rasterio
-
 import pyproj
-from pysheds.grid import Grid
 
+from pysheds.grid import Grid
 import numpy as np
 
-#from hmc.algorithm.io.lib_data_io_generic import create_darray_2d
 from hmc.algorithm.default.lib_default_args import logger_name
 
 # Logging

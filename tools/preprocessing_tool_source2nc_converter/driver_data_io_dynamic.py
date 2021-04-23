@@ -346,6 +346,9 @@ class DriverDynamic:
 
                 if not (os.path.exists(file_path_dst) or os.path.exists(file_path_zip)):
 
+                    dset_obj = dset_obj.squeeze("time")
+                    dset_obj = dset_obj.drop('time')
+
                     write_dset(file_path_dst, dset_obj,
                                dset_engine=self.nc_type_engine, dset_format=self.nc_type_file,
                                dset_compression=self.nc_compression_level, fill_data=-9999.0, dset_type='float32')

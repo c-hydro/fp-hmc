@@ -34,10 +34,12 @@ proj_default_wkt = 'GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,2
 
 # -------------------------------------------------------------------------------------
 # Method to read data
-def read_data_tiff(file_name, var_scale_factor=1, var_name=None, var_time=None, var_no_data=-9999.0,
+def read_data_tiff(file_name, var_scale_factor=1, var_type='float32', var_name=None, var_time=None, var_no_data=-9999.0,
                    coord_name_time='time', coord_name_geo_x='Longitude', coord_name_geo_y='Latitude',
                    dim_name_time='time', dim_name_geo_x='west_east', dim_name_geo_y='south_north',
-                   dims_order=None, decimal_round_data=2, decimal_round_geo=7):
+                   dims_order=None,
+                   decimal_round_data=7, flag_round_data=False,
+                   decimal_round_geo=7, flag_round_geo=True):
 
     if dims_order is None:
         dims_order = [dim_name_geo_y, dim_name_geo_x, dim_name_time]
@@ -56,8 +58,16 @@ def read_data_tiff(file_name, var_scale_factor=1, var_name=None, var_time=None, 
         if file_nodata is None:
             file_nodata = var_no_data
 
-        file_values = file_values.round(decimal_round_data)
-        file_values = np.float32(file_values / var_scale_factor)
+        if flag_round_data:
+            file_values = file_values.round(decimal_round_data)
+
+        if var_type == 'float64':
+            file_values = np.float64(file_values / var_scale_factor)
+        elif var_type == 'float32':
+            file_values = np.float32(file_values / var_scale_factor)
+        else:
+            log_stream.error(' ===> File type is not correctly defined.')
+            raise NotImplemented('Case not implemented yet')
 
         if file_handle.crs is None:
             file_proj = proj_default_wkt
@@ -87,15 +97,19 @@ def read_data_tiff(file_name, var_scale_factor=1, var_name=None, var_time=None, 
         lat = np.arange(center_bottom, center_top + np.abs(file_res[1] / 2), np.abs(file_res[1]), float)
         lons, lats = np.meshgrid(lon, lat)
 
-        min_lon_round = round(np.min(lons), decimal_round_geo)
-        max_lon_round = round(np.max(lons), decimal_round_geo)
-        min_lat_round = round(np.min(lats), decimal_round_geo)
-        max_lat_round = round(np.max(lats), decimal_round_geo)
+        if flag_round_geo:
+            min_lon_round = round(np.min(lons), decimal_round_geo)
+            max_lon_round = round(np.max(lons), decimal_round_geo)
+            min_lat_round = round(np.min(lats), decimal_round_geo)
+            max_lat_round = round(np.max(lats), decimal_round_geo)
 
-        center_right_round = round(center_right, decimal_round_geo)
-        center_left_round = round(center_left, decimal_round_geo)
-        center_bottom_round = round(center_bottom, decimal_round_geo)
-        center_top_round = round(center_top, decimal_round_geo)
+            center_right_round = round(center_right, decimal_round_geo)
+            center_left_round = round(center_left, decimal_round_geo)
+            center_bottom_round = round(center_bottom, decimal_round_geo)
+            center_top_round = round(center_top, decimal_round_geo)
+        else:
+            log_stream.error(' ===> Switch off the rounding of geographical dataset is not expected')
+            raise NotImplemented('Case not implemented yet')
 
         assert min_lon_round == center_left_round
         assert max_lon_round == center_right_round

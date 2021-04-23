@@ -132,19 +132,19 @@
         "AEvt": {
           "var_compute": true,
           "var_name": "AEvt",
-          "var_scale_factor": 24,
+          "var_scale_factor": 1,
           "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/project/dte-ws/data_dynamic/ancillary/{source_folder_datetime_evt}",
           "file_name": "evt_actual.{source_file_datetime_evt}.tiff",
           "file_compression": false,
           "file_geo_reference": null,
           "file_type": "tiff",
           "file_coords": null,
-          "file_frequency": "D"
+          "file_frequency": "H"
         },
         "PEvt": {
           "var_compute": true,
           "var_name": "PEvt",
-          "var_scale_factor": 24,
+          "var_scale_factor": 1,
           "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/project/dte-ws/data_dynamic/ancillary/{source_folder_datetime_evt}",
           "file_name": "evt_potential.{source_file_datetime_evt}.tiff",
           "file_compression": false,
@@ -183,7 +183,7 @@
         "file_name": "hmc.forcing-grid.{ancillary_file_datetime_generic}.workspace"
       },
       "destination": {
-        "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/dte_hydrology/data/data_dynamic/destination/FORCING_S3M_MCM_GLEAM/{destination_folder_datetime_generic}",
+        "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/dte_hydrology/data/data_dynamic/destination/FORCING_S3M_MCM_GLEAM_NEW/{destination_folder_datetime_generic}",
         "file_name": "hmc.forcing-grid.{destination_file_datetime_generic}.nc",
         "file_geo_reference": "Terrain",
         "file_compression": true
