@@ -2,13 +2,13 @@
 
 #-----------------------------------------------------------------------------------------
 # Script information
-script_name='HMC MODEL - MANAGER RFARM ECMWF0100 - REALTIME'
+script_name='HMC MODEL - MANAGER NWP ECMWF0100 - REALTIME'
 script_version="1.0.0"
 script_date='2020/11/27'
 
 virtualenv_folder='/hydro/library/fp_libs_python3/'
 virtualenv_name='virtualenv_python3'
-script_folder='/hydro/library/hmc/'
+script_folder='/hydro/library/fp_package_hmc/'
 
 # Execution example:
 # python3 HMC_Model_RUN_Manager.py -settings_algorithm hmc_model_settings_algorithm.json -settings_datasets hmc_model_settings_datasets.json -time "2020-11-02 12:00"
@@ -16,48 +16,34 @@ script_folder='/hydro/library/hmc/'
 
 #-----------------------------------------------------------------------------------------
 # Get file information
-script_file_runner='/hydro/library/hmc/apps/HMC_Model_RUN_Manager.py'
+script_file_runner='/hydro/library/fp_package_hmc/apps/HMC_Model_RUN_Manager.py'
+settings_algorithm_runner='/hydro/fp_tools_runner/nwp_ecmwf0100_realtime/hmc_model_settings_algorithm_nwp_ecmwf0100_realtime.json'
+settings_datasets_runner='/hydro/fp_tools_runner/nwp_ecmwf0100_realtime/hmc_model_settings_datasets_nwp_ecmwf0100_realtime.json'
 
-settings_algorithm_runner_example='/hydro/fp_tools_runner/rfarm_ecmwf0100_realtime/hmc_model_settings_algorithm_rfarm_ecmwf0100_realtime_{group_name}.json'
-settings_datasets_runner_example='/hydro/fp_tools_runner/rfarm_ecmwf0100_realtime/hmc_model_settings_datasets_rfarm_ecmwf0100_realtime_{group_name}.json'
-
-settings_algorithm_runner_group1='/hydro/fp_tools_runner/rfarm_ecmwf0100_realtime/hmc_model_settings_algorithm_rfarm_ecmwf0100_realtime_group1.json'
-settings_algorithm_runner_group2='/hydro/fp_tools_runner/rfarm_ecmwf0100_realtime/hmc_model_settings_algorithm_rfarm_ecmwf0100_realtime_group2.json'
-settings_algorithm_runner_group3='/hydro/fp_tools_runner/rfarm_ecmwf0100_realtime/hmc_model_settings_algorithm_rfarm_ecmwf0100_realtime_group3.json'
-settings_datasets_runner_group1='/hydro/fp_tools_runner/rfarm_ecmwf0100_realtime/hmc_model_settings_datasets_rfarm_ecmwf0100_realtime_group1.json'
-settings_datasets_runner_group2='/hydro/fp_tools_runner/rfarm_ecmwf0100_realtime/hmc_model_settings_datasets_rfarm_ecmwf0100_realtime_group2.json'
-settings_datasets_runner_group3='/hydro/fp_tools_runner/rfarm_ecmwf0100_realtime/hmc_model_settings_datasets_rfarm_ecmwf0100_realtime_group3.json'
-
-# Set model ensemble maker execution and settings filename(s)
-script_file_maker_ensemble='/hydro/library/hmc/tools/postprocessing_tool_ensemble_maker/hmc_tool_postprocessing_ensemble_maker.py'
-settings_algorithm_maker_ensemble='/hydro/fp_tools_runner/rfarm_ecmwf0100_realtime/hmc_model_maker_ensemble_rfarm_ecmwf0100_realtime.json'
-
-# Set model json2dew converter execution and settings filename(s)
-script_file_converter_json2dew='/hydro/library/hmc/tools/postprocessing_tool_json2dew_converter/hmc_tool_postprocessing_json2dew_converter.py'
-settings_algorithm_converter_json2dew='/hydro/fp_tools_runner/rfarm_ecmwf0100_realtime/hmc_model_converter_json2dew_rfarm_ecmwf0100_realtime.json'
-
+script_file_converter_json2dew='/hydro/library/fp_package_hmc/tools/postprocessing_tool_json2dew_converter/hmc_tool_postprocessing_json2dew_converter.py'
+settings_algorithm_converter_json2dew='/hydro/fp_tools_runner/nwp_ecmwf0100_realtime/hmc_model_converter_json2dew_nwp_ecmwf0100_realtime.json'
 
 folder_name_obs_raw='/hydro/data/data_dynamic/outcome/obs/weather_stations/%Y/%m/%d/'
 file_name_obs_raw='ws.db.%Y%m%d%H00.nc.gz'
 searching_period_hour_obs=4
 
-folder_name_for_raw='/hydro/data/data_dynamic/outcome/rfarm/ecmwf0100/%Y/%m/%d/'
-file_name_for_raw='rf.ecmwf0100.%Y%m%d0000_040.nc.gz'
+folder_name_for_raw='/hydro/data/data_dynamic/outcome/nwp/ecmwf0100/%Y/%m/%d/'
+file_name_for_raw='nwp.ecmwf0100.%Y%m%d0000.nc.gz'
 searching_period_hour_for=0
 
-folder_name_datasets_lock_raw='/hydro/lock/rfarm/'
-file_name_datasets_lock_start_raw='hyde_lock_rfarm_ecmwf0100_realtime_%Y%m%d_START.txt'
-file_name_datasets_lock_end_raw='hyde_lock_rfarm_ecmwf0100_realtime_%Y%m%d_END.txt'
+folder_name_datasets_lock_raw='/hydro/lock/nwp/'
+file_name_datasets_lock_start_raw='hyde_lock_nwp_ecmwf0100_realtime_%Y%m%d_START.txt'
+file_name_datasets_lock_end_raw='hyde_lock_nwp_ecmwf0100_realtime_%Y%m%d_END.txt'
 file_lock_datasets_check=true
 
 folder_name_hmc_lock_raw='/hydro/lock/hmc/'
-file_name_hmc_lock_start_raw='hmc_lock_rfarm_ecmwf0100_realtime_%Y%m%d_START.txt'
-file_name_hmc_lock_end_raw='hmc_lock_rfarm_ecmwf0100_realtime_%Y%m%d_END.txt'
+file_name_hmc_lock_start_raw='hmc_lock_nwp_ecmwf0100_realtime_%Y%m%d_START.txt'
+file_name_hmc_lock_end_raw='hmc_lock_nwp_ecmwf0100_realtime_%Y%m%d_END.txt'
 file_lock_hmc_init=false
 
 # Get information (-u to get gmt time)
 time_now=$(date -u +"%Y-%m-%d %H:00")
-#time_now='2020-12-22 13:21' # DEBUG 
+#time_now='2020-12-21 13:21' # DEBUG 
 #-----------------------------------------------------------------------------------------
 
 #-----------------------------------------------------------------------------------------
@@ -353,57 +339,28 @@ if [ $flag_datasets_lock_start_ref ] && [ $flag_datasets_lock_end_ref ]; then
         echo " ==== Status: RUNNING" >> $path_file_lock_hmc_start_ref
         echo " " >> $path_file_lock_hmc_start_ref
         echo " ================================ " >> $path_file_lock_hmc_start_ref
+	
         #-----------------------------------------------------------------------------------------
-
-        #-----------------------------------------------------------------------------------------
-        # Run hmc model instance (using setting and time)
+        # Run hmc model instance (using settings and time)
         echo " ====> RUN HMC MODEL INSTANCE ... "
         
-        # Define command-line
-        echo " =====> COMMAND LINE: " python $script_file_runner -settings_algorithm $settings_algorithm_runner_example -settings_datasets $settings_datasets_runner_example -time "$time_ref"
-
         # Execute python script to run the model
-        # GROUP 1 (Ensembles 1-10)
-        python $script_file_runner -settings_algorithm $settings_algorithm_runner_group1 -settings_datasets $settings_datasets_runner_group1 -time "$time_ref" &
-        sleep 20
-        # GROUP 2 (Ensembles 11-20)
-        python $script_file_runner -settings_algorithm $settings_algorithm_runner_group2 -settings_datasets $settings_datasets_runner_group2 -time "$time_ref" &
-        sleep 20
-        # GROUP 3 (Ensembles 21-30)
-        python $script_file_runner -settings_algorithm $settings_algorithm_runner_group3 -settings_datasets $settings_datasets_runner_group3 -time "$time_ref" &
-        sleep 20
-        
-        wait
+	echo " =====> COMMAND LINE: " python $script_file_runner -settings_algorithm $settings_algorithm_runner -settings_datasets $settings_datasets_runner -time $time_now
+        python $script_file_runner -settings_algorithm $settings_algorithm_runner -settings_datasets $settings_datasets_runner -time "$time_ref"
         
         echo " ====> RUN HMC MODEL INSTANCE ... DONE"
-        #-----------------------------------------------------------------------------------------
-        
-	#-----------------------------------------------------------------------------------------
-        # Run hmc model instance (using setting and time)
-        echo " ====> POSTPROCESS HMC MODEL INSTANCE ... "
-        
-        # Execute python script to convert time-series from instance to ensemble format
-        echo " =====> MAKE ENSEMBLE ... "
-        echo " ======> COMMAND LINE: " python $script_file_maker_ensemble -settings_file $settings_algorithm_maker_ensemble -time "$time_ref"
-	python $script_file_maker_ensemble -settings_file $settings_algorithm_maker_ensemble -time "$time_ref"
-	
-	wait
-	
-        echo " =====> MAKE ENSEMBLE ... DONE"
-        
-        # Execute python script to convert time-series from json to dewetra format
+
+	# Postprocess model instance (using settings and time)
+	echo " ====> POSTPROCESS HMC MODEL INSTANCE ... "
+
+	# Execute python script to convert time-series from json to dewetra format
 	echo " =====> CONVERT JSON2DEW ... "
-        echo " ======> COMMAND LINE: " python $script_file_converter_json2dew -settings_file $settings_algorithm_converter_json2dew -time "$time_ref"
+	echo " ======> COMMAND LINE: " python $script_file_converter_json2dew -settings_file $settings_algorithm_converter_json2dew -time $time_ref
 	python $script_file_converter_json2dew -settings_file $settings_algorithm_converter_json2dew -time "$time_ref"
-	
-	wait
-	
-        echo " =====> CONVERT JSON2DEW ... DONE"
+	echo " =====> CONVERT JSON2DEW ... DONE"
+
+	echo " ====> POSTPROCESS HMC MODEL INSTANCE ... DONE"
         
-        echo " ====> POSTPROCESS HMC MODEL INSTANCE ... DONE"
-        #-----------------------------------------------------------------------------------------
-        
-        #-----------------------------------------------------------------------------------------
         # Lock File END
         time_lock_end=$(date +"%Y-%m-%d %H:%S")
         echo " ============================== " >> $path_file_lock_hmc_end_ref

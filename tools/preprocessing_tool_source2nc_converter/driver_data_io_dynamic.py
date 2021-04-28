@@ -346,8 +346,12 @@ class DriverDynamic:
 
                 if not (os.path.exists(file_path_dst) or os.path.exists(file_path_zip)):
 
-                    dset_obj = dset_obj.squeeze("time")
-                    dset_obj = dset_obj.drop('time')
+                    # Squeeze time dimensions (if equal == 1) --> continuum expects 2d variables in forcing variables
+                    if self.dim_name_time in list(dset_obj.dims):
+                        time_array = dset_obj[self.dim_name_time].values
+                        if time_array.shape[0] == 1:
+                            dset_obj = dset_obj.squeeze(self.dim_name_time)
+                            dset_obj = dset_obj.drop(self.dim_name_time)
 
                     write_dset(file_path_dst, dset_obj,
                                dset_engine=self.nc_type_engine, dset_format=self.nc_type_file,

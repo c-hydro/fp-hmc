@@ -63,8 +63,20 @@ class DSetReader:
                 file_src_tmp_list.append(file_src_step)
 
         if (file_src_tmp_list.__len__() > 1) and (file_src_tmp_list.__len__() != file_src_time.__len__()):
-            log_stream.error(' ===> File(s) expected is less then time(s) expected.')
-            raise IOError('Some files are not correctly defined. Check your settings!')
+
+            file_src_tmp_list = sorted(file_src_tmp_list)
+            file_src_date_list = sorted(list(set(list(file_src_time.date))))
+
+            if file_src_tmp_list.__len__() == file_src_date_list.__len__():
+                file_src_filled_list = []
+                for file_src_date_step, file_src_tmp_step in zip(file_src_date_list, file_src_tmp_list):
+                    file_select_step = file_src_time[file_src_time.date == file_src_date_step]
+                    file_src_filled_step = [file_src_tmp_step] * file_select_step.__len__()
+                    file_src_filled_list.extend(file_src_filled_step)
+                file_src_tmp_list = deepcopy(file_src_filled_list)
+            else:
+                log_stream.error(' ===> File(s) expected are not equal to time steps expected.')
+                raise IOError('Files does not match time steps length. Check your settings!')
 
         self.file_src_info = file_src_info
         self.file_src_time = file_src_time
