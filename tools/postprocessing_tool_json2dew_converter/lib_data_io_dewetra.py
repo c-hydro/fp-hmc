@@ -72,7 +72,7 @@ def write_file_dewetra_hydrograph(file_name, file_data_obs, file_data_mod,
     data_ws = {'line_01': 'Procedure=' + str(run_name) + ' \n',
                'line_02': 'DateMeteoModel=' + str(time_now) + ' \n',
                'line_03': 'DateStart=' + str(time_from) + ' \n',
-               'line_04': 'Temp.Resolution=' + str(time_resolution) + ' \n',
+               'line_04': 'Temp.Resolution=' + str(int(time_resolution)) + ' \n',
                'line_05': 'SscenariosNumber=' + str(int(run_n)) + ' \n',
                'line_06': (' '.join(map(str, file_data_obs))) + ' \n'}
 
