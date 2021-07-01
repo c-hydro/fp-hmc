@@ -8,7 +8,7 @@ script_date='2021/04/07'
 
 virtualenv_folder='/home/cfmi.arpal.org/continuum/library/fp_virtualenv_python3_hmc/'
 virtualenv_name='fp_virtualenv_python3_hmc_libraries'
-script_folder='/home/cfmi.arpal.org/continuum/library/fp-hmc/'
+script_folder='/home/cfmi.arpal.org/continuum/library/fp-dev-hmc/'
 
 # Domain list
 domain_name_list=("CentaDomain")
@@ -19,7 +19,7 @@ domain_name_list=("CentaDomain")
 
 #-----------------------------------------------------------------------------------------
 # Get file information
-script_file='/home/cfmi.arpal.org/continuum/library/fp-hmc/apps/HMC_Model_RUN_Manager.py'
+script_file='/home/cfmi.arpal.org/continuum/library/fp-dev-hmc/apps/HMC_Model_RUN_Manager.py'
 settings_algorithm_raw='/home/cfmi.arpal.org/continuum/fp_tools_runner/weather_stations_state/%DOMAIN_NAME/hmc_model_settings_algorithm_weather_stations_state.json'
 settings_datasets_raw='/home/cfmi.arpal.org/continuum/fp_tools_runner/weather_stations_state/%DOMAIN_NAME/hmc_model_settings_datasets_weather_stations_state.json'
 

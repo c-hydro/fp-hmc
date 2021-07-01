@@ -245,6 +245,8 @@ class DSetManager:
                     dset_source[var_name] = obj_var
                 elif isinstance(obj_var, list):
                     dset_source[var_name] = obj_var
+                elif isinstance(obj_var, tuple):
+                    dset_source[var_name] = obj_var
                 else:
                     log_stream.error(' ===> Data static object is not allowed')
                     raise NotImplementedError('Object static type is not valid')

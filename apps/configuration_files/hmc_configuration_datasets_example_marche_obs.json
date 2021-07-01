@@ -40,9 +40,25 @@
           "var_file_name"   : "hydrograph_{string_var_name_summary_section}_{string_var_name_summary_basin}_{dset_datetime_summary}.json",
           "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/archive/{run_name}/{dset_sub_path_summary}/outcome/collections/{run_mode}/",
           "var_file_dset"	: "Discharge",
-          "var_file_format"	: "json_time_series",
+          "var_file_format"	: "json_time_series_discharge",
           "var_file_limits"	: [0, null],
           "var_file_units"  : "m^3/s"
+        },
+        "DamV"		  : {
+          "var_file_name"   : "damv_{string_var_name_summary_dam}_{dset_datetime_summary}.json",
+          "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/archive/{run_name}/{dset_sub_path_summary}/outcome/collections/{run_mode}/",
+          "var_file_dset"	: "DamV",
+          "var_file_format"	: "json_time_series_dam_volume",
+          "var_file_limits"	: [0, null],
+          "var_file_units"  : "m^3"
+        },
+        "DamL"		  : {
+          "var_file_name"   : "daml_{string_var_name_summary_dam}_{dset_datetime_summary}.json",
+          "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/archive/{run_name}/{dset_sub_path_summary}/outcome/collections/{run_mode}/",
+          "var_file_dset"	: "DamL",
+          "var_file_format"	: "json_time_series_dam_level",
+          "var_file_limits"	: [0, null],
+          "var_file_units"  : "m"
         }
       }
     }
@@ -91,7 +107,8 @@
         "Vegetation_Type"         : {"var_name": "cn",                "check": true,   "mandatory": true  },
         "Terrain"                 : {"var_name": "dem",               "check": true,   "mandatory": true  },
         "Mask"                    : {"var_name": "mask",              "check": true,   "mandatory": false },
-        "Water_Source"            : {"var_name": "ws",                "check": true,   "mandatory": false },
+        "WaterTable_Source"       : {"var_name": "ws",                "check": true,   "mandatory": false },
+        "WaterTable_Deep_Losses"  : {"var_name": "wdl",               "check": true,   "mandatory": false },
         "Nature"                  : {"var_name": "nature",            "check": true,   "mandatory": false },
         "Width"                   : {"var_name": "width",             "check": true,   "mandatory": false },
         "Fracturation"            : {"var_name": "fr",                "check": true,   "mandatory": false },

@@ -14,6 +14,7 @@ import pyproj
 
 from pysheds.grid import Grid
 import numpy as np
+import xarray as xr
 
 from hmc.algorithm.default.lib_default_args import logger_name
 
@@ -88,7 +89,7 @@ def create_darray_2d(data, geo_x, geo_y, geo_1d=True, time=None,
                      coord_name_x='west_east', coord_name_y='south_north', coord_name_time='time',
                      dim_name_x='west_east', dim_name_y='south_north', dim_name_time='time',
                      dims_order=None):
-    import xarray as xr
+
     if dims_order is None:
         dims_order = [dim_name_y, dim_name_x]
     if time is not None:
@@ -183,7 +184,6 @@ def compute_drainage_area(terrain, cell_area, no_data=-9999, units='Km^2'):
     return drainage_area
 
 # -------------------------------------------------------------------------------------
-
 
 # -------------------------------------------------------------------------------------
 # Method to compute corrivation time

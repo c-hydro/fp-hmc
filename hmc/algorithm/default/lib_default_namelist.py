@@ -19,6 +19,7 @@ link_namelist_default = dict(
         'dCPI': {'algorithm': ['HMC_Info', 'hmc_parameters', 'cpi']},
         'dCN': {'algorithm': ['HMC_Info', 'hmc_parameters', 'cn']},
         'dWS': {'algorithm': ['HMC_Info', 'hmc_parameters', 'ws']},
+        'dWDL': {'algorithm': ['HMC_Info', 'hmc_parameters', 'wdl']},
         'dFrac': {'algorithm': ['HMC_Info', 'hmc_parameters', 'fracturation']},
         'dWTableHbr': {'algorithm': ['HMC_Info', 'hmc_parameters', 'wtable_hbr']},
         'dKSatRatio': {'algorithm': ['HMC_Info', 'hmc_parameters', 'ksat_ratio']},
@@ -54,7 +55,8 @@ link_namelist_default = dict(
         'iFlagLAI': {'algorithm': ['HMC_Info', 'hmc_flags', 'flag_datasets_lai']},
         'iFlagAlbedo': {'algorithm': ['HMC_Info', 'hmc_flags', 'flag_datasets_albedo']},
         'iFlagCoeffRes': {'algorithm': ['HMC_Info', 'hmc_flags', 'flag_phys_coeff_resolution']},
-        'iFlagWS': {'algorithm': ['HMC_Info', 'hmc_flags', 'flag_phys_water_sources']},
+        'iFlagWS': {'algorithm': ['HMC_Info', 'hmc_flags', 'flag_phys_water_table_sources']},
+        'iFlagWDL': {'algorithm': ['HMC_Info', 'hmc_flags', 'flag_phys_water_table_deep_losses']},
         'iFlagReleaseMass': {'algorithm': ['HMC_Info', 'hmc_flags', 'flag_phys_release_mass']},
         'iFlagCType': {'algorithm': ['HMC_Info', 'hmc_flags', 'flag_phys_convolution_type']},
         'iFlagFrac': {'algorithm': ['HMC_Info', 'hmc_flags', 'flag_phys_fracturation']},
@@ -163,6 +165,8 @@ link_namelist_default = dict(
         'dTV': {'algorithm': ['HMC_Info', 'hmc_phys_parametrization', 'phys_dam_initial_percentage_outflow']},
         'dDamSpillH': {'algorithm': ['HMC_Info', 'hmc_phys_parametrization', 'phys_dam_initial_delta_spill']},
 
+        'dWTLossMax': {'algorithm': ['HMC_Info', 'hmc_phys_parametrization', 'phys_water_table_maximum_losses']},
+
         'dSMGain': 0.45,
     },
 
@@ -174,9 +178,9 @@ link_namelist_default = dict(
     },
 
     HMC_Info={
-        'sReleaseVersion': "3.1.4",
+        'sReleaseVersion': "3.1.5",
         'sAuthorNames': "Delogu F., Silvestro F., Gabellani S., Libertino A., Ercolani G.",
-        'sReleaseDate': "2021/03/09",
+        'sReleaseDate': "2021/06/28",
     },
 )
 # Namelist default
@@ -188,10 +192,15 @@ structure_namelist_default = dict(
         'dCt': 0.5,
         'dCf': 0.02,
         'dCPI': 0.3,
+        'dCN': 60.01,
+        'dWS': 3.6780000000000003e-09,
+        'dWDL': 3.6780000000000003e-09,
+        'dFrac': 0.0,
         'dWTableHbr': 500,
         'dKSatRatio': 1,
         'dSlopeMax': 70,
         'sDomainName': "default",
+
     },
 
     HMC_Namelist={
@@ -223,6 +232,7 @@ structure_namelist_default = dict(
         'iFlagAlbedo': 0,
         'iFlagCoeffRes': 0,
         'iFlagWS': 0,
+        'iFlagWDL': 0,
         'iFlagReleaseMass': 1,
         'iFlagCType': 1,
         'iFlagFrac': 0,
@@ -331,6 +341,8 @@ structure_namelist_default = dict(
         'dTV': 0.95,
         'dDamSpillH': 0.4,
 
+        'dWTLossMax': 0.25,
+
         'dSMGain': 0.45,
     },
 
@@ -342,9 +354,9 @@ structure_namelist_default = dict(
     },
 
     HMC_Info={
-        'sReleaseVersion': "3.1.4",
+        'sReleaseVersion': "3.1.5",
         'sAuthorNames': "Delogu F., Silvestro F., Gabellani S., Libertino A., Ercolani G.",
-        'sReleaseDate': "2021/03/08",
+        'sReleaseDate': "2021/06/28",
     },
 )
 # -------------------------------------------------------------------------------------

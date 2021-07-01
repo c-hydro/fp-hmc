@@ -77,9 +77,11 @@ class ModelSource:
 
         self.tag_dam_list = 'dam_name_list'
         self.tag_plant_list = 'plant_name_list'
+        self.tag_release_list = 'release_name_list'
         self.tag_basin_list = 'basin_name_list'
         self.tag_section_list = 'section_name_list'
         self.tag_outlet_list = 'outlet_name_list'
+        self.tag_dam_system_list = 'dam_system_name_list'
         self.tag_mask_list = 'mask_name_list'
 
         self.list_sep = ':'
@@ -200,12 +202,41 @@ class ModelSource:
                 else:
                     logging.error(' ===> Dam parts are in a unsupported format')
                     raise NotImplementedError('Case not implemented yet')
+
+                if dam_list.__len__() != plant_list.__len__():
+                    logging.error(' ===> Dams list and plants list have not the same elements length')
+                    raise NotImplementedError('Case not implemented yet')
+
+                dam_system_list = []
+                for dam, plant in zip(dam_list, plant_list):
+                    dam_system_step = self.list_sep.join([dam, plant])
+                    dam_system_list.append(dam_system_step)
+
             else:
+                dam_system_list = None
                 dam_list = None
                 plant_list = None
         else:
             logging.error(' ===> "Dam" key in static collections does not exist')
             raise NotImplementedError('Key not available in data collections')
+
+        if 'Intake' in list(dset_collections_static.keys()):                                # add20210604 --start
+
+            if dset_collections_static['Intake'] is not None:
+                intake_list = list(dset_collections_static['Intake'].keys())
+                intake_parts = split_dict_keys(intake_list)
+                if intake_parts.__len__() == 2:
+                    release_list = intake_parts[0]
+                    socket_list = intake_parts[1]
+                else:
+                    logging.error(' ===> Intake parts are in a unsupported format')
+                    raise NotImplementedError('Case not implemented yet')
+            else:
+                release_list = None
+                socket_list = None
+        else:
+            logging.error(' ===> "Intake" key in static collections does not exist')
+            raise NotImplementedError('Key not available in data collections')              # add20210604 --end
 
         if 'Section' in list(dset_collections_static.keys()):
             section_list = list(dset_collections_static['Section'].keys())
@@ -233,8 +264,16 @@ class ModelSource:
             mask_obj = None
             logging.warning(' ===> "Section" or/and "Flow_Directions" keys in static collections does not exist')
 
+        if release_list is not None:                                            #add20210607 ---start
+            if plant_list is None:
+                plant_list = deepcopy(release_list)
+            else:
+                plant_list = plant_list + release_list                          #add20210607 ---end
+
         dset_collections_static[self.tag_dam_list] = dam_list
         dset_collections_static[self.tag_plant_list] = plant_list
+        dset_collections_static[self.tag_dam_system_list] = dam_system_list
+        dset_collections_static[self.tag_release_list] = release_list
         dset_collections_static[self.tag_basin_list] = section_parts[0]
         dset_collections_static[self.tag_section_list] = section_parts[1]
         dset_collections_static[self.tag_outlet_list] = outlet_list
@@ -319,7 +358,7 @@ class ModelSource:
                     dset_static_info=obj_static_datasets,
                     dset_time_info=obj_ti_step,
                     dset_time_start=start_idx_subselect, dset_time_end=end_idx_subselect,
-                    plant_name_list=obj_static_datasets[self.tag_plant_list])
+                    plant_name_list=obj_static_datasets[self.tag_plant_list], release_name_list=obj_static_datasets[self.tag_release_list])			#add20210608_last_arg
 
                 # Check collected data
                 if dset_source_frame_raw[self.tag_datasets] is not None:
@@ -447,7 +486,7 @@ class ModelSource:
                         dset_static_info=obj_static_datasets,
                         dset_time_info=obj_ti_step,
                         dset_time_start=start_idx_subselect, dset_time_end=end_idx_subselect,
-                        plant_name_list=obj_static_datasets[self.tag_plant_list])
+                        plant_name_list=obj_static_datasets[self.tag_plant_list], release_name_list=obj_static_datasets[self.tag_release_list])			#add20210608_last_arg
 
                     # Check collected data
                     if dset_source_frame_raw_base[self.tag_datasets] is not None:
@@ -580,7 +619,7 @@ class ModelSource:
                         dset_static_info=obj_static_datasets,
                         dset_time_info=obj_ti_step,
                         dset_time_start=start_idx_subselect, dset_time_end=end_idx_subselect,
-                        plant_name_list=obj_static_datasets[self.tag_plant_list])
+                        plant_name_list=obj_static_datasets[self.tag_plant_list], release_name_list=obj_static_datasets[self.tag_release_list])				#add20210608_last_arg
 
                     # Check collected data
                     if dset_source_frame_raw_base[self.tag_datasets] is not None:

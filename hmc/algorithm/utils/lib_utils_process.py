@@ -10,6 +10,7 @@ Version:       '3.0.0'
 # Library
 import logging
 import subprocess
+import time
 
 from os import stat, chmod
 
@@ -34,7 +35,7 @@ def make_process(file):
 
 # -------------------------------------------------------------------------------------
 # Method to execute process
-def exec_process(command_line=None):
+def exec_process(command_line=None, time_elapsed_min=1):
 
     try:
 
@@ -47,6 +48,7 @@ def exec_process(command_line=None):
             stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         # Read standard output
+        time_start_run = time.time()
         while True:
             string_out = process_handle.stdout.readline()
             if isinstance(string_out, bytes):
@@ -81,6 +83,14 @@ def exec_process(command_line=None):
 
         # Check stream process
         stream_process(std_out, std_err)
+
+        # Compute elapsed time run
+        time_elapsed_run = round(time.time() - time_start_run, 1)
+
+        if time_elapsed_run < time_elapsed_min:
+            log_stream.error(' ===> Process execution FAILED! Run time elapsed: ' + str(time_elapsed_run))
+            raise RuntimeError('Run execution is not correctly completed. '
+                               'Check your model version, namelist version, algorithm or datasets configurations')
 
         # Info command-line end
         log_stream.info(' ------> Process execution: ' + command_line + ' ... DONE')

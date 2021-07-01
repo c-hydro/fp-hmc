@@ -11,6 +11,7 @@ Version:       '1.0.0'
 # Libraries
 import logging
 import geopandas as gpd
+import numpy as np
 
 from hmc.algorithm.default.lib_default_args import logger_name
 
@@ -35,6 +36,7 @@ def read_data_shapefile_section(file_name, columns_name_expected=None, columns_n
     file_rows = file_dframe_raw.shape[0]
 
     file_obj = {}
+    type_obj = {}
     for column_name, column_type in zip(columns_name_expected, columns_name_type):
         if column_name in file_dframe_raw.columns:
             column_data = file_dframe_raw[column_name].values.tolist()
@@ -52,7 +54,42 @@ def read_data_shapefile_section(file_name, columns_name_expected=None, columns_n
                 log_stream.error(' ===> Datatype for undefined columns in the section shapefile is not allowed')
                 raise NotImplementedError('Datatype not implemented yet')
 
-        file_obj[column_name] = column_data
+        type_data_alpha = []
+        type_data_numeric = []
+        for step_data in column_data:
+            if isinstance(step_data, str):
+                if step_data.isalpha():
+                    type_data_alpha.append(True)
+                    type_data_numeric.append(False)
+                elif step_data.isnumeric():
+                    type_data_alpha.append(False)
+                    type_data_numeric.append(True)
+            elif isinstance(step_data, (int, float)):
+                type_data_alpha.append(False)
+                type_data_numeric.append(True)
+
+        if all(type_data_alpha):
+            type_data = 'str'
+            no_data = 'NA'
+        elif all(type_data_numeric):
+            type_data = 'numeric'
+            no_data = -9999.0
+        else:
+            log_stream.error(' ===> Datatype of the columns "' + column_name +
+                             '"  must be character or numeric. Mixed mode is not allowed')
+            raise NotImplementedError('Datatype not implemented yet')
+
+        column_data_def = []
+        for column_step in column_data:
+            if column_step is None:
+                column_data_def.append(no_data)
+            else:
+                column_data_def.append(column_step)
+        else:
+            column_data_def = column_data
+
+        file_obj[column_name] = column_data_def
+        type_obj[column_name] = type_data
 
     return file_obj
 # -------------------------------------------------------------------------------------

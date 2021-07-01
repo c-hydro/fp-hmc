@@ -100,6 +100,7 @@ def main():
 
         template_now['domain'] = domain
         file_in = os.path.join(data_settings['data']['input']['folder'],data_settings['data']['input']['filename']).format(**template_now)
+        dem_in = xr.open_rasterio(data_settings['data']['input']['dem'].format(**template_now))
 
         try:
             os.system('gunzip -fk ' + file_in + ".gz")
@@ -109,17 +110,17 @@ def main():
             not_available_run = not_available_run + 1
             continue
 
-        lat_in= np.unique(data['Latitude'].values)
-        lon_in= np.unique(data['Longitude'].values)
-
-        sm_in = xr.DataArray(np.where(data['SM']<0, np.nan, data['SM']), dims=['lat','lon'], coords={'lat': lat_in,'lon': lon_in})
+        lat_in= np.flipud(dem_in['y'].values)
+        lon_in= dem_in['x'].values
+        
         et_in = xr.DataArray(np.where(data['SM']<0, np.nan, data['ETCum']), dims=['lat', 'lon'], coords={'lat': lat_in, 'lon': lon_in})
-
+        sm_in = xr.DataArray(np.where(data['SM']<0, np.nan, data['SM']), dims=['lat','lon'], coords={'lat': lat_in,'lon': lon_in})
+        
         sm_out = sm_in.reindex({'lat': lat_out,'lon': lon_out}, method='nearest')
         et_out = et_in.reindex({'lat': lat_out, 'lon': lon_out}, method='nearest')
 
-        sm_map = np.where(sm_out.values>0, sm_out, sm_map)
-        et_map = np.where(et_out.values > 0, et_out, et_map)
+        sm_map = np.where(sm_out.values>=0, sm_out, sm_map)
+        et_map = np.where(et_out.values>=0, et_out, et_map)
 
     # -------------------------------------------------------------------------------------
     # Write outputs

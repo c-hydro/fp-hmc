@@ -167,8 +167,8 @@ class DSetManager:
 
         self.attrs_selected = ['time_str_run', 'time_str_start', 'time_str_restart', 'time_run_length',
                                'time_format', 'time_units', 'time_calendar',
-                               'time_observed_delta', 'time_forecast_delta', 'time_tc'
-                               'dam_name_list', 'plant_name_list',
+                               'time_observed_delta', 'time_forecast_delta', 'time_tc',
+                               'dam_name_list', 'plant_name_list', 'dam_system_name_list',
                                'basin_name_list', 'section_name_list', 'outlet_name_list',
                                'run_domain', 'run_name', 'run_mode', 'run_var']
 
@@ -177,7 +177,8 @@ class DSetManager:
                           'time_format': 'time_format', 'time_units': 'time_units', 'time_calendar': 'time_calendar',
                           'time_observed_delta': 'time_observed_delta',
                           'time_forecast_delta': 'time_forecast_delta', 'time_tc': 'time_tc',
-                          'dam_name_list': 'dam_name', 'plant_name_list': 'plant_name',
+                          'dam_name_list': 'dam_name',
+                          'plant_name_list': 'plant_name', 'dam_system_name_list': 'dam_system_name',
                           'basin_name_list': 'basin_name', 'section_name_list': 'section_name',
                           'outlet_name_list': 'outlet_name',
                           'run_domain': 'run_domain', 'run_name': 'run_name',
@@ -189,6 +190,11 @@ class DSetManager:
         self.tag_rain_section_ts_forcing = 'Rain:hmc_forcing_datasets:{:}'
         self.tag_airt_section_ts_forcing = 'AirTemperature:hmc_forcing_datasets:{:}'
         self.tag_sm_section_ts_outcome = 'SM:hmc_outcome_datasets:{:}'
+
+        self.tag_volume_dam_ts_obs = 'DamV:dam_volume_obs:{:}'
+        self.tag_volume_dam_ts_sim = 'DamV:dam_volume_sim:{:}'
+        self.tag_level_dam_ts_obs = 'DamL:dam_level_obs:{:}'
+        self.tag_level_dam_ts_sim = 'DamL:dam_level_sim:{:}'
 
     # Method to dump data
     def dump_data(self, file_list, file_data, file_time, file_format=None,
@@ -232,7 +238,7 @@ class DSetManager:
 
                 log_stream.info(' --------> Dump data ... DONE')
 
-            elif file_format == 'json_time_series':
+            elif file_format == 'json_time_series' or file_format == 'json_time_series_discharge':
 
                 outlet_workspace = obj_attrs['Section']
                 basin_list = file_attrs['basin_name'].split(self.list_sep)
@@ -333,6 +339,153 @@ class DSetManager:
 
                 log_stream.info(' -------> Dump data ... DONE')
 
+            elif file_format == 'json_time_series_dam_volume':
+
+                dam_workspace = obj_attrs['Dam']
+                dam_list = file_attrs['dam_name'].split(self.list_sep)
+                plant_list = file_attrs['plant_name'].split(self.list_sep)
+                system_list = file_attrs['dam_system_name'].split(self.list_sep)
+
+                for file_path, dam_name, plant_name, system_name in zip(file_list, dam_list, plant_list, system_list):
+
+                    folder_name, file_name = os.path.split(file_path)
+                    create_folder(folder_name)
+
+                    if dam_name == plant_name:
+                        dam_system_name = dam_name
+                    else:
+                        dam_system_name = self.list_sep.join([dam_name, plant_name])
+
+                    log_stream.info(' --------> Dam Volume ' + system_name +
+                                    ' time-series file ' + file_name + '... ')
+
+                    dam_workspace_default = dam_workspace[dam_system_name]
+
+                    var_name_obs = self.tag_volume_dam_ts_obs.format(dam_system_name)
+                    var_name_sim = self.tag_volume_dam_ts_sim.format(dam_system_name)
+
+                    if var_name_sim in list(file_data.keys()):
+                        dam_data_sim = list(file_data[var_name_sim].values())
+                    else:
+                        dam_data_sim = None
+
+                    if var_name_obs in list(file_data.keys()):
+                        dam_data_obs = list(file_data[var_name_obs].values())
+                    else:
+                        if dam_data_sim is not None:
+                            dam_data_obs = [no_data] * dam_data_sim.__len__()
+                            log_stream.warning(' ===> Observed datasets is null. Use array with ' +
+                                               str(no_data) + ' values')
+                        else:
+                            dam_data_obs = None
+
+                    if (dam_data_obs is not None) and (dam_data_sim is not None):
+                        dam_time = []
+                        for time_stamp in file_time:
+                            time_str = time_stamp.strftime(format=time_format_algorithm)
+                            dam_time.append(time_str)
+
+                        dam_workspace_data = {
+                            'time_series_dam_volume_observed': dam_data_obs,
+                            'time_series_dam_volume_simulated': dam_data_sim,
+                            'time_period': dam_time,
+                            'time_run': file_attrs['time_run'],
+                            'time_start': file_attrs['time_start'],
+                            'time_restart': file_attrs['time_restart'],
+                            'run_domain': file_attrs['run_domain'],
+                            'run_name': file_attrs['run_name'],
+                            'run_mode': file_attrs['run_mode'],
+                            'run_var': file_attrs['run_var'],
+                        }
+
+                        # Define outlet workspace
+                        dam_workspace_obj = {**dam_workspace_default, **dam_workspace_data}
+                        # Dump data to json file
+                        write_time_series(file_path, dam_workspace_obj)
+
+                        log_stream.info(' --------> Dam Volume ' + dam_name +
+                                        ' time-series file ' + file_name + '... DONE')
+
+                    else:
+                        log_stream.info(' --------> Dam Volume ' + dam_name +
+                                        ' time-series file ' + file_name + '... FAILED')
+                        log_stream.warning(' ===> Observed and simulated datasets are null')
+
+                log_stream.info(' -------> Dump data ... DONE')
+
+            elif file_format == 'json_time_series_dam_level':
+
+                dam_workspace = obj_attrs['Dam']
+                dam_list = file_attrs['dam_name'].split(self.list_sep)
+                plant_list = file_attrs['plant_name'].split(self.list_sep)
+                system_list = file_attrs['dam_system_name'].split(self.list_sep)
+
+                for file_path, dam_name, plant_name, system_name in zip(file_list, dam_list, plant_list, system_list):
+
+                    folder_name, file_name = os.path.split(file_path)
+                    create_folder(folder_name)
+
+                    if dam_name == plant_name:
+                        dam_system_name = dam_name
+                    else:
+                        dam_system_name = self.list_sep.join([dam_name, plant_name])
+
+                    log_stream.info(' --------> Dam Level ' + system_name +
+                                    ' time-series file ' + file_name + '... ')
+
+                    dam_workspace_default = dam_workspace[dam_system_name]
+
+                    var_name_obs = self.tag_level_dam_ts_obs.format(dam_system_name)
+                    var_name_sim = self.tag_level_dam_ts_sim.format(dam_system_name)
+
+                    if var_name_sim in list(file_data.keys()):
+                        dam_data_sim = list(file_data[var_name_sim].values())
+                    else:
+                        dam_data_sim = None
+
+                    if var_name_obs in list(file_data.keys()):
+                        dam_data_obs = list(file_data[var_name_obs].values())
+                    else:
+                        if dam_data_sim is not None:
+                            dam_data_obs = [no_data] * dam_data_sim.__len__()
+                            log_stream.warning(' ===> Observed datasets is null. Use array with ' +
+                                               str(no_data) + ' values')
+                        else:
+                            dam_data_obs = None
+
+                    if (dam_data_obs is not None) and (dam_data_sim is not None):
+                        dam_time = []
+                        for time_stamp in file_time:
+                            time_str = time_stamp.strftime(format=time_format_algorithm)
+                            dam_time.append(time_str)
+
+                        dam_workspace_data = {
+                            'time_series_dam_level_observed': dam_data_obs,
+                            'time_series_dam_level_simulated': dam_data_sim,
+                            'time_period': dam_time,
+                            'time_run': file_attrs['time_run'],
+                            'time_start': file_attrs['time_start'],
+                            'time_restart': file_attrs['time_restart'],
+                            'run_domain': file_attrs['run_domain'],
+                            'run_name': file_attrs['run_name'],
+                            'run_mode': file_attrs['run_mode'],
+                            'run_var': file_attrs['run_var'],
+                        }
+
+                        # Define outlet workspace
+                        dam_workspace_obj = {**dam_workspace_default, **dam_workspace_data}
+                        # Dump data to json file
+                        write_time_series(file_path, dam_workspace_obj)
+
+                        log_stream.info(' --------> Dam Level ' + dam_name +
+                                        ' time-series file ' + file_name + '... DONE')
+
+                    else:
+                        log_stream.info(' --------> Dam Level ' + dam_name +
+                                        ' time-series file ' + file_name + '... FAILED')
+                        log_stream.warning(' ===> Observed and simulated datasets are null')
+
+
             else:
                 log_stream.info(' -------> Dump data ... FAILED')
                 log_stream.error(' ===> Type of summary format not allowed')
@@ -423,19 +576,41 @@ class DSetManager:
                         else:
                             file_path_list.append(None)
                     else:
-                        for basin_name, section_name in zip(dset_extra['basin_name'], dset_extra['section_name']):
 
-                            template_merge_ref['string_var_name_summary_basin'] = basin_name
-                            template_merge_ref['string_var_name_summary_section'] = section_name
+                        if dset_key == 'Discharge':
 
-                            if (folder_name_raw is not None) and (file_name_raw is not None):
-                                folder_name_tmp = fill_tags2string(
-                                    folder_name_raw, template_merge_ref, template_merge_filled)
-                                file_name_tmp = fill_tags2string(
-                                    file_name_raw, template_merge_ref, template_merge_filled)
-                                file_path_list.append(os.path.join(folder_name_tmp, file_name_tmp))
-                            else:
-                                file_path_list.append(None)
+                            for basin_name, section_name in zip(dset_extra['basin_name'], dset_extra['section_name']):
+
+                                template_merge_ref['string_var_name_summary_basin'] = basin_name
+                                template_merge_ref['string_var_name_summary_section'] = section_name
+
+                                if (folder_name_raw is not None) and (file_name_raw is not None):
+                                    folder_name_tmp = fill_tags2string(
+                                        folder_name_raw, template_merge_ref, template_merge_filled)
+                                    file_name_tmp = fill_tags2string(
+                                        file_name_raw, template_merge_ref, template_merge_filled)
+                                    file_path_list.append(os.path.join(folder_name_tmp, file_name_tmp))
+                                else:
+                                    file_path_list.append(None)
+
+                        elif (dset_key == 'DamV') or (dset_key == 'DamL'):
+
+                            for dam_name in dset_extra['dam_name']:
+
+                                template_merge_ref['string_var_name_summary_dam'] = dam_name
+
+                                if (folder_name_raw is not None) and (file_name_raw is not None):
+                                    folder_name_tmp = fill_tags2string(
+                                        folder_name_raw, template_merge_ref, template_merge_filled)
+                                    file_name_tmp = fill_tags2string(
+                                        file_name_raw, template_merge_ref, template_merge_filled)
+                                    file_path_list.append(os.path.join(folder_name_tmp, file_name_tmp))
+                                else:
+                                    file_path_list.append(None)
+
+                        else:
+                            log_stream.error(' ===> Dataset key "' + dset_key + '" is not expected')
+                            raise NotImplementedError('Case not expected and not implemented yet')
 
                     file_time_list.append(datestring_idx_step)
 

@@ -109,7 +109,17 @@ def read_data_point_section(file_name, section_cols_expected=8):
                 section_idx_ji = [int(section_cols[0]), int(section_cols[1])]
                 section_domain = section_cols[2]
                 section_name = section_cols[3]
-                section_code = int(section_cols[4])
+
+                if isinstance(section_cols[4], (float, int)):
+                    section_code = int(section_cols[4])
+                elif isinstance(section_cols[4], str):
+                    section_code = section_cols[4]
+                else:
+                    log_stream.error(
+                        ' ===> Parse section filename failed in filtering "section code" value "' + section_cols[4] +
+                        '". Value types allowed are float, int and string')
+                    raise IOError('Case not implemented yet')
+
                 section_drained_area = float(section_cols[5])
                 section_discharge_thr_alert = float(section_cols[6])
                 section_discharge_thr_alarm = float(section_cols[7])

@@ -404,6 +404,9 @@ def read_data_time_series(file_name, file_time,
         file_columns_type = {0: 'dset'}
     file_ref = list(file_columns_type.values())[0]
 
+    if file_columns_name is None:           #add20210607
+        file_name[0] = None                 #add20210607
+
     if file_name[0] is not None:
         if column_sep in file_name[0]:
             file_name = file_name[0].split(column_sep)

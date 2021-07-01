@@ -364,6 +364,8 @@ class DSetReader:
                     file_columns_var = {0: 'dam_index', 1: 'dam_code', 2: 'dam_volume_max', 3: 'dam_volume_sim'}
                     list_columns_excluded = ['dam_index', 'dam_code', 'dam_volume_max']
                     var_columns_list = var_args['plant_name_list']
+                    if var_args['release_name_list'] is not None:                                                                 #add20210608
+                        var_columns_list = [i for i in var_columns_list if i not in var_args['release_name_list']]                #add20210608
                     obj_name = 'DamV'
                     obj_var = read_state_point(file_path, self.file_src_time, var_name=obj_name,
                                                file_time_start=var_time_start, file_time_end=var_time_end,

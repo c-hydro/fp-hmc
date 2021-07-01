@@ -1086,6 +1086,8 @@ class DSetManager:
         var_args = {}
         if 'plant_name_list' in kwargs:
             var_args['plant_name_list'] = kwargs['plant_name_list']
+        if 'release_name_list' in kwargs:                                       #add20210608
+            var_args['release_name_list'] = kwargs['release_name_list']         #add20210608
 
         da_terrain = self.da_terrain
 
@@ -1123,6 +1125,8 @@ class DSetManager:
                             var_static_info = dset_static_info['outlet_name_list']
                         elif (var_name == 'DamV') or (var_name == 'DamL'):
                             var_static_info = dset_static_info['dam_name_list']
+                        elif (var_name == 'IntakeQ'):                                               #add20210607
+                            var_static_info = dset_static_info['plant_name_list']                   #add20210607
                         elif var_name == 'VarAnalysis':
                             var_static_info = None
                         else:

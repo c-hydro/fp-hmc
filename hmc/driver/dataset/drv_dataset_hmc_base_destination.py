@@ -422,7 +422,8 @@ class ModelDestination:
             'Collections': None,
             'TimeSeries':
                 {'section_name': static_datasets_collections['section_name_list'],
-                 'basin_name': static_datasets_collections['basin_name_list']}
+                 'basin_name': static_datasets_collections['basin_name_list'],
+                 'dam_name': static_datasets_collections['dam_name_list']}
         }
 
         obj_outcome_datasets = {}
