@@ -5,9 +5,11 @@ Changelog
 Version 3.1.5 (20210628)
 ========================
 - Codes and package based on HMC Fortran codes version 3.1.5;
-- Add the writer for discharges, dams volume and dams level in json format; 
+- Add the writers for discharges, dams volume and dams level in json format; 
 - Add the condition for the section code in the section points file in character format;
 - Add the possibility of providing to the model time series of observed socket/release systems;
+- Extend the hmc tool for converting time-series adding the dam volume datasets;
+- Fix bugs in managing dam unavailable datasets in summary data structure;
 - Fix the hmc tool for merging gridded output also in presence of clipped lon-lat matrices.
 
 Version 3.1.4 (20210308)

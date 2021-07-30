@@ -3,8 +3,8 @@ Class Features
 
 Name:          driver_data_io_dynamic
 Author(s):     Fabio Delogu (fabio.delogu@cimafoundation.org)
-Date:          '20210126'
-Version:       '1.0.0'
+Date:          '20210730'
+Version:       '1.0.1'
 """
 
 ######################################################################################
@@ -19,9 +19,8 @@ from copy import deepcopy
 from tools.postprocessing_tool_json2dew_converter.lib_utils_io import read_obj, write_obj
 from tools.postprocessing_tool_json2dew_converter.lib_utils_system import fill_tags2string, make_folder
 from tools.postprocessing_tool_json2dew_converter.lib_info_args import time_format_algorithm
-from tools.postprocessing_tool_json2dew_converter.lib_data_io_json import read_file_ts_hydrograph
-from tools.postprocessing_tool_json2dew_converter.lib_data_io_dewetra import prepare_info_dewetra_hydrograph,\
-    write_file_dewetra_hydrograph
+from tools.postprocessing_tool_json2dew_converter.lib_data_io_json import read_file_ts_hydrograph, read_file_ts
+from tools.postprocessing_tool_json2dew_converter.lib_data_io_dewetra import prepare_info_dewetra, write_file_dewetra
 
 # Debug
 # import matplotlib.pylab as plt
@@ -36,19 +35,25 @@ class DriverDynamic:
     # Initialize class
     def __init__(self, time_now, time_run, src_dict, anc_dict, dest_dict, static_data_collection,
                  alg_ancillary=None, alg_template_tags=None,
-                 tag_section_data='section_data', tag_section_name='section_name', tag_basin_name='section_domain',
+                 tag_point_data='point_data',
+                 tag_point_type='point_type', tag_point_variable='point_variable',
+                 tag_point_name='point_name', tag_basin_name='point_domain',
                  tag_run_mode_probabilistic='probabilistic', tag_run_mode_deterministic='deterministic',
                  flag_cleaning_dynamic_ancillary=True, flag_cleaning_dynamic_data=True, flag_cleaning_dynamic_tmp=True):
 
         self.time_now = time_now
         self.time_run = time_run
-        self.tag_section_data = tag_section_data
-        self.tag_section_name = tag_section_name
+        self.tag_point_data = tag_point_data
+        self.tag_point_type = tag_point_type
+        self.tag_point_name = tag_point_name
+        self.tag_point_variable = tag_point_variable
         self.tag_basin_name = tag_basin_name
         self.alg_ancillary = alg_ancillary
         self.alg_template_tags = alg_template_tags
 
-        self.section_data_collection = static_data_collection[self.tag_section_data]
+        self.point_data_collection = static_data_collection[self.tag_point_data]
+        self.point_data_type = static_data_collection[self.tag_point_type]
+        self.point_data_variable = static_data_collection[self.tag_point_variable]
 
         self.file_name_tag = 'file_name'
         self.folder_name_tag = 'folder_name'
@@ -70,8 +75,8 @@ class DriverDynamic:
 
         self.run_list, self.ensemble_list = self.collect_run_instance()
 
-        self.section_name_list = self.collect_section_list([self.tag_section_name])[self.tag_section_name]
-        self.basin_name_list = self.collect_section_list([self.tag_basin_name])[self.tag_basin_name]
+        self.point_name_list = self.collect_point_list([self.tag_point_name])[self.tag_point_name]
+        self.basin_name_list = self.collect_point_list([self.tag_basin_name])[self.tag_basin_name]
 
         self.folder_name_ts_src = src_dict[self.folder_name_tag]
         self.file_name_ts_src = src_dict[self.file_name_tag]
@@ -80,33 +85,33 @@ class DriverDynamic:
         self.folder_name_ts_dest = dest_dict[self.folder_name_tag]
         self.file_name_ts_dest = dest_dict[self.file_name_tag]
 
-        self.section_tag_list = []
+        self.point_tag_list = []
         self.file_path_collections_src = {}
         self.file_path_collections_anc = {}
         self.file_path_collections_dest = {}
-        for section_name, basin_name in zip(self.section_name_list, self.basin_name_list):
+        for point_name, basin_name in zip(self.point_name_list, self.basin_name_list):
 
-            section_tag_step = ':'.join([basin_name, section_name])
+            point_tag_step = ':'.join([basin_name, point_name])
 
             file_path_ts_src = self.define_file_timeseries(
                 self.time_run, self.folder_name_ts_src, self.file_name_ts_src, file_ensemble_list=None,
-                file_extra_args={'section_name': section_name, 'basin_name': basin_name,
+                file_extra_args={'point_name': point_name, 'basin_name': basin_name,
                                  'run_name_hmc': self.run_name_hmc})
 
             file_path_ts_anc = self.define_file_timeseries(
                 self.time_run, self.folder_name_ts_anc, self.file_name_ts_anc, file_ensemble_list=None,
-                file_extra_args={'section_name': section_name, 'basin_name': basin_name,
+                file_extra_args={'point_name': point_name, 'basin_name': basin_name,
                                  'run_name_hmc': self.run_name_hmc})
 
             file_path_ts_dest = self.define_file_timeseries(
                 self.time_run, self.folder_name_ts_dest, self.file_name_ts_dest, file_ensemble_list=None,
-                file_extra_args={'section_name': section_name, 'basin_name': basin_name,
+                file_extra_args={'point_name': point_name, 'basin_name': basin_name,
                                  'run_name_hmc': self.run_name_hmc})
 
-            self.file_path_collections_src[section_tag_step] = file_path_ts_src
-            self.file_path_collections_anc[section_tag_step] = file_path_ts_anc
-            self.file_path_collections_dest[section_tag_step] = file_path_ts_dest
-            self.section_tag_list.append(section_tag_step)
+            self.file_path_collections_src[point_tag_step] = file_path_ts_src
+            self.file_path_collections_anc[point_tag_step] = file_path_ts_anc
+            self.file_path_collections_dest[point_tag_step] = file_path_ts_dest
+            self.point_tag_list.append(point_tag_step)
 
         self.flag_cleaning_dynamic_ancillary = flag_cleaning_dynamic_ancillary
         self.flag_cleaning_dynamic_data = flag_cleaning_dynamic_data
@@ -116,10 +121,8 @@ class DriverDynamic:
 
         self.ts_nodata = -9997.0
 
-        self.tag_ts_time = 'time_period'
-        self.tag_ts_observed = 'time_series_discharge_observed'
-        self.tag_ts_simulated_single_run = 'time_series_discharge_simulated'
-        self.tag_ts_simulated_multi_run = 'time_series_discharge_simulated_{:03d}'
+        self.tag_ts_time, self.tag_ts_observed, \
+            self.tag_ts_simulated_single_run, self.tag_ts_simulated_multi_run = self.define_tag_timeseries()
 
         self.str_run_ens_start = str(self.ensemble_start)
         self.str_run_ens_end = str(self.ensemble_end)
@@ -167,7 +170,39 @@ class DriverDynamic:
     # -------------------------------------------------------------------------------------
 
     # -------------------------------------------------------------------------------------
-    # Method to define  filename
+    # Method to define tags
+    def define_tag_timeseries(self):
+
+        point_type = self.point_data_type
+        point_var = self.point_data_variable
+
+        if point_type == 'section':
+            if point_var == 'discharge':
+                tag_ts_time = 'time_period'
+                tag_ts_observed = 'time_series_discharge_observed'
+                tag_ts_simulated_single_run = 'time_series_discharge_simulated'
+                tag_ts_simulated_multi_run = 'time_series_discharge_simulated_{:03d}'
+            else:
+                logging.error(' ===> Point variable "' + point_var + '" is not allowed.')
+                raise NotImplemented('Case not implemented yet')
+
+        elif point_type == 'dam':
+            if point_var == 'dam_volume':
+                tag_ts_time = 'time_period'
+                tag_ts_observed = 'time_series_dam_volume_observed'
+                tag_ts_simulated_single_run = 'time_series_dam_volume_simulated'
+                tag_ts_simulated_multi_run = 'time_series_dam_volume_simulated_{:03d}'
+            else:
+                logging.error(' ===> Point variable "' + point_var + '" is not allowed.')
+                raise NotImplemented('Case not implemented yet')
+        else:
+            logging.error(' ===> Point type "' + point_type + '" is not allowed.')
+            raise NotImplemented('Case not implemented yet')
+
+        return tag_ts_time, tag_ts_observed, tag_ts_simulated_single_run, tag_ts_simulated_multi_run
+
+    # -------------------------------------------------------------------------------------
+    # Method to define filename
     def define_file_timeseries(self, time, folder_name_raw, file_name_raw,
                                file_ensemble_list=None, file_extra_args=None):
 
@@ -183,7 +218,7 @@ class DriverDynamic:
         for file_ensemble_step in file_ensemble_list:
 
             alg_template_values = {'domain_name': domain_name,
-                                   'section_name': None,
+                                   'point_name': None,
                                    'basin_name': None,
                                    'run_name_hmc': None,
                                    'run_name_dewetra': None,
@@ -209,18 +244,18 @@ class DriverDynamic:
 
     # -------------------------------------------------------------------------------------
     # Method to collect section information
-    def collect_section_list(self, columns_tag=None):
+    def collect_point_list(self, columns_tag=None):
 
         if columns_tag is None:
-            columns_tag = ['section_domain', 'section_name']
+            columns_tag = ['point_domain', 'point_name']
 
-        section_data_collection = self.section_data_collection
+        point_data_collection = self.point_data_collection
 
-        section_dict = {}
+        point_dict = {}
         for columns_step in columns_tag:
-            section_data_step = section_data_collection[columns_step].values.tolist()
-            section_dict[columns_step] = section_data_step
-        return section_dict
+            point_data_step = point_data_collection[columns_step].values.tolist()
+            point_dict[columns_step] = point_data_step
+        return point_dict
 
     # -------------------------------------------------------------------------------------
 
@@ -320,11 +355,13 @@ class DriverDynamic:
                     make_folder(folder_name_dset)
 
                     [point_ts_obs, point_ts_mod,
-                     time_now, time_from, time_resolution_mins, run_n] = prepare_info_dewetra_hydrograph(point_data)
+                        time_now, time_from,
+                        time_resolution_mins, run_n] = prepare_info_dewetra(
+                        point_data, tag_ts_obs=self.tag_ts_observed, tag_ts_mod=self.tag_ts_simulated_single_run)
 
-                    write_file_dewetra_hydrograph(point_file_dest, point_ts_obs, point_ts_mod,
-                                                  time_now, time_from, time_resolution_mins,
-                                                  run_n=run_n, run_name=self.run_name_dew)
+                    write_file_dewetra(point_file_dest, point_ts_obs, point_ts_mod,
+                                       time_now, time_from, time_resolution_mins,
+                                       run_n=run_n, run_name=self.run_name_dew)
 
                     logging.info(' ----> Point ' + point_tag + ' ... DONE')
 
@@ -351,6 +388,9 @@ class DriverDynamic:
         tag_ts_obs = self.tag_ts_observed
         tag_ts_sim_srun = self.tag_ts_simulated_single_run
         tag_ts_sim_mrun = self.tag_ts_simulated_multi_run
+
+        point_type = self.point_data_type
+        point_var = self.point_data_variable
 
         flag_cleaning_ancillary = self.flag_cleaning_dynamic_ancillary
 
@@ -399,9 +439,22 @@ class DriverDynamic:
                     columns_sim = None
                     if os.path.exists(point_file_step):
 
-                        point_ts, point_attrs = read_file_ts_hydrograph(
-                            point_file_step,
-                            tag_discharge_obs_out=tag_ts_obs, tag_discharge_sim_out=tag_ts_sim_srun)
+                        if (point_type == 'section') and (point_var == 'discharge'):
+                            point_ts, point_attrs = read_file_ts(
+                                point_file_step,
+                                tag_point_obs_in=self.tag_ts_observed,
+                                tag_point_sim_in=self.tag_ts_simulated_single_run,
+                                tag_point_obs_out=tag_ts_obs, tag_point_sim_out=tag_ts_sim_srun)
+                        elif (point_type == 'dam') and (point_var == 'dam_volume'):
+                            point_ts, point_attrs = read_file_ts(
+                                point_file_step,
+                                tag_point_obs_in=self.tag_ts_observed,
+                                tag_point_sim_in=self.tag_ts_simulated_single_run,
+                                tag_point_obs_out=tag_ts_obs, tag_point_sim_out=tag_ts_sim_srun)
+                        else:
+                            logging.error(' ===> Expected simulation type "' + point_type +
+                                          '" and variable "' + point_var + '" are not allowed.')
+                            raise NotImplemented('Case not implemented yet')
 
                         tmp_ts = deepcopy(point_ts)
 
@@ -449,36 +502,46 @@ class DriverDynamic:
 
                     else:
                         logging.warning(' ===> RunStep ' + mode_step + ' is not available.')
+                        if ts_collections is None:
+                            ts_collections = {}
                         ts_collections[tag_ts_sim_step] = None
 
                 if ts_collections is not None:
 
-                    for ts_type, ts_data in ts_collections.items():
-                        if ts_data is None:
-                            ts_data_null = np.zeros(shape=[ts_len])
-                            ts_data_null[:] = self.ts_nodata
-                            ts_collections[ts_type] = ts_data_null
+                    dict_empty = all(value is None for value in ts_collections.values())
+                    if not dict_empty:
 
-                    ts_collections_obs = ts_collections[tag_ts_obs]
-                    ts_dataframe_obs = pd.DataFrame(data=ts_collections_obs, columns=columns_obs,
-                                                    index=ts_collections[tag_ts_time])
-                    ts_dataframe_obs.index.name = tag_ts_time
-                    ts_dataframe_obs.attrs = ts_attrs
+                        for ts_type, ts_data in ts_collections.items():
+                            if ts_data is None:
+                                if ts_len is not None:
+                                    ts_data_null = np.zeros(shape=[ts_len])
+                                    ts_data_null[:] = self.ts_nodata
+                                    ts_collections[ts_type] = ts_data_null
 
-                    ts_collections_sim = {x: v for x, v in ts_collections.items() if x in tag_ts_sim_list}
-                    ts_values_sim = list(ts_collections_sim.values())[0]
-                    ts_dataframe_sim = pd.DataFrame(data=ts_values_sim, columns=columns_sim,
-                                                    index=ts_collections[tag_ts_time])
-                    ts_dataframe_sim.index.name = tag_ts_time
-                    ts_dataframe_sim.attrs = ts_attrs
+                        ts_collections_obs = ts_collections[tag_ts_obs]
 
-                    folder_name_anc, file_name_anc = os.path.split(point_file_anc)
-                    make_folder(folder_name_anc)
+                        ts_dataframe_obs = pd.DataFrame(data=ts_collections_obs, columns=columns_obs,
+                                                        index=ts_collections[tag_ts_time])
+                        ts_dataframe_obs.index.name = tag_ts_time
+                        ts_dataframe_obs.attrs = ts_attrs
 
-                    ts_obj = {self.tag_ws_observed: ts_dataframe_obs, self.tag_ws_simulated: ts_dataframe_sim}
-                    write_obj(point_file_anc, ts_obj)
+                        ts_collections_sim = {x: v for x, v in ts_collections.items() if x in tag_ts_sim_list}
+                        ts_values_sim = list(ts_collections_sim.values())[0]
+                        ts_dataframe_sim = pd.DataFrame(data=ts_values_sim, columns=columns_sim,
+                                                        index=ts_collections[tag_ts_time])
+                        ts_dataframe_sim.index.name = tag_ts_time
+                        ts_dataframe_sim.attrs = ts_attrs
 
-                    logging.info(' ----> Point ' + point_tag + ' ... DONE')
+                        folder_name_anc, file_name_anc = os.path.split(point_file_anc)
+                        make_folder(folder_name_anc)
+
+                        ts_obj = {self.tag_ws_observed: ts_dataframe_obs, self.tag_ws_simulated: ts_dataframe_sim}
+                        write_obj(point_file_anc, ts_obj)
+
+                        logging.info(' ----> Point ' + point_tag + ' ... DONE')
+
+                    else:
+                        logging.info(' ----> Point ' + point_tag + ' ... SKIPPED. Datasets is null')
 
                 else:
                     logging.info(' ----> Point ' + point_tag + ' ... SKIPPED. Datasets is null')

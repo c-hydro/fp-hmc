@@ -3,8 +3,8 @@ Library Features:
 
 Name:          lib_data_io_json
 Author(s):     Fabio Delogu (fabio.delogu@cimafoundation.org)
-Date:          '20210113'
-Version:       '1.0.0'
+Date:          '20210730'
+Version:       '1.0.1'
 """
 #######################################################################################
 # Library
@@ -53,7 +53,79 @@ def write_file_ts_hydrograph(file_name, file_dict_raw, file_indent=4, file_sep='
 
 
 # -------------------------------------------------------------------------------------
-# Method to read file hydrograph
+# Method to read file dam volume
+def read_file_ts(file_name, file_sep=',',
+                 tag_time_in='time_period',
+                 tag_point_obs_in='time_series_discharge_observed',
+                 tag_point_sim_in='time_series_discharge_simulated',
+                 tag_time_out='time_period',
+                 tag_point_obs_out='discharge_observed',
+                 tag_point_sim_out='discharge_simulated',
+                 tag_index='time_period'):
+
+    if os.path.exists(file_name):
+        with open(file_name) as file_handle:
+            file_data = json.load(file_handle)
+    else:
+        log_stream.error(' ===> Error in reading json file ' + file_name)
+        raise IOError('File not found')
+
+    keys_list = list(file_data.keys())
+    tag_point_sim_in_select = []
+    tag_point_sim_out_select = []
+    for keys_step in keys_list:
+        if tag_point_sim_in in keys_step:
+            tag_point_sim_in_select.append(keys_step)
+
+            tag_diff_tmp = [li for li in difflib.ndiff(keys_step, tag_point_sim_in) if li[0] != ' ']
+            tag_diff_element = ''.join([tag_step[1:].strip() for tag_step in tag_diff_tmp])
+            tag_diff_idx = keys_step.find(tag_diff_element)
+
+            if tag_point_sim_out.__len__() == tag_diff_idx:
+                tag_point_sim_out_step = tag_point_sim_out[:tag_diff_idx] + tag_diff_element
+            elif tag_point_sim_out.__len__() > tag_diff_idx:
+                tag_point_sim_out_step = tag_point_sim_out + tag_diff_element
+            elif tag_point_sim_out.__len__() < tag_diff_idx:
+                tag_point_sim_out_step = tag_point_sim_out + tag_diff_element
+            else:
+                log_stream.error(' ===> Error in create tags for outcome variable')
+                raise NotImplementedError('Case not implemented yet')
+
+            tag_point_sim_out_select.append(tag_point_sim_out_step)
+
+    variable_list_in = [tag_time_in, tag_point_obs_in]
+    variable_list_in.extend(tag_point_sim_in_select)
+    variable_list_out = [tag_time_out, tag_point_obs_out]
+    variable_list_out.extend(tag_point_sim_out_select)
+
+    file_data_attrs = {}
+    file_data_dict = {}
+    for file_key, file_value in file_data.items():
+        if file_key in variable_list_in:
+            var_idx = variable_list_in.index(file_key)
+            var_name = variable_list_out[var_idx]
+            file_data_dict[var_name] = file_value
+        else:
+            file_data_attrs[file_key] = file_value
+
+    for file_key, file_value_tmp in file_data_dict.items():
+        file_list_tmp = file_value_tmp.split(file_sep)
+        if file_key == tag_time_out:
+            file_list_converted = pd.DatetimeIndex(file_list_tmp)
+        else:
+            file_list_converted = list(map(float, file_list_tmp))
+        file_data_dict[file_key] = file_list_converted
+
+    file_data_df = pd.DataFrame(data=file_data_dict)
+    if tag_index in list(file_data_df.columns):
+        file_data_df.set_index(tag_index, inplace=True)
+
+    return file_data_df, file_data_attrs
+# -------------------------------------------------------------------------------------
+
+
+# -------------------------------------------------------------------------------------
+# Method to read time-series file
 def read_file_ts_hydrograph(file_name, file_sep=',',
                             tag_time_in='time_period',
                             tag_discharge_obs_in='time_series_discharge_observed',
@@ -67,7 +139,7 @@ def read_file_ts_hydrograph(file_name, file_sep=',',
         with open(file_name) as file_handle:
             file_data = json.load(file_handle)
     else:
-        log_stream.error(' ===> Error in reading hydrograph file ' + file_name)
+        log_stream.error(' ===> Error in reading json file ' + file_name)
         raise IOError('File not found')
 
     keys_list = list(file_data.keys())
@@ -131,7 +203,7 @@ def read_file_settings(file_name):
         with open(file_name) as file_handle:
             file_data = json.load(file_handle)
     else:
-        log_stream.error(' ===> Error in reading settings file ' + file_name)
+        log_stream.error(' ===> Error in reading settings file "' + file_name + '"')
         raise IOError('File not found')
     return file_data
 # -------------------------------------------------------------------------------------

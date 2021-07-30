@@ -3,8 +3,8 @@
 """
 HYDROLOGICAL MODEL CONTINUUM - Tool json2dew converter
 
-__date__ = '20210215'
-__version__ = '2.0.1'
+__date__ = '20210730'
+__version__ = '2.0.2'
 __author__ = 'Fabio Delogu (fabio.delogu@cimafoundation.org'
 __library__ = 'HMC'
 
@@ -12,6 +12,7 @@ General command line:
 python hmc_tool_postprocessing_json2dew_converter.py -settings_file configuration.json -time "YYYY-MM-DD HH:MM"
 
 Version:
+20210730 (2.0.2) --> Add dam case and update algorithm options
 20210215 (2.0.1) --> Fix bugs for deterministic mode
 20210126 (2.0.0) --> Beta release for HMC package
 """
@@ -36,8 +37,8 @@ from tools.postprocessing_tool_json2dew_converter.driver_data_io_dynamic import 
 project_name = 'HMC'
 alg_name = 'TOOL JSON2DEW CONVERTER'
 alg_type = 'Model'
-alg_version = '2.0.1'
-alg_release = '2021-02-15'
+alg_version = '2.0.2'
+alg_release = '2021-07-30'
 # -------------------------------------------------------------------------------------
 
 

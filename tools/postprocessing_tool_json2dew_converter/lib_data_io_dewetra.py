@@ -3,8 +3,8 @@ Library Features:
 
 Name:          lib_data_io_ascii
 Author(s):     Fabio Delogu (fabio.delogu@cimafoundation.org)
-Date:          '20210113'
-Version:       '1.0.0'
+Date:          '20210730'
+Version:       '1.0.1'
 """
 #######################################################################################
 # Library
@@ -22,10 +22,10 @@ log_stream = logging.getLogger(logger_name)
 
 
 # -------------------------------------------------------------------------------------
-# Method to prepare data in dewetra format
-def prepare_info_dewetra_hydrograph(point_data,
-                                    tag_ts_obs='time_series_discharge_observed',
-                                    tag_ts_mod='time_series_discharge_simulated'):
+# Method to prepare time-series datasets in dewetra format
+def prepare_info_dewetra(point_data,
+                         tag_ts_obs='time_series_discharge_observed',
+                         tag_ts_mod='time_series_discharge_simulated'):
 
     keys_data = list(point_data.keys())
 
@@ -63,10 +63,10 @@ def prepare_info_dewetra_hydrograph(point_data,
 
 
 # -------------------------------------------------------------------------------------
-# Method to write hydrograph dewetra file
-def write_file_dewetra_hydrograph(file_name, file_data_obs, file_data_mod,
-                                  time_now, time_from, time_resolution,
-                                  run_n=1, run_name='obs_ws'):
+# Method to write time-series datasets in dewetra format
+def write_file_dewetra(file_name, file_data_obs, file_data_mod,
+                       time_now, time_from, time_resolution,
+                       run_n=1, run_name='hmc_ts_outcome'):
 
     # Save update information
     data_ws = {'line_01': 'Procedure=' + str(run_name) + ' \n',

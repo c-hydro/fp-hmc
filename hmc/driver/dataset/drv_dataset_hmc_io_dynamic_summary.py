@@ -595,18 +595,19 @@ class DSetManager:
 
                         elif (dset_key == 'DamV') or (dset_key == 'DamL'):
 
-                            for dam_name in dset_extra['dam_name']:
+                            if not dset_extra['dam_name'] is None:              #edit20210708 check if dam list is not none
+                                for dam_name in dset_extra['dam_name']:
 
-                                template_merge_ref['string_var_name_summary_dam'] = dam_name
+                                    template_merge_ref['string_var_name_summary_dam'] = dam_name
 
-                                if (folder_name_raw is not None) and (file_name_raw is not None):
-                                    folder_name_tmp = fill_tags2string(
-                                        folder_name_raw, template_merge_ref, template_merge_filled)
-                                    file_name_tmp = fill_tags2string(
-                                        file_name_raw, template_merge_ref, template_merge_filled)
-                                    file_path_list.append(os.path.join(folder_name_tmp, file_name_tmp))
-                                else:
-                                    file_path_list.append(None)
+                                    if (folder_name_raw is not None) and (file_name_raw is not None):
+                                        folder_name_tmp = fill_tags2string(
+                                            folder_name_raw, template_merge_ref, template_merge_filled)
+                                        file_name_tmp = fill_tags2string(
+                                            file_name_raw, template_merge_ref, template_merge_filled)
+                                        file_path_list.append(os.path.join(folder_name_tmp, file_name_tmp))
+                                    else:
+                                        file_path_list.append(None)
 
                         else:
                             log_stream.error(' ===> Dataset key "' + dset_key + '" is not expected')
@@ -629,11 +630,11 @@ class DSetManager:
 
             for (var_key, var_time), var_data in zip(dict_time.items(), dict_vars.values()):
 
+                var_data_merge = None            #edit20210708 initialized to none
                 if isinstance(var_data, list):
-                    if var_data[0] is not None:
-                        var_data_merge = self.list_sep.join(var_data)
-                    else:
-                        var_data_merge = None
+                    if var_data.__len__() > 0:         #edit20210708 I check the first value only if the list has a member
+                        if var_data[0] is not None:
+                            var_data_merge = self.list_sep.join(var_data)
                 elif isinstance(var_data, str):
                     var_data_merge = var_data
                 else:

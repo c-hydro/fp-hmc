@@ -4,7 +4,7 @@
       "title": "TOOL JSON2DEW CONVERTER",
       "web-site": "",
       "source": "Python library developed by CIMA Research Foundation",
-      "history": "2.0.1 [20210215]",
+      "history": "2.0.2 [20210730]",
       "project-info": "HMC - Hydrological Model Continuum",
       "algorithm": "Json2Dew converter postprocessing tool"
     },
@@ -16,7 +16,7 @@
     "ancillary": {
       "domain_name": "marche",
       "run_name_hmc": "rfarm_lami-2i",
-      "run_name_dewetra": "Probabilistic_Lami",
+      "run_name_dewetra": "Probabilistic_Lami_Section",
       "run_type": "probabilistic_lami-2i",
       "run_mode" :
       {
@@ -28,7 +28,7 @@
     },
     "template": {
       "domain_name": "string_domain_name",
-      "section_name": "string_section_name",
+      "point_name": "string_point_name",
       "basin_name": "string_basin_name",
       "run_name_hmc": "string_run_name_hmc",
       "run_name_dewetra": "string_run_name_dewetra",
@@ -36,35 +36,37 @@
       "source_datetime": "%Y%m%d%H00",
       "source_sub_path_time": "%Y/%m/%d/",
       "ancillary_datetime": "%Y%m%d%H00",
-      "ancillary_sub_path_time": "%Y/%m/%d/",
+      "ancillary_sub_path_time": "%Y/%m/%d/%H/",
       "destination_datetime": "%Y%m%d%H00",
       "destination_sub_path_time": "%Y/%m/%d/"
     }
   },
   "data": {
     "static": {
-      "section_data": {
+      "point_data": {
         "file_name": "fp_sections_marche.shp",
-        "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/data/data_static/shapefile/"
+        "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/data/data_static/shapefile/",
+        "type": "section",
+        "variable": "discharge"
       }
     },
     "dynamic": {
       "source": {
-        "file_name": "hydrograph_{section_name}_{basin_name}_{source_datetime}.json",
+        "file_name": "hydrograph_{point_name}_{basin_name}_{source_datetime}.json",
         "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name_hmc}/{source_sub_path_time}/probabilistic_ensemble/"
       },
       "ancillary": {
-        "file_name": "hydrograph_{section_name}_{basin_name}_{ancillary_datetime}.workspace",
+        "file_name": "hydrograph_{point_name}_{basin_name}_{ancillary_datetime}.workspace",
         "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name_hmc}/{ancillary_sub_path_time}/dewetra/"
       },
       "destination": {
-        "file_name": "hydrograph_{section_name}_{basin_name}_{destination_datetime}.txt",
-        "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name_hmc}/{destination_sub_path_time}/dewetra/"
+        "file_name": "hydrograph_{point_name}_{basin_name}_{destination_datetime}.txt",
+        "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/archive/{run_name_hmc}/{destination_sub_path_time}/dewetra/sections/"
       }
     }
   },
   "log": {
-    "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hyde-ws/marche/log/hmc_tools/json2dew_converter/",
+    "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/log/{run_name_hmc}/json2dew_converter/",
     "file_name": "hmc_postprocessing_json2dew_converter_log.txt",
     "file_history": true
   },

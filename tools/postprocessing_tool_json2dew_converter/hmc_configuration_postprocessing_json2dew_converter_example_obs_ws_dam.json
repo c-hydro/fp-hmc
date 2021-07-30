@@ -1,0 +1,79 @@
+{
+  "algorithm" : {
+    "general": {
+      "title": "TOOL JSON2DEW CONVERTER",
+      "web-site": "",
+      "source": "Python library developed by CIMA Research Foundation",
+      "history": "2.0.2 [20210730]",
+      "project-info": "HMC - Hydrological Model Continuum",
+      "algorithm": "Json2Dew converter postprocessing tool"
+    },
+    "flags": {
+      "cleaning_dynamic_ancillary": false,
+      "cleaning_dynamic_data": true,
+      "cleaning_dynamic_tmp": true
+    },
+    "ancillary": {
+      "domain_name": "marche",
+      "run_name_hmc": "weather_stations",
+      "run_name_dewetra": "Observation_Deterministic_DamV",
+      "run_type": "deterministic_weather_stations",
+      "run_mode" :
+      {
+        "probabilistic" : {
+          "activate": false, "ensemble_start": 1, "ensemble_end": 1, "ensemble_step": 1, "ensemble_format": "{:03d}"},
+        "deterministic" : {
+          "activate": true}
+      }
+    },
+    "template": {
+      "domain_name": "string_domain_name",
+      "point_name": "string_point_name",
+      "basin_name": "string_basin_name",
+      "run_name_hmc": "string_run_name_hmc",
+      "run_name_dewetra": "string_run_name_dewetra",
+      "ensemble_name": "string_ensemble_name",
+      "source_datetime": "%Y%m%d%H00",
+      "source_sub_path_time": "%Y/%m/%d/%H",
+      "ancillary_datetime": "%Y%m%d%H00",
+      "ancillary_sub_path_time": "%Y/%m/%d/%H/",
+      "destination_datetime": "%Y%m%d%H00",
+      "destination_sub_path_time": "%Y/%m/%d/%H"
+    }
+  },
+  "data": {
+    "static": {
+      "point_data": {
+        "file_name": "fp_dams_marche.shp",
+        "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/data/data_static/shapefile/",
+        "type": "dam",
+        "variable": "dam_volume"
+      }
+    },
+    "dynamic": {
+      "source": {
+        "file_name": "damv_{point_name}_{source_datetime}.json",
+        "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/archive/{run_name_hmc}/{source_sub_path_time}/collections/"
+      },
+      "ancillary": {
+        "file_name": "damv_{point_name}_{basin_name}_{ancillary_datetime}.workspace",
+        "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/archive/{run_name_hmc}/{ancillary_sub_path_time}/dewetra/"
+      },
+      "destination": {
+        "file_name": "damv_{point_name}_{destination_datetime}.txt",
+        "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/archive/{run_name_hmc}/{destination_sub_path_time}/dewetra/dams/"
+      }
+    }
+  },
+  "log": {
+    "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/log/{run_name_hmc}/json2dew_converter/",
+    "file_name": "hmc_postprocessing_json2dew_converter_{run_name_hmc}_log.txt",
+    "file_history": true
+  },
+  "time": {
+    "time_run": "2021-01-27 06:00",
+    "time_period": 1,
+    "time_frequency": "D",
+    "time_rounding": "H"
+  }
+}

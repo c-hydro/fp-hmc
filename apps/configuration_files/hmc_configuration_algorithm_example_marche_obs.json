@@ -151,7 +151,7 @@
       "flag_phys_assimilation_snow": 0,
       "flag_phys_assimilation_soil_moisture": 0,
       "flag_phys_coeff_resolution": 0,
-      "flag_phys_water_sources": 0,
+      "flag_phys_water_table_sources": 0,
       "flag_phys_water_table_deep_losses": 0,
       "flag_phys_release_mass": 1,
       "flag_phys_convolution_type": 1,
