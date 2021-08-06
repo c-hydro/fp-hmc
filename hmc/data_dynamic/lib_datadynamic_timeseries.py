@@ -46,9 +46,16 @@ def writeTS_DewApp(sFileName, sTimeNow, sTimeFrom, oDataModel, oDataObs=None, oF
 
         # Get the right column according with the file format (in same case first column is the time step)
         iSectionID = iSectionID + iStartCols
-
+        
+        sSectionBasin = oSectionLine[3]
+        sSectionName = oSectionLine[2]
+        
+        ### in lexis problemi perchè i nomi delle sezioni sono attesi con gli spazi e non con gli _
+        sSectionName = sSectionName.replace('_', ' '); print('CHECK LEXIS ---> SECTION: ' + sSectionName + ' --- BASIN: ' + sSectionBasin) # per visualizzazione dewetra italia 
+		###
+		
         # Create file section name
-        oSectionTags = {'$SECTION': oSectionLine[2], '$BASIN': oSectionLine[3]}
+        oSectionTags = {'$SECTION': sSectionName, '$BASIN': sSectionBasin}
         sFileNameSection = defineString(sFileName, oSectionTags)
 
         # Check file existence on disk
