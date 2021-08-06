@@ -51,7 +51,7 @@ def writeTS_DewApp(sFileName, sTimeNow, sTimeFrom, oDataModel, oDataObs=None, oF
         sSectionName = oSectionLine[2]
         
         ### in lexis problemi perchè i nomi delle sezioni sono attesi con gli spazi e non con gli _
-        sSectionName = sSectionName.replace('_', ' '); print('CHECK LEXIS ---> SECTION: ' + sSectionName + ' --- BASIN: ' + sSectionBasin) # per visualizzazione dewetra italia 
+        sSectionName = sSectionName.replace('_', ' '); sSectionBasin = sSectionBasin.replace('_', ' '); print('CHECK LEXIS ---> SECTION: ' + sSectionName + ' --- BASIN: ' + sSectionBasin) # per visualizzazione dewetra italia 
 		###
 		
         # Create file section name
