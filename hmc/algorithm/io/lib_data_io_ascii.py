@@ -55,7 +55,7 @@ def read_state_point(file_name, file_time, var_name='state', file_time_start=Non
         file_name = file_name[0]
 
     dframe_summary = {}
-    if os.path.exists(file_name):
+    if os.path.exists(file_name) and not file_columns_name is None:             #edit 20210809
         file_table = pd.read_table(file_name, header=None)
         file_row_values = file_table.values.tolist()
 

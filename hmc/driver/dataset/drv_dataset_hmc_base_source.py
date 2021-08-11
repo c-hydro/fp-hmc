@@ -3,8 +3,8 @@ Class Features
 
 Name:          drv_dataset_hmc_base_source
 Author(s):     Fabio Delogu (fabio.delogu@cimafoundation.org)
-Date:          '20200401'
-Version:       '3.0.0'
+Date:          '20210811'
+Version:       '3.0.1'
 """
 
 #######################################################################################
@@ -76,6 +76,7 @@ class ModelSource:
         self.tag_datasets = 'datasets'
 
         self.tag_dam_list = 'dam_name_list'
+        self.tag_lake_list = 'lake_name_list'                       #add20210809
         self.tag_plant_list = 'plant_name_list'
         self.tag_release_list = 'release_name_list'
         self.tag_basin_list = 'basin_name_list'
@@ -238,6 +239,23 @@ class ModelSource:
             logging.error(' ===> "Intake" key in static collections does not exist')
             raise NotImplementedError('Key not available in data collections')              # add20210604 --end
 
+        if 'Lake' in list(dset_collections_static.keys()):                                #add20210809 --start
+
+            if dset_collections_static['Lake'] is not None:
+                lake_list = list(dset_collections_static['Lake'].keys())
+                #intake_parts = split_dict_keys(intake_list)
+                #if intake_parts.__len__() == 2:
+                #    release_list = intake_parts[0]
+                #    socket_list = intake_parts[1]
+                #else:
+                #    logging.error(' ===> Intake parts are in a unsupported format')
+                #    raise NotImplementedError('Case not implemented yet')
+            else:
+                lake_list = None
+        else:
+            logging.error(' ===> "Lake" key in static collections does not exist')
+            raise NotImplementedError('Key not available in data collections')              #add20210809 --end
+
         if 'Section' in list(dset_collections_static.keys()):
             section_list = list(dset_collections_static['Section'].keys())
             section_parts = split_dict_keys(section_list)
@@ -271,6 +289,7 @@ class ModelSource:
                 plant_list = plant_list + release_list                          #add20210607 ---end
 
         dset_collections_static[self.tag_dam_list] = dam_list
+        dset_collections_static[self.tag_lake_list] = lake_list                 #add20210809
         dset_collections_static[self.tag_plant_list] = plant_list
         dset_collections_static[self.tag_dam_system_list] = dam_system_list
         dset_collections_static[self.tag_release_list] = release_list
@@ -358,7 +377,7 @@ class ModelSource:
                     dset_static_info=obj_static_datasets,
                     dset_time_info=obj_ti_step,
                     dset_time_start=start_idx_subselect, dset_time_end=end_idx_subselect,
-                    plant_name_list=obj_static_datasets[self.tag_plant_list], release_name_list=obj_static_datasets[self.tag_release_list])			#add20210608_last_arg
+                    plant_name_list=obj_static_datasets[self.tag_plant_list], release_name_list=obj_static_datasets[self.tag_release_list], lake_name_list=obj_static_datasets[self.tag_lake_list])			#add20210608_last_arg #add20210809
 
                 # Check collected data
                 if dset_source_frame_raw[self.tag_datasets] is not None:

@@ -3,8 +3,8 @@ Class Features
 
 Name:          drv_dataset_hmc_io_dynamic_forcing
 Author(s):     Fabio Delogu (fabio.delogu@cimafoundation.org)
-Date:          '20200401'
-Version:       '3.0.0'
+Date:          '20210811'
+Version:       '3.0.1'
 """
 
 #######################################################################################
@@ -1088,6 +1088,8 @@ class DSetManager:
             var_args['plant_name_list'] = kwargs['plant_name_list']
         if 'release_name_list' in kwargs:                                       #add20210608
             var_args['release_name_list'] = kwargs['release_name_list']         #add20210608
+        if 'lake_name_list' in kwargs:                                       #add20210809
+            var_args['lake_name_list'] = kwargs['lake_name_list']         #add20210809
 
         da_terrain = self.da_terrain
 
@@ -1127,6 +1129,8 @@ class DSetManager:
                             var_static_info = dset_static_info['dam_name_list']
                         elif (var_name == 'IntakeQ'):                                               #add20210607
                             var_static_info = dset_static_info['plant_name_list']                   #add20210607
+                        elif (var_name == 'Lake'):  # add20210809
+                            var_static_info = dset_static_info['lake_name_list']  # add20210809
                         elif var_name == 'VarAnalysis':
                             var_static_info = None
                         else:

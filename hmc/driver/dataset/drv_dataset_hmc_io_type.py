@@ -3,8 +3,8 @@ Class Features
 
 Name:          drv_dataset_hmc_io_type
 Author(s):     Fabio Delogu (fabio.delogu@cimafoundation.org)
-Date:          '20200401'
-Version:       '3.0.0'
+Date:          '20210811'
+Version:       '3.0.1'
 """
 
 #######################################################################################
@@ -366,6 +366,11 @@ class DSetReader:
                     var_columns_list = var_args['plant_name_list']
                     if var_args['release_name_list'] is not None:                                                                 #add20210608
                         var_columns_list = [i for i in var_columns_list if i not in var_args['release_name_list']]                #add20210608
+                    if var_args['lake_name_list'] is not None:          #add2021080900 ---start
+                        if var_columns_list is not None:
+                            var_columns_list = var_columns_list + var_args['lake_name_list'] #add2021080900 ---end
+                        else:
+                            var_columns_list = var_args['lake_name_list']
                     obj_name = 'DamV'
                     obj_var = read_state_point(file_path, self.file_src_time, var_name=obj_name,
                                                file_time_start=var_time_start, file_time_end=var_time_end,
