@@ -87,11 +87,21 @@ def create_data_grid(info_grid, info_expected_fields=None, map_expected_fields=N
                     ncols = data_grid['ncols']
                     res = data_grid['cellsize']
 
-                    geo_x_values = np.arange(xll + res / 2, xll + res / 2 + res * ncols, res)
-                    geo_y_values = np.arange(yll + res / 2, yll + res / 2 + res * nrows, res)
+                    geo_x_start = xll + res / 2
+                    geo_x_end = xll + res / 2 + res * (ncols - 1)
+                    geo_x_values = np.linspace(geo_x_start, geo_x_end, ncols)
+
+                    geo_y_start = yll + res / 2
+                    geo_y_end = yll + res / 2 + res * (nrows - 1)
+                    geo_y_values = np.linspace(geo_y_start, geo_y_end, nrows)
+
+                    # geo_x_values = np.arange(xll + res / 2, xll + res / 2 + res * ncols, res)
+                    # geo_y_values = np.arange(yll + res / 2, yll + res / 2 + res * nrows, res)
 
                     geo_x_values_2d, geo_y_values_2d = np.meshgrid(geo_x_values, geo_y_values)
 
+                    geo_y_right = geo_x_values_2d[0, 0]
+                    geo_y_left = geo_x_values_2d[0, -1]
                     geo_y_upper = geo_y_values_2d[0, 0]
                     geo_y_lower = geo_y_values_2d[-1, 0]
                     if geo_y_lower > geo_y_upper:
