@@ -2,10 +2,10 @@
   "__comment": " ### HMC configuration file - Static and dynamic data settings ###",
   "Flags": {
     "__comment": " --- Flags configuration --- ",
-    "cleaning_ancillary_data_static": true,
+    "cleaning_ancillary_data_static": false,
     "cleaning_ancillary_data_dynamic_source": false,
-    "cleaning_ancillary_data_dynamic_execution": false,
-    "cleaning_ancillary_data_dynamic_outcome": false,
+    "cleaning_ancillary_data_dynamic_execution": true,
+    "cleaning_ancillary_data_dynamic_outcome": true,
     "cleaning_run_execution": false,
     "cleaning_run_logging": false,
     "cleaning_run_tmp": false
@@ -161,7 +161,7 @@
           "var_list"         : {
             "Rain"            : {
               "var_file_name"   : "ws.db.{dset_datetime_forcing_obs}.nc.gz",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/data/data_dynamic/weather_stations/{dset_sub_path_forcing_obs}",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/data/data_dynamic/outcome/obs/weather_stations/{dset_sub_path_forcing_obs}",
               "var_file_dset"	: "Rain",
               "var_file_format"	: "netcdf",
               "var_file_limits"	: [0, null],
@@ -169,7 +169,7 @@
             },
             "AirTemperature"  : {
               "var_file_name"   : "ws.db.{dset_datetime_forcing_obs}.nc.gz",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/data/data_dynamic/weather_stations/{dset_sub_path_forcing_obs}",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/data/data_dynamic/outcome/obs/weather_stations/{dset_sub_path_forcing_obs}",
               "var_file_dset"	: "Air_Temperature",
               "var_file_format"	: "netcdf",
               "var_file_limits"	: [-20, 40],
@@ -177,7 +177,7 @@
             },
             "Wind"            : {
               "var_file_name"   : "ws.db.{dset_datetime_forcing_obs}.nc.gz",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/data/data_dynamic/weather_stations/{dset_sub_path_forcing_obs}",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/data/data_dynamic/outcome/obs/weather_stations/{dset_sub_path_forcing_obs}",
               "var_file_dset"	: "Wind",
               "var_file_format"	: "netcdf",
               "var_file_limits"	: [0, 10],
@@ -185,7 +185,7 @@
             },
             "RelHumidity"     : {
               "var_file_name"   : "ws.db.{dset_datetime_forcing_obs}.nc.gz",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/data/data_dynamic/weather_stations/{dset_sub_path_forcing_obs}",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/data/data_dynamic/outcome/obs/weather_stations/{dset_sub_path_forcing_obs}",
               "var_file_dset"   : "Relative_Humidity",
               "var_file_format"	: "netcdf",
               "var_file_limits"	: [0, 100],
@@ -193,7 +193,7 @@
             },
             "IncRadiation"	  : {
               "var_file_name"   : "ws.db.{dset_datetime_forcing_obs}.nc.gz",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/data/data_dynamic/weather_stations/{dset_sub_path_forcing_obs}",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/data/data_dynamic/outcome/obs/weather_stations/{dset_sub_path_forcing_obs}",
               "var_file_dset"	: "Incoming_Radiation",
               "var_file_format"	: "netcdf",
               "var_file_limits"	: [-100, 1200],
@@ -201,7 +201,7 @@
             },
             "AirPressure"	  : {
               "var_file_name"   : "ws.db.{dset_datetime_forcing_obs}.nc.gz",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/data/data_dynamic/weather_stations/{dset_sub_path_forcing_obs}",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/data/data_dynamic/outcome/obs/weather_stations/{dset_sub_path_forcing_obs}",
               "var_file_dset"	: "AirPressure",
               "var_file_format"	: "netcdf",
               "var_file_limits"	: [1010.0, 1020.0],
@@ -283,7 +283,7 @@
           "var_list"        : {
             "Discharge"		  : {
               "var_file_name"   : "rs.db.{dset_datetime_forcing_obs}.txt",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/data/data_dynamic/river_stations/{dset_sub_path_forcing_obs}",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/data/data_dynamic/outcome/obs/river_stations/{dset_sub_path_forcing_obs}",
               "var_file_dset"	: "discharge",
               "var_file_format"	: "ascii_point",
               "var_file_limits"	: [0, null],
@@ -363,7 +363,7 @@
             "SnowHeight"	  : {
               "__comment": "snow height datasets by observed measurements [example: ws.db.{dset_datetime_forcing_obs}.nc.gz]",
               "var_file_name"   : "ws.db.{dset_datetime_forcing_obs}.nc.gz",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/data/data_dynamic/weather_stations/{dset_sub_path_forcing_obs}",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/data/data_dynamic/outcome/obs/weather_stations/{dset_sub_path_forcing_obs}",
               "var_file_dset"	: "SnowLevel",
               "var_file_format"	: "netcdf",
               "var_file_limits"	: [0, null],
@@ -372,7 +372,7 @@
             "SnowKernel"      : {
               "__comment": "snow kernel datasets by observed measurements [example: ws.db.{dset_datetime_forcing_obs}.nc.gz]",
               "var_file_name"   : "ws.db.{dset_datetime_forcing_obs}.nc.gz",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/data/data_dynamic/weather_stations/{dset_sub_path_forcing_obs}",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/data/data_dynamic/outcome/obs/weather_stations/{dset_sub_path_forcing_obs}",
               "var_file_dset"	: "SnowKernel",
               "var_file_format"	: "netcdf",
               "var_file_limits"	: [0, 1],
@@ -381,7 +381,7 @@
             "SnowCoverArea"	  : {
               "__comment": "snow cover datasets [example: MOD10A1.005_marche_{dset_datetime_forcing_obs}.nc.gz]",
               "var_file_name"   : "MOD10A1.005_marche_{dset_datetime_forcing_obs}.nc.gz",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/data/data_dynamic/modis/{dset_sub_path_forcing_obs}",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/data/data_dynamic/outcome/obs/satellite/modis/{dset_sub_path_forcing_obs}",
               "var_file_dset"	: "snow_cover_daily",
               "var_file_format"	: "netcdf",
               "var_file_limits"	: [0, 4],
@@ -390,7 +390,7 @@
             "SnowQualityArea" : {
               "__comment": "snow quality datasets [example: MOD10A1.005_marche_{dset_datetime_forcing_obs}.nc.gz]",
               "var_file_name"   : "MOD10A1.005_marche_{dset_datetime_forcing_obs}.nc.gz",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/data/data_dynamic/modis/{dset_sub_path_forcing_obs}",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/data/data_dynamic/outcome/obs/satellite/modis/{dset_sub_path_forcing_obs}",
               "var_file_dset"	: "snow_spatial_qa_filter",
               "var_file_format"	: "netcdf",
               "var_file_limits"	: [null, null],
@@ -598,7 +598,7 @@
           "var_list"        : {
             "ALL"			  : {
               "var_file_name"   : "hmc.state-grid.{dset_datetime_restart}.nc.gz",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/data/data_dynamic/restart/",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/data/data_restart/",
               "var_file_dset"	: "ALL",
               "var_file_format"	: "netcdf",
               "var_file_limits"	: [null, null],
@@ -623,7 +623,7 @@
           "var_list"        : {
             "ALL"			  : {
               "var_file_name"   : "hmc.state-point.{dset_datetime_restart}.txt",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/data/data_dynamic/restart/",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/data/data_restart/",
               "var_file_dset"	: "ALL",
               "var_file_format"	: "ascii_point",
               "var_file_limits"	: [null, null],

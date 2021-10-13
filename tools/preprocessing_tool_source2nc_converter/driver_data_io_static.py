@@ -32,11 +32,11 @@ class DriverStatic:
     # Initialize class
     def __init__(self, src_dict, dst_dict=None,
                  alg_ancillary=None, alg_template_tags=None,
-                 flag_terrain_data='Terrain', flag_grid_data='Grid',
+                 flag_file_data='file_obj', flag_grid_data='grid_obj',
                  flag_static_source='source', flag_static_destination='destination',
                  flag_cleaning_static=True):
 
-        self.flag_terrain_data = flag_terrain_data
+        self.flag_file_data = flag_file_data
         self.flag_grid_data = flag_grid_data
 
         self.flag_static_source = flag_static_source
@@ -48,17 +48,44 @@ class DriverStatic:
         self.file_name_tag = 'file_name'
         self.folder_name_tag = 'folder_name'
 
-        self.folder_name_terrain_src = src_dict[self.flag_terrain_data][self.folder_name_tag]
-        self.file_name_terrain_src = src_dict[self.flag_terrain_data][self.file_name_tag]
-        self.file_path_terrain_src = os.path.join(self.folder_name_terrain_src, self.file_name_terrain_src)
+        self.file_obj_fields = [self.file_name_tag, self.folder_name_tag]
+        self.grid_obj_fields = ["xll", "yll", "res", "nrows", "ncols"]
 
-        self.grid_info_src = src_dict[self.flag_grid_data]
+        self.obj_static_src = {}
+        for src_key, src_fields in src_dict.items():
 
-        self.folder_name_terrain_dst = dst_dict[self.flag_terrain_data][self.folder_name_tag]
-        self.file_name_terrain_dst = dst_dict[self.flag_terrain_data][self.file_name_tag]
-        self.file_path_terrain_dst = os.path.join(self.folder_name_terrain_dst, self.file_name_terrain_dst)
+            if all(key in list(src_fields.keys()) for key in self.file_obj_fields):
+                folder_name_src = src_fields[self.folder_name_tag]
+                file_name_src = src_fields[self.file_name_tag]
+                file_path_src = os.path.join(folder_name_src, file_name_src)
+                self.obj_static_src[src_key] = {}
+                self.obj_static_src[src_key]['fields'] = file_path_src
+                self.obj_static_src[src_key]['type'] = self.flag_file_data
+            elif all(key in list(src_fields.keys()) for key in self.grid_obj_fields):
+                self.obj_static_src[src_key] = {}
+                self.obj_static_src[src_key]['fields'] = src_fields
+                self.obj_static_src[src_key]['type'] = self.flag_grid_data
+            else:
+                log_stream.error(' ===> Static source key "' + src_key + '" is not in allowed format')
+                raise NotImplementedError('Case not implemented yet')
 
-        self.grid_info_dst = dst_dict[self.flag_grid_data]
+        self.obj_static_dst = {}
+        for dst_key, dst_fields in dst_dict.items():
+
+            if all(key in list(dst_fields.keys()) for key in self.file_obj_fields):
+                folder_name_src = dst_fields[self.folder_name_tag]
+                file_name_src = dst_fields[self.file_name_tag]
+                file_path_src = os.path.join(folder_name_src, file_name_src)
+                self.obj_static_dst[dst_key] = {}
+                self.obj_static_dst[dst_key]['fields'] = file_path_src
+                self.obj_static_dst[dst_key]['type'] = self.flag_file_data
+            elif all(key in list(dst_fields.keys()) for key in self.grid_obj_fields):
+                self.obj_static_dst[dst_key] = {}
+                self.obj_static_dst[dst_key]['fields'] = dst_fields
+                self.obj_static_dst[dst_key]['type'] = self.flag_grid_data
+            else:
+                log_stream.error(' ===> Static destination key "' + dst_key + '" is not in allowed format')
+                raise NotImplementedError('Case not implemented yet')
 
         self.flag_cleaning_static = flag_cleaning_static
 
@@ -71,28 +98,42 @@ class DriverStatic:
         # Info start
         log_stream.info(' ---> Organize static datasets ... ')
 
+        # Get static objects
+        obj_static_src = self.obj_static_src
+        obj_static_dst = self.obj_static_dst
+
         # Data collection object
         data_collections = {self.flag_static_source: {}, self.flag_static_destination: {}}
 
         # Read static data source
-        terrain_data_src = read_data_grid(self.file_path_terrain_src, output_format='dictionary')
-        terrain_grid_src = extract_data_grid(terrain_data_src['values'],
-                                             terrain_data_src['longitude'], terrain_data_src['latitude'],
-                                             terrain_data_src['transform'], terrain_data_src['bbox'])
-        data_collections[self.flag_static_source][self.flag_terrain_data] = terrain_grid_src
+        for obj_key, obj_collections in obj_static_src.items():
+            obj_data_grid = None
+            if obj_collections['type'] == self.flag_file_data:
+                obj_data_file = obj_collections['fields']
+                obj_data_tmp = read_data_grid(obj_data_file, output_format='dictionary')
+                obj_data_grid = extract_data_grid(obj_data_tmp['values'],
+                                                  obj_data_tmp['longitude'], obj_data_tmp['latitude'],
+                                                  obj_data_tmp['transform'], obj_data_tmp['bbox'])
+            elif obj_collections['type'] == self.flag_grid_data:
+                obj_data_fields = obj_collections['fields']
+                obj_data_grid = create_data_grid(obj_data_fields)
 
-        generic_grid_src = create_data_grid(self.grid_info_src)
-        data_collections[self.flag_static_source][self.flag_grid_data] = generic_grid_src
+            data_collections[self.flag_static_source][obj_key] = obj_data_grid
 
         # Read static data destination
-        terrain_data_dst = read_data_grid(self.file_path_terrain_dst, output_format='dictionary')
-        terrain_grid_dst = extract_data_grid(terrain_data_dst['values'],
-                                             terrain_data_dst['longitude'], terrain_data_dst['latitude'],
-                                             terrain_data_dst['transform'], terrain_data_dst['bbox'])
-        data_collections[self.flag_static_destination][self.flag_terrain_data] = terrain_grid_dst
+        for obj_key, obj_collections in obj_static_dst.items():
+            obj_data_grid = None
+            if obj_collections['type'] == self.flag_file_data:
+                obj_data_file = obj_collections['fields']
+                obj_data_tmp = read_data_grid(obj_data_file, output_format='dictionary')
+                obj_data_grid = extract_data_grid(obj_data_tmp['values'],
+                                                  obj_data_tmp['longitude'], obj_data_tmp['latitude'],
+                                                  obj_data_tmp['transform'], obj_data_tmp['bbox'])
+            elif obj_collections['type'] == self.flag_grid_data:
+                obj_data_fields = obj_collections['fields']
+                obj_data_grid = create_data_grid(obj_data_fields)
 
-        generic_grid_dst = create_data_grid(self.grid_info_dst)
-        data_collections[self.flag_static_destination][self.flag_grid_data] = generic_grid_dst
+            data_collections[self.flag_static_destination][obj_key] = obj_data_grid
 
         # Info end
         log_stream.info(' ---> Organize static datasets ... DONE')

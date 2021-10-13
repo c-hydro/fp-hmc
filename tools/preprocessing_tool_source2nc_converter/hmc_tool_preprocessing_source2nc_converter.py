@@ -1,7 +1,7 @@
 """
 HMC Preprocessing Tool - Source2Netcdf converter
-__date__ = '20210408'
-__version__ = '1.0.0'
+__date__ = '20211012'
+__version__ = '1.1.0'
 __author__ =
         'Lorenzo Alfieri' (lorenzo.alfieri@cimafoundation.org',
         'Andrea Libertino (andrea.libertino@cimafoundation.org',
@@ -13,6 +13,7 @@ General command line:
 python hmc_tool_preprocessing_source2nc_converter.py -settings_file "configuration.json"
 
 Version(s):
+20211012 (1.1.0) --> Add the restart datasets in binary format to the sources
 20210408 (1.0.0) --> Refactor to manage different format for source datasets
 20201214 (0.0.2) --> Various bug fixes
 20201203 (0.0.1) --> Beta release
@@ -43,8 +44,8 @@ log_stream = logging.getLogger(logger_name)
 project_name = 'HMC'
 alg_name = 'TOOL SOURCE2NC CONVERTER'
 alg_type = 'Model'
-alg_version = '1.0.0'
-alg_release = '2021-04-08'
+alg_version = '1.1.0'
+alg_release = '2021-10-12'
 # -------------------------------------------------------------------------------------
 
 
@@ -125,13 +126,13 @@ def main():
     # Info algorithm
     alg_time_elapsed = round(time.time() - alg_time_start, 1)
 
-    logging.info(' ')
-    logging.info('[' + project_name + ' ' + alg_type + ' - ' + alg_name + ' (Version ' + alg_version +
+    log_stream.info(' ')
+    log_stream.info('[' + project_name + ' ' + alg_type + ' - ' + alg_name + ' (Version ' + alg_version +
                  ' - Release ' + alg_release + ')]')
-    logging.info(' ==> TIME ELAPSED: ' + str(alg_time_elapsed) + ' seconds')
-    logging.info(' ==> ... END')
-    logging.info(' ==> Bye, Bye')
-    logging.info(' ============================================================================ ')
+    log_stream.info(' ==> TIME ELAPSED: ' + str(alg_time_elapsed) + ' seconds')
+    log_stream.info(' ==> ... END')
+    log_stream.info(' ==> Bye, Bye')
+    log_stream.info(' ============================================================================ ')
 
     # -------------------------------------------------------------------------------------
 

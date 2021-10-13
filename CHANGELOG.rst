@@ -9,6 +9,7 @@ Version 3.1.5 (20210628)
 - Add the condition for the section code in the section points file in character format;
 - Add the possibility of providing to the model time series of observed socket/release systems;
 - Extend the hmc tool for converting time-series adding the dam volume datasets;
+- Extend the hmc tool for preprocessing gridded sources adding the restart datasets in binary format;
 - Fix bugs in managing dam unavailable datasets in summary data structure;
 - Fix the hmc tool for merging gridded output also in presence of clipped lon-lat matrices.
 

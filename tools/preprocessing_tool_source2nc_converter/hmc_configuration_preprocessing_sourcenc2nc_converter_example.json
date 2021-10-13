@@ -4,7 +4,7 @@
       "title": "TOOL SOURCE2NC CONVERTER",
       "web-site": "",
       "source": "Python library developed by CIMA Research Foundation",
-      "history": "1.0.0 [20210408]",
+      "history": "1.1.0 [20211012]",
       "project-info": "HMC - Hydrological Model Continuum",
       "algorithm": "Source2NC converter postprocessing tool"
     },

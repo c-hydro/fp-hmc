@@ -11,10 +11,13 @@ Version:       '1.0.0'
 # Libraries
 import logging
 import os
+import time
 
 import numpy as np
 import xarray as xr
 import pandas as pd
+
+from netCDF4 import Dataset
 
 from hmc.algorithm.default.lib_default_args import logger_name
 
@@ -24,6 +27,60 @@ log_stream = logging.getLogger(logger_name)
 # Debug
 # import matplotlib.pylab as plt
 #######################################################################################
+
+
+# -------------------------------------------------------------------------------------
+# Method to write data netcdf
+def write_data_nc(file_name, file_obj_data, file_obj_dims_def, file_obj_dims_list,
+                  file_obj_attrs, file_format='NETCDF4_CLASSIC'):
+
+    # Open file handle
+    file_handle = Dataset(file_name, 'w', format=file_format)
+
+    # Cycle on file dimension(s)
+    dim_obj_collections = {}
+    for dim_key, dim_value in file_obj_dims_def.items():
+        if dim_key not in list(file_handle.dimensions.items()):
+            dim_obj_step = file_handle.createDimension(dim_key, dim_value)
+            dim_obj_collections[dim_key] = dim_obj_step
+
+    # Cycle on file attribute(s)
+    for attr_key, attr_value in file_obj_attrs.items():
+        file_handle.setncattr(attr_key, attr_value)
+    file_handle.filedate = 'Created ' + time.ctime(time.time())
+
+    for data_key, data_values in file_obj_data.items():
+
+        if data_key in list(file_obj_dims_list.keys()):
+
+            dim_values = file_obj_dims_list[data_key]
+
+            if data_values.ndim == 2:
+                data_dim_x = dim_values[1]
+                data_dim_y = dim_values[0]
+
+                file_var = file_handle.createVariable(data_key, np.float32,
+                                                      (data_dim_y, data_dim_x,), zlib=True)
+
+                file_var[:, :] = np.transpose(np.rot90(data_values, -1))
+
+            elif data_values.ndim == 3:
+                data_dim_x = dim_values[1]
+                data_dim_y = dim_values[0]
+                data_dim_time = dim_values[2]
+
+                file_var = file_handle.createVariable(data_key, np.float32,
+                                                      (data_dim_time, data_dim_y, data_dim_x,), zlib=True)
+
+                file_var[:, :, :] = np.transpose(np.rot90(data_values, -1))
+
+            else:
+                log_stream.warning(' ===> Datasets dimensions for ' +
+                                   data_key + ' is not allowed. Only 2D or 3D arrays are implemented.')
+
+    file_handle.close()
+
+# -------------------------------------------------------------------------------------
 
 
 # -------------------------------------------------------------------------------------

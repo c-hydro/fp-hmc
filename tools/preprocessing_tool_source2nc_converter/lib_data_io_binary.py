@@ -29,35 +29,10 @@ import matplotlib.pylab as plt
 
 
 # --------------------------------------------------------------------------------
-# Method to get size of binary file
-def search_geo_reference(file_name, info_dict, tag_geo_reference=None,
-                         tag_cols='ncols', tag_rows='nrows', scale_factor=4):
-
-    file_handle = open(file_name, 'rb')
-    file_stream = file_handle.read(-1)
-    straem_n = file_stream.__len__()
-
-    data_tag = None
-    for info_key, info_fields in info_dict.items():
-        data_n = int(info_fields[tag_cols]) * int(info_fields[tag_rows]) * scale_factor
-        if data_n == straem_n:
-            data_info = info_fields
-            data_tag = info_key
-            break
-
-    file_handle.close()
-
-    assert data_tag == tag_geo_reference, " ===> Geographical reference set and found are not equal. " \
-                                          "Check your settings and datasets"
-
-    return data_tag
-# --------------------------------------------------------------------------------
-
-
-# --------------------------------------------------------------------------------
 # Method to read 2d variable in binary format (saved as 1d integer array)
-def read_data_binary(file_name, var_geo_x, var_geo_y, var_geo_attrs=None, var_format='i', var_scale_factor=10,
-                     var_name=None, var_time=None, var_geo_1d=True,
+def read_data_binary(file_name, var_geo_x, var_geo_y, var_geo_attrs=None,
+                     var_format='i', var_scale_factor=10,
+                     var_name=None, var_time=None, var_geo_1d=True, var_time_freq='H', var_time_steps_expected=1,
                      coord_name_geo_x='west_east', coord_name_geo_y='south_north', coord_name_time='time',
                      dim_name_geo_x='west_east', dim_name_geo_y='south_north', dim_name_time='time',
                      dims_order=None):
@@ -67,25 +42,24 @@ def read_data_binary(file_name, var_geo_x, var_geo_y, var_geo_attrs=None, var_fo
 
     if os.path.exists(file_name):
 
-        # Open file handle
-        file_handle = open(file_name, 'rb')
+        # Shape values 1d
         rows = var_geo_y.shape[0]
         cols = var_geo_x.shape[0]
+        geo_n = rows * cols
 
-        # Values shape (1d)
-        var_n = rows * cols
-        # Values format
-        data_format = var_format * var_n
-        # Open and read binary file
+        # Open and read binary file [OLD]
+        file_handle = open(file_name, 'rb')
+        data_format = var_format * geo_n
         data_stream = file_handle.read(-1)
-        array_data = struct.unpack(data_format, data_stream)
-
-        # Close file handle
+        var_data_1d = struct.unpack(data_format, data_stream)
         file_handle.close()
 
-        # Reshape binary file in Fortran order and scale Data (float32)
-        file_values = np.reshape(array_data, (rows, cols), order='F')
-        file_values = np.float32(file_values / var_scale_factor)
+        var_data_1d = np.asarray(var_data_1d, dtype=np.float32)
+        var_data_1d = np.float32(var_data_1d / var_scale_factor)
+        var_n = var_data_1d.shape[0]
+
+        var_time_steps_cmp = int(var_n / geo_n)
+        var_data_3d = np.reshape(var_data_1d, (rows, cols, var_time_steps_cmp), order='F')
 
         if var_geo_1d:
             var_geo_x_2d, var_geo_y_2d = np.meshgrid(var_geo_x, var_geo_y)
@@ -98,14 +72,35 @@ def read_data_binary(file_name, var_geo_x, var_geo_y, var_geo_attrs=None, var_fo
         if geo_y_lower > geo_y_upper:
             var_geo_y_2d = np.flipud(var_geo_y_2d)
 
-        file_dims = file_values.shape
-        file_high = file_dims[0]
-        file_wide = file_dims[1]
+        var_dims = var_data_3d.shape
+        var_high = var_dims[0]
+        var_wide = var_dims[1]
 
-        var_data = np.zeros(shape=[var_geo_x_2d.shape[0], var_geo_y_2d.shape[1], 1])
-        var_data[:, :, :] = np.nan
+        if var_time_steps_cmp == var_time_steps_expected:
 
-        var_data[:, :, 0] = file_values
+            var_data = np.zeros(shape=[var_geo_x_2d.shape[0], var_geo_y_2d.shape[1], var_time_steps_cmp])
+            var_data[:, :, :] = np.nan
+            for step in np.arange(0, var_time_steps_cmp, 1):
+                var_data_step = var_data_3d[:, :, step]
+                var_data[:, :, step] = var_data_step
+
+        elif (var_time_steps_cmp == 1) and (var_time_steps_cmp < var_time_steps_expected):
+
+            log_stream.warning(' ===> File ' + file_name +
+                               ' steps expected [' + str(var_time_steps_expected) +
+                               '] and found [' + str(var_time_steps_cmp) + '] are different!')
+
+            var_data = np.zeros(shape=[var_geo_x_2d.shape[0], var_geo_y_2d.shape[1], var_time_steps_expected])
+            var_data[:, :, :] = np.nan
+            for step in np.arange(0, var_time_steps_expected, 1):
+                var_data_step = var_data_3d[:, :, 0]
+                var_data[:, :, step] = var_data_step
+
+            var_time_steps_cmp = deepcopy(var_time_steps_expected)
+
+        else:
+            log_stream.error(' ===> File ' + file_name + ' format are not expected!')
+            raise NotImplemented('Case not implemented yet')
 
     else:
         log_stream.warning(' ===> File ' + file_name + ' not available in loaded datasets!')
@@ -114,7 +109,12 @@ def read_data_binary(file_name, var_geo_x, var_geo_y, var_geo_attrs=None, var_fo
     if var_data is not None:
 
         if isinstance(var_time, pd.Timestamp):
-            var_time = pd.DatetimeIndex([var_time])
+
+            if var_time_steps_cmp == 1:
+                var_time = pd.DatetimeIndex([var_time])
+            elif var_time_steps_cmp > 1:
+                var_time = pd.date_range(end=var_time, freq=var_time_freq, periods=var_time_steps_cmp)
+
         elif isinstance(var_time, pd.DatetimeIndex):
             pass
         else:
