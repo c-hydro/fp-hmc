@@ -1230,6 +1230,38 @@ class DSetManager:
 
                             log_stream.info(' --------> Organize ' + var_name + ' dataset geographical domain  ... DONE')
 
+                            log_stream.info(' --------> Organize ' + var_name + ' dataset time period  ... ')
+                            if obj_var[self.coord_name_time].shape[0] < dset_datetime_idx.shape[0]:
+
+                                log_stream.info(' ---------> Fill expected datasets with dynamic values  ... ')
+
+                                var_x_tmp = da_terrain['Longitude'].values.shape[0]
+                                var_y_tmp = da_terrain['Latitude'].values.shape[0]
+                                var_time_tmp = dset_datetime_idx.shape[0]
+
+                                var_values_period = obj_var[var_name].values
+                                var_time_period = da_time.values
+
+                                var_values_tmp = np.zeros([var_y_tmp, var_x_tmp, var_time_tmp])
+                                var_values_tmp[:, :, :] = np.nan
+                                for var_time_i, var_time_step in enumerate(var_time_period):
+                                    var_time_idx = dset_datetime_idx.indexer_at_time(pd.Timestamp(var_time_step))[0]
+                                    var_values_step = var_values_period[:, :, var_time_i]
+                                    var_values_tmp[:, :, var_time_idx] = var_values_step
+
+                                var_da_tmp = create_darray_3d(
+                                    var_values_tmp, dset_datetime_idx, geo_x, geo_y,
+                                    coord_name_time=self.coord_name_time,
+                                    coord_name_x=self.coord_name_geo_x, coord_name_y=self.coord_name_geo_y,
+                                    dim_name_time=self.dim_name_time,
+                                    dim_name_x=self.dim_name_geo_x, dim_name_y=self.dim_name_geo_y,
+                                    dims_order=[self.dim_name_geo_y, self.dim_name_geo_x, self.dim_name_time])
+
+                                obj_var = var_da_tmp.to_dataset(name=var_name)
+                                log_stream.info(' ---------> Fill expected datasets with dynamic values  ... DONE')
+
+                            log_stream.info(' --------> Organize ' + var_name + ' dataset time period  ... DONE')
+
                             # Organize a common dataset for all variable(s)
                             log_stream.info(' --------> Organize ' + var_name + ' dataset in a common dataset ... ')
                             if self.coord_name_geo_x not in list(var_frame.keys()):

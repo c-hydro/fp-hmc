@@ -32,6 +32,29 @@ variable_excluded_default = ['terrain', 'Terrain', 'mask', 'Mask']
 #######################################################################################
 
 
+def compute_baseflow():
+    print('ciao')
+
+# -------------------------------------------------------------------------------------
+# Method to compute runoff coefficient
+def compute_runoff_coefficient(section_time_run=None,
+                               section_time_from=None, section_time_to=None, section_time_delta=None,
+                               section_ts_time=None, section_ts_rain=None, section_ts_discharge=None,
+                               section_area=None, section_thr_rain=1):
+
+    section_corrivation_time = np.int(0.27 * np.sqrt(0.6 * section_area) + 0.25)
+
+    section_dframe_rain = pd.DataFrame(index=section_ts_time, data=section_ts_rain)
+    section_dframe_discharge = pd.DataFrame(index=section_ts_time, data=section_ts_discharge)
+
+    section_dframe_rain_select = section_dframe_rain[section_time_from:section_time_to]
+    section_dframe_discharge_select = section_dframe_discharge[section_time_from:section_time_to]
+
+
+
+
+# -------------------------------------------------------------------------------------
+
 # -------------------------------------------------------------------------------------
 # Method to compute mean values over domain
 def compute_domain_mean(var_da, var_dim=None,

@@ -37,7 +37,7 @@ import matplotlib.pylab as plt
 
 # -------------------------------------------------------------------------------------
 # Method to write file point section(s)
-def write_data_point_section(file_name, file_data, file_cols_expected=8):
+def write_data_point_section(file_name, file_data, file_cols_expected=10):
 
     file_keys = list(file_data.keys())
 

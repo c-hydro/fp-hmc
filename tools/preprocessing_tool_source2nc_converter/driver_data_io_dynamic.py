@@ -429,55 +429,61 @@ class DriverDynamic:
                                 file_time_steps_expected, \
                                 file_time_steps_ref, file_time_steps_flag = self.extract_var_fields(src_dict[var_name])
 
-                            var_geo_data, var_geo_x, var_geo_y, var_geo_attrs = \
-                                self.set_geo_attributes(self.static_data_src[file_geo_reference])
+                            if var_compute:
 
-                            if (var_geo_x.shape.__len__() == 1) and (var_geo_y.shape.__len__() == 1):
-                                var_geo_x_2d, var_geo_y_2d = np.meshgrid(var_geo_x, var_geo_y)
-                                if self.dim_name_geo_y not in list(var_dims_def.keys()):
-                                    var_dims_def[self.dim_name_geo_y] = var_geo_y.shape[0]
-                                if self.dim_name_geo_x not in list(var_dims_def.keys()):
-                                    var_dims_def[self.dim_name_geo_x] = var_geo_x.shape[0]
+                                var_geo_data, var_geo_x, var_geo_y, var_geo_attrs = \
+                                    self.set_geo_attributes(self.static_data_src[file_geo_reference])
 
-                                if self.coord_name_geo_y not in list(var_data_dict.keys()):
-                                    var_data_dict[self.coord_name_geo_y] = var_geo_y_2d
-                                    var_dims_list[self.coord_name_geo_y] = deepcopy(self.dims_order_2d)
-                                if self.coord_name_geo_x not in list(var_data_dict.keys()):
-                                    var_data_dict[self.coord_name_geo_x] = var_geo_x_2d
-                                    var_dims_list[self.coord_name_geo_x] = deepcopy(self.dims_order_2d)
+                                if (var_geo_x.shape.__len__() == 1) and (var_geo_y.shape.__len__() == 1):
+                                    var_geo_x_2d, var_geo_y_2d = np.meshgrid(var_geo_x, var_geo_y)
+                                    if self.dim_name_geo_y not in list(var_dims_def.keys()):
+                                        var_dims_def[self.dim_name_geo_y] = var_geo_y.shape[0]
+                                    if self.dim_name_geo_x not in list(var_dims_def.keys()):
+                                        var_dims_def[self.dim_name_geo_x] = var_geo_x.shape[0]
+
+                                    if self.coord_name_geo_y not in list(var_data_dict.keys()):
+                                        var_data_dict[self.coord_name_geo_y] = var_geo_y_2d
+                                        var_dims_list[self.coord_name_geo_y] = deepcopy(self.dims_order_2d)
+                                    if self.coord_name_geo_x not in list(var_data_dict.keys()):
+                                        var_data_dict[self.coord_name_geo_x] = var_geo_x_2d
+                                        var_dims_list[self.coord_name_geo_x] = deepcopy(self.dims_order_2d)
+                                else:
+                                    log_stream.error(' ===> Geographical dimensions are not allowed.')
+                                    raise NotImplementedError('Case not implemented yet')
+
+                                if file_time_steps_flag not in list(var_dims_def.keys()):
+                                    var_dims_def[file_time_steps_flag] = file_time_steps_expected
+
+                                var_dset = dset_obj[var_name]
+
+                                if self.dim_name_time in list(var_dset.dims):
+                                    time_array = var_dset[self.dim_name_time].values
+                                    if time_array.shape[0] == 1:
+                                        var_dset = var_dset.squeeze(self.dim_name_time)
+                                        var_dset = var_dset.drop(self.dim_name_time)
+
+                                        if self.dim_name_time not in list(var_dims_def.keys()):
+                                            var_dims_def[self.dim_name_time] = None
+
+                                var_data = np.flipud(var_dset[var_name].values)
+                                var_data_dict[var_name] = var_data
+
+                                if var_data.ndim == 2:
+                                    dims_order_2d = deepcopy(self.dims_order_2d)
+                                    var_dims_list[var_name] = dims_order_2d
+                                elif var_data.ndim == 3:
+                                    dims_order_3d = deepcopy(self.dims_order_3d)
+                                    dims_order_3d[2] = file_time_steps_flag
+                                    var_dims_list[var_name] = dims_order_3d
+                                else:
+                                    log_stream.error(' ===> Datasets dimensions for ' + var_name + ' is not allowed.')
+                                    raise NotImplementedError('Case not implemented yet')
+
+                                log_stream.info(' --------> Configure variable "' + var_name + '" ... DONE')
+
                             else:
-                                log_stream.error(' ===> Geographical dimensions are not allowed.')
-                                raise NotImplementedError('Case not implemented yet')
-
-                            if file_time_steps_flag not in list(var_dims_def.keys()):
-                                var_dims_def[file_time_steps_flag] = file_time_steps_expected
-
-                            var_dset = dset_obj[var_name]
-
-                            if self.dim_name_time in list(var_dset.dims):
-                                time_array = var_dset[self.dim_name_time].values
-                                if time_array.shape[0] == 1:
-                                    var_dset = var_dset.squeeze(self.dim_name_time)
-                                    var_dset = var_dset.drop(self.dim_name_time)
-
-                                    if self.dim_name_time not in list(var_dims_def.keys()):
-                                        var_dims_def[self.dim_name_time] = None
-
-                            var_data = np.flipud(var_dset[var_name].values)
-                            var_data_dict[var_name] = var_data
-
-                            if var_data.ndim == 2:
-                                dims_order_2d = deepcopy(self.dims_order_2d)
-                                var_dims_list[var_name] = dims_order_2d
-                            elif var_data.ndim == 3:
-                                dims_order_3d = deepcopy(self.dims_order_3d)
-                                dims_order_3d[2] = file_time_steps_flag
-                                var_dims_list[var_name] = dims_order_3d
-                            else:
-                                log_stream.error(' ===> Datasets dimensions for ' + var_name + ' is not allowed.')
-                                raise NotImplementedError('Case not implemented yet')
-
-                            log_stream.info(' --------> Configure variable "' + var_name + '" ... DONE')
+                                log_stream.info(' --------> Configure variable "' +
+                                                var_name + '" ... SKIPPED. Variable is not activated.')
 
                         log_stream.info(' --------> Write datasets ... ')
                         write_data_nc(file_path_dst, var_data_dict, var_dims_def,
@@ -570,164 +576,170 @@ class DriverDynamic:
 
                         log_stream.info(' -----> Time "' + var_time.strftime(time_format_algorithm) + '" ... ')
 
-                        if file_compression:
-                            var_file_path_out = self.define_file_name_unzip(var_file_path_in)
-                            unzip_filename(var_file_path_in, var_file_path_out)
-                        else:
-                            var_file_path_out = deepcopy(var_file_path_in)
+                        if os.path.exists(var_file_path_in):
 
-                        if file_type == 'binary':
+                            if file_compression:
+                                var_file_path_out = self.define_file_name_unzip(var_file_path_in)
+                                unzip_filename(var_file_path_in, var_file_path_out)
+                            else:
+                                var_file_path_out = deepcopy(var_file_path_in)
 
-                            if var_geo_data is None:
-                                log_stream.info(' ------> Select geo reference for binary datasets ... ')
+                            if file_type == 'binary':
 
-                                log_stream.info(' -------> Geo reference name: ' + file_geo_reference)
-                                var_geo_data, var_geo_x, var_geo_y, var_geo_attrs = \
-                                    self.set_geo_attributes(self.static_data_src[file_geo_reference])
-                                log_stream.info(' ------> Select geo reference for binary datasets ... DONE')
+                                if var_geo_data is None:
+                                    log_stream.info(' ------> Select geo reference for binary datasets ... ')
 
-                            var_da_src = read_data_binary(
-                                var_file_path_out, var_geo_x, var_geo_y, var_geo_attrs,
-                                var_scale_factor=var_scale_factor, var_time=var_time,
-                                var_name=var_name, var_format=var_format,
-                                var_time_steps_expected=file_time_steps_expected,
-                                coord_name_geo_x=self.coord_name_geo_x, coord_name_geo_y=self.coord_name_geo_y,
-                                coord_name_time=self.coord_name_time,
-                                dim_name_geo_x=self.dim_name_geo_x, dim_name_geo_y=self.dim_name_geo_y,
-                                dim_name_time=self.dim_name_time,
-                                dims_order=self.dims_order_3d)
+                                    log_stream.info(' -------> Geo reference name: ' + file_geo_reference)
+                                    var_geo_data, var_geo_x, var_geo_y, var_geo_attrs = \
+                                        self.set_geo_attributes(self.static_data_src[file_geo_reference])
+                                    log_stream.info(' ------> Select geo reference for binary datasets ... DONE')
 
-                        elif file_type == 'netcdf':
-
-                            if var_geo_data is None:
-                                log_stream.info(' ------> Select geo reference for netcdf datasets ... ')
-                                var_geo_data, var_geo_x, var_geo_y, var_geo_attrs = \
-                                    self.set_geo_attributes(self.static_data_src[file_geo_reference])
-                                log_stream.info(' ------> Select geo reference for netcdf datasets ... DONE')
-
-                            var_da_src = read_data_nc(
-                                var_file_path_out, var_geo_x, var_geo_y, var_geo_attrs,  var_coords=file_coords,
-                                var_scale_factor=var_scale_factor, var_name=var_tag, var_time=var_time,
-                                coord_name_geo_x=self.coord_name_geo_x, coord_name_geo_y=self.coord_name_geo_y,
-                                coord_name_time=self.coord_name_time,
-                                dim_name_geo_x=self.dim_name_geo_x, dim_name_geo_y=self.dim_name_geo_y,
-                                dim_name_time=self.dim_name_time,
-                                dims_order=self.dims_order_3d)
-
-                        elif file_type == 'tiff':
-
-                            var_da_src = read_data_tiff(
-                                var_file_path_out,
-                                var_scale_factor=var_scale_factor, var_name=var_tag, var_time=var_time,
-                                coord_name_geo_x=self.coord_name_geo_x, coord_name_geo_y=self.coord_name_geo_y,
-                                coord_name_time=self.coord_name_time,
-                                dim_name_geo_x=self.dim_name_geo_x, dim_name_geo_y=self.dim_name_geo_y,
-                                dim_name_time=self.dim_name_time,
-                                dims_order=self.dims_order_3d,
-                                decimal_round_data=2, decimal_round_geo=7)
-
-                        else:
-                            log_stream.info(' -----> Time "' + var_time.strftime(time_format_algorithm) + '" ... FAILED')
-                            log_stream.error(' ===> File type "' + file_type + '"is not allowed.')
-                            raise NotImplementedError('Case not implemented yet')
-
-                        # Delete (if needed the uncompressed file(s)
-                        if var_file_path_in != var_file_path_out:
-                            if os.path.exists(var_file_path_out):
-                                os.remove(var_file_path_out)
-
-                        # Organize destination dataset
-                        if var_da_src is not None:
-
-                            # Active (if needed) interpolation method to the variable source data-array
-                            active_interp = active_var_interp(var_da_src.attrs, geo_da_dst.attrs)
-
-                            # Apply the interpolation method to the variable source data-array
-                            if active_interp:
-                                var_da_dst = apply_var_interp(
-                                    var_da_src, geo_da_dst,
-                                    var_name=var_name,
-                                    dim_name_geo_x=self.dim_name_geo_x, dim_name_geo_y=self.dim_name_geo_y,
+                                var_da_src = read_data_binary(
+                                    var_file_path_out, var_geo_x, var_geo_y, var_geo_attrs,
+                                    var_scale_factor=var_scale_factor, var_time=var_time,
+                                    var_name=var_name, var_format=var_format,
+                                    var_time_steps_expected=file_time_steps_expected,
                                     coord_name_geo_x=self.coord_name_geo_x, coord_name_geo_y=self.coord_name_geo_y,
-                                    interp_method=self.interp_method)
+                                    coord_name_time=self.coord_name_time,
+                                    dim_name_geo_x=self.dim_name_geo_x, dim_name_geo_y=self.dim_name_geo_y,
+                                    dim_name_time=self.dim_name_time,
+                                    dims_order=self.dims_order_3d)
+
+                            elif file_type == 'netcdf':
+
+                                if var_geo_data is None:
+                                    log_stream.info(' ------> Select geo reference for netcdf datasets ... ')
+                                    var_geo_data, var_geo_x, var_geo_y, var_geo_attrs = \
+                                        self.set_geo_attributes(self.static_data_src[file_geo_reference])
+                                    log_stream.info(' ------> Select geo reference for netcdf datasets ... DONE')
+
+                                var_da_src = read_data_nc(
+                                    var_file_path_out, var_geo_x, var_geo_y, var_geo_attrs,  var_coords=file_coords,
+                                    var_scale_factor=var_scale_factor, var_name=var_tag, var_time=var_time,
+                                    coord_name_geo_x=self.coord_name_geo_x, coord_name_geo_y=self.coord_name_geo_y,
+                                    coord_name_time=self.coord_name_time,
+                                    dim_name_geo_x=self.dim_name_geo_x, dim_name_geo_y=self.dim_name_geo_y,
+                                    dim_name_time=self.dim_name_time,
+                                    dims_order=self.dims_order_3d)
+
+                            elif file_type == 'tiff':
+
+                                var_da_src = read_data_tiff(
+                                    var_file_path_out,
+                                    var_scale_factor=var_scale_factor, var_name=var_tag, var_time=var_time,
+                                    coord_name_geo_x=self.coord_name_geo_x, coord_name_geo_y=self.coord_name_geo_y,
+                                    coord_name_time=self.coord_name_time,
+                                    dim_name_geo_x=self.dim_name_geo_x, dim_name_geo_y=self.dim_name_geo_y,
+                                    dim_name_time=self.dim_name_time,
+                                    dims_order=self.dims_order_3d,
+                                    decimal_round_data=2, decimal_round_geo=7)
+
                             else:
-                                if var_tag != var_name:
-                                    var_da_dst = deepcopy(var_da_src)
-                                    var_da_dst.name = var_name
+                                log_stream.info(' -----> Time "' + var_time.strftime(time_format_algorithm) + '" ... FAILED')
+                                log_stream.error(' ===> File type "' + file_type + '"is not allowed.')
+                                raise NotImplementedError('Case not implemented yet')
+
+                            # Delete (if needed the uncompressed file(s)
+                            if var_file_path_in != var_file_path_out:
+                                if os.path.exists(var_file_path_out):
+                                    os.remove(var_file_path_out)
+
+                            # Organize destination dataset
+                            if var_da_src is not None:
+
+                                # Active (if needed) interpolation method to the variable source data-array
+                                active_interp = active_var_interp(var_da_src.attrs, geo_da_dst.attrs)
+
+                                # Apply the interpolation method to the variable source data-array
+                                if active_interp:
+                                    var_da_dst = apply_var_interp(
+                                        var_da_src, geo_da_dst,
+                                        var_name=var_name,
+                                        dim_name_geo_x=self.dim_name_geo_x, dim_name_geo_y=self.dim_name_geo_y,
+                                        coord_name_geo_x=self.coord_name_geo_x, coord_name_geo_y=self.coord_name_geo_y,
+                                        interp_method=self.interp_method)
                                 else:
-                                    var_da_dst = deepcopy(var_da_src)
+                                    if var_tag != var_name:
+                                        var_da_dst = deepcopy(var_da_src)
+                                        var_da_dst.name = var_name
+                                    else:
+                                        var_da_dst = deepcopy(var_da_src)
 
-                            # Mask the variable destination data-array
-                            var_nodata = None
-                            if 'nodata_value' in list(var_da_dst.attrs.keys()):
-                                var_nodata = var_da_dst.attrs['nodata_value']
-                            geo_nodata = None
-                            if 'nodata_value' in list(geo_da_dst.attrs.keys()):
-                                geo_nodata = geo_da_dst.attrs['nodata_value']
+                                # Mask the variable destination data-array
+                                var_nodata = None
+                                if 'nodata_value' in list(var_da_dst.attrs.keys()):
+                                    var_nodata = var_da_dst.attrs['nodata_value']
+                                geo_nodata = None
+                                if 'nodata_value' in list(geo_da_dst.attrs.keys()):
+                                    geo_nodata = geo_da_dst.attrs['nodata_value']
 
-                            if geo_nodata is not None and (var_nodata is not None):
-                                var_da_masked = var_da_dst.where(
-                                    ((geo_da_dst.values[:, :, np.newaxis] != geo_nodata) != geo_nodata) &
-                                    (var_da_dst != var_nodata))
-                            else:
-                                var_da_masked = deepcopy(var_da_dst)
-
-                            '''
-                            plt.figure(1)
-                            plt.imshow(var_da_dst.values[:, :, 0])
-                            plt.colorbar()
-                            plt.figure(2)
-                            plt.imshow(var_da_src.values[:, :, 0])
-                            plt.colorbar()
-                            plt.figure(3)
-                            plt.imshow(var_da_masked.values[:, :, 0])
-                            plt.colorbar()
-                            plt.show()
-                            plt.figure(4)
-                            plt.imshow(geo_da_dst.values)
-                            plt.colorbar()
-                            plt.show()
-                            '''
-
-                            # Organize data in a common datasets
-                            if self.dim_name_time in list(var_da_masked.dims):
-                                var_time_dset = pd.DatetimeIndex(var_da_masked[self.dim_name_time].values)
-                            else:
-                                var_time_dset = deepcopy(var_time)
-
-                            var_dset_masked = create_dset(var_data_time=var_time_dset,
-                                                          var_data_name=var_name, var_data_values=var_da_masked,
-                                                          var_data_attrs=None,
-                                                          var_geo_1d=False,
-                                                          file_attributes=geo_da_dst.attrs,
-                                                          var_geo_name='terrain',
-                                                          var_geo_values=geo_da_dst.values,
-                                                          var_geo_x=geo_da_dst[self.coord_name_geo_x].values,
-                                                          var_geo_y=geo_da_dst[self.coord_name_geo_y].values,
-                                                          var_geo_attrs=None)
-
-                            # Organize data in merged datasets
-                            if datasets_type == 'forcing_data':
-                                if var_time not in list(dset_collection.keys()):
-                                    dset_collection[var_time] = var_dset_masked
+                                if geo_nodata is not None and (var_nodata is not None):
+                                    var_da_masked = var_da_dst.where(
+                                        ((geo_da_dst.values[:, :, np.newaxis] != geo_nodata) != geo_nodata) &
+                                        (var_da_dst != var_nodata))
                                 else:
-                                    var_dset_tmp = deepcopy(dset_collection[var_time])
-                                    var_dset_tmp = var_dset_tmp.merge(var_dset_masked, join='right')
-                                    dset_collection[var_time] = var_dset_tmp
-                            elif datasets_type == 'restart_data':
-                                if var_time not in list(dset_collection.keys()):
-                                    dset_collection[var_time] = {}
-                                dset_collection[var_time][var_name] = {}
-                                dset_collection[var_time][var_name] = var_dset_masked
+                                    var_da_masked = deepcopy(var_da_dst)
+
+                                '''
+                                plt.figure(1)
+                                plt.imshow(var_da_dst.values[:, :, 0])
+                                plt.colorbar()
+                                plt.figure(2)
+                                plt.imshow(var_da_src.values[:, :, 0])
+                                plt.colorbar()
+                                plt.figure(3)
+                                plt.imshow(var_da_masked.values[:, :, 0])
+                                plt.colorbar()
+                                plt.show()
+                                plt.figure(4)
+                                plt.imshow(geo_da_dst.values)
+                                plt.colorbar()
+                                plt.show()
+                                '''
+
+                                # Organize data in a common datasets
+                                if self.dim_name_time in list(var_da_masked.dims):
+                                    var_time_dset = pd.DatetimeIndex(var_da_masked[self.dim_name_time].values)
+                                else:
+                                    var_time_dset = deepcopy(var_time)
+
+                                var_dset_masked = create_dset(var_data_time=var_time_dset,
+                                                              var_data_name=var_name, var_data_values=var_da_masked,
+                                                              var_data_attrs=None,
+                                                              var_geo_1d=False,
+                                                              file_attributes=geo_da_dst.attrs,
+                                                              var_geo_name='terrain',
+                                                              var_geo_values=geo_da_dst.values,
+                                                              var_geo_x=geo_da_dst[self.coord_name_geo_x].values,
+                                                              var_geo_y=geo_da_dst[self.coord_name_geo_y].values,
+                                                              var_geo_attrs=None)
+
+                                # Organize data in merged datasets
+                                if datasets_type == 'forcing_data':
+                                    if var_time not in list(dset_collection.keys()):
+                                        dset_collection[var_time] = var_dset_masked
+                                    else:
+                                        var_dset_tmp = deepcopy(dset_collection[var_time])
+                                        var_dset_tmp = var_dset_tmp.merge(var_dset_masked, join='right')
+                                        dset_collection[var_time] = var_dset_tmp
+                                elif datasets_type == 'restart_data':
+                                    if var_time not in list(dset_collection.keys()):
+                                        dset_collection[var_time] = {}
+                                    dset_collection[var_time][var_name] = {}
+                                    dset_collection[var_time][var_name] = var_dset_masked
+                                else:
+                                    log_stream.error(' ===> Datasets type ' + datasets_type + ' is not allowed.')
+                                    raise IOError('Check your datasets type in the configuration file.')
+
+                                log_stream.info(' -----> Time "' + var_time.strftime(time_format_algorithm) +
+                                                '" ... DONE')
+
                             else:
-                                log_stream.error(' ===> Datasets type ' + datasets_type + ' is not allowed.')
-                                raise IOError('Check your datasets type in the configuration file.')
-
-                            log_stream.info(' -----> Time "' + var_time.strftime(time_format_algorithm) + '" ... DONE')
-
+                                log_stream.info(' -----> Time "' + var_time.strftime(time_format_algorithm) +
+                                                '" ... SKIPPED. Datasets is not defined')
                         else:
                             log_stream.info(' -----> Time "' + var_time.strftime(time_format_algorithm) +
-                                            '" ... Datasets is not defined')
+                                            '" ... SKIPPED. File source "' + var_file_path_in + '" is not available')
 
                     log_stream.info(' ----> Variable "' + var_name + '" ... DONE')
 

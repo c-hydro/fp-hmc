@@ -218,7 +218,7 @@ class DSetManager:
         self.template_analysis_def = template_analysis_def
         if self.template_analysis_def is not None:
 
-            self.list_variable_selected = ['SM']
+            self.list_variable_selected = ['ET', 'ETCum', 'ETPotCum', 'SM']
             self.tag_variable_fields = '{var_name}:hmc_outcome_datasets:{domain_name}'
 
             self.flag_analysis_ts_domain = True
@@ -239,7 +239,7 @@ class DSetManager:
                 self.flag_analysis_ts_catchment_cpu = 1
 
         else:
-            self.list_variable_selected = ['SM']
+            self.list_variable_selected = ['ET', 'ETCum', 'ETPotCum', 'SM']
             self.tag_variable_fields = '{var_name}:hmc_outcome_datasets:{domain_name}'
 
             self.flag_analysis_ts_domain = True
@@ -248,7 +248,34 @@ class DSetManager:
             self.flag_analysis_ts_catchment_mode = False
             self.flag_analysis_ts_catchment_cpu = 1
 
-    def copy_data(self, dset_model_dyn, dset_destination_dyn, columns_excluded=None):
+    @staticmethod
+    def filter_data(dset_static, dset_filter=None):
+
+        if dset_filter is None:
+            dset_filter = {'Section': 'section_baseflow'}
+
+        data_filters = {}
+        for key_filter, key_value in dset_filter.items():
+            obj_static_section = dset_static[key_filter]
+            data_filters[key_filter] = {}
+            data_values = []
+            for static_key, static_fields in obj_static_section.items():
+                data_step = static_fields[key_value]
+                data_step = 10
+                data_values.append(data_step)
+
+            if key_value == 'section_baseflow':
+                if list(set(data_values)).__len__() > 1 or \
+                        (list(set(data_values)).__len__() == 1 and data_values[0] > 0):
+                    data_filters[key_value] = data_values
+                else:
+                    data_filters[key_value] = None
+            else:
+                data_filters = None
+
+        return data_filters
+
+    def copy_data(self, dset_model_dyn, dset_destination_dyn, columns_excluded=None, **extra_args):
 
         # Starting info
         log_stream.info(' -------> Copy data ... ')

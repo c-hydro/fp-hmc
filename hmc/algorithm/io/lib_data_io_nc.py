@@ -289,18 +289,19 @@ def read_data(file_name_list, var_name=None, var_time_start=None, var_time_end=N
                     log_stream.error(' ===> Time indexes are not implemented for this case')
                     raise IOError(' ===> Case not implemented yet!')
 
-            if coord_name_geo_x not in dst_list_coords:
+            coord_name_geo_x_select = deepcopy(coord_name_geo_x)
+            if coord_name_geo_x_select not in dst_list_coords:
                 coord_name_geo_x_list = ['Longitude', 'longitude', 'lon', 'Lon', 'LON']
                 for coord_name_geo_x_tmp in coord_name_geo_x_list:
                     if coord_name_geo_x_tmp in dst_list_coords:
-                        log_stream.warning(' ===> GeoX coord name used "' + coord_name_geo_x +
+                        log_stream.warning(' ===> GeoX coord name used "' + coord_name_geo_x_select +
                                            '" but found "' + coord_name_geo_x_tmp + '" in collected datasets')
-                        coord_name_geo_x = coord_name_geo_x_tmp
+                        coord_name_geo_x_select = coord_name_geo_x_tmp
                         break
 
             da_geo_x = None
-            if coord_name_geo_x in dst_list_coords:
-                da_geo_x_tmp = dst[coord_name_geo_x]
+            if coord_name_geo_x_select in dst_list_coords:
+                da_geo_x_tmp = dst[coord_name_geo_x_select]
                 if dim_name_time in list(da_geo_x_tmp.dims):
                     da_geo_x = da_geo_x_tmp.squeeze(dim_name_time)
                 else:
@@ -309,18 +310,19 @@ def read_data(file_name_list, var_name=None, var_time_start=None, var_time_end=N
                 log_stream.error(' ===> GeoX dimension name is not in the variables list of nc file')
                 raise IOError(' ===> Check the GeoX dimension!')
 
-            if coord_name_geo_y not in dst_list_coords:
+            coord_name_geo_y_select = deepcopy(coord_name_geo_y)
+            if coord_name_geo_y_select not in dst_list_coords:
                 coord_name_geo_y_list = ['Latitude', 'latitude', 'lat', 'Lat', 'LAT']
                 for coord_name_geo_y_tmp in coord_name_geo_y_list:
                     if coord_name_geo_y_tmp in dst_list_coords:
-                        log_stream.warning(' ===> GeoY coord name used "' + coord_name_geo_y +
+                        log_stream.warning(' ===> GeoY coord name used "' + coord_name_geo_y_select +
                                            '" but found "' + coord_name_geo_y_tmp + '" in collected datasets')
-                        coord_name_geo_y = coord_name_geo_y_tmp
+                        coord_name_geo_y_select = coord_name_geo_y_tmp
                         break
 
             da_geo_y = None
-            if coord_name_geo_y in dst_list_coords:
-                da_geo_y_tmp = dst[coord_name_geo_y]
+            if coord_name_geo_y_select in dst_list_coords:
+                da_geo_y_tmp = dst[coord_name_geo_y_select]
                 if dim_name_time in list(da_geo_y_tmp.dims):
                     da_geo_y = da_geo_y_tmp.squeeze(dim_name_time)
                 else:
@@ -330,7 +332,7 @@ def read_data(file_name_list, var_name=None, var_time_start=None, var_time_end=N
                 raise IOError(' ===> Check the GeoY dimension!')
 
             # Check dimensions not allowed in the datasets (for example: "height")
-            dst_list_coords_expected = [coord_name_geo_x, coord_name_geo_y, coord_name_time]
+            dst_list_coords_expected = [coord_name_geo_x_select, coord_name_geo_y_select, coord_name_time]
             dst_list_coords_tmp = deepcopy(dst_list_coords)
             for coord_name in dst_list_coords_expected:
                 if coord_name in dst_list_coords:

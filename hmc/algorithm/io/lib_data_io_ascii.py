@@ -14,8 +14,9 @@ import os
 import itertools
 
 from abc import ABC
-
 from copy import deepcopy
+
+import numpy as np
 import pandas as pd
 
 from hmc.algorithm.default.lib_default_args import logger_name
@@ -106,7 +107,7 @@ def read_state_point(file_name, file_time, var_name='state', file_time_start=Non
 
 # -------------------------------------------------------------------------------------
 # Method to read outcome point file
-def read_outcome_point(file_name, file_time, file_columns=None, file_ancillary=None):
+def read_outcome_point(file_name, file_time, file_columns=None, file_map=None, file_ancillary=None):
 
     if file_columns is None:
         file_columns = {0: 'dset'}
@@ -171,6 +172,29 @@ def read_outcome_point(file_name, file_time, file_columns=None, file_ancillary=N
         dframe_merged = pd.DataFrame(index=time_step_expected)
         for var_id, (var_key, var_ts) in enumerate(data_var.items()):
             for var_pivot, var_data_defined in var_ts.items():
+
+                if file_map is not None:
+                    if var_pivot in list(file_ancillary.keys()):
+                        for map_key, map_fields in file_map.items():
+                            var_data_ancillary = file_ancillary[var_pivot][map_key]
+                            var_lim_min = map_fields['limits'][0]
+                            var_lim_max = map_fields['limits'][1]
+                            if map_fields['type'] == 'constant':
+                                assert np.isscalar(var_data_ancillary)
+                            else:
+                                log_stream.error(' ===> Map key "' + map_key + '" type is not allowed.')
+                                raise NotImplementedError('Case not implemented yet')
+
+                            if map_key == 'section_baseflow':
+                                var_data_tmp = deepcopy(var_data_defined)
+                                var_data_defined = []
+                                for value_tmp in var_data_tmp:
+                                    value_step = value_tmp + var_data_ancillary
+                                    if (var_lim_min is not None) and (value_step < var_lim_min):
+                                        value_step = value_tmp
+                                    if (var_lim_max is not None) and (value_step > var_lim_max):
+                                        value_step = var_lim_max
+                                    var_data_defined.append(value_step)
 
                 dframe_expected = pd.DataFrame(index=time_step_expected, data=var_data_expected, columns=[var_pivot])
                 dframe_expected.index.name = 'Time'

@@ -41,7 +41,7 @@ class DSetManager:
     # Method to initialize class
     def __init__(self, dset, template_static_ref=None, template_run_ref=None, template_run_def=None,
                  model_tag='hmc', datasets_tag='datasets',
-                 dset_list_format=None, **kwargs):
+                 dset_list_format=None, dset_list_filter=None, **kwargs):
 
         if dset_list_format is None:
             dset_list_format = ['Shapefile', 'Point', 'Gridded']
@@ -75,6 +75,11 @@ class DSetManager:
                 file_frequency = dset_tmp['hmc_file_frequency']
                 file_vars = dset_tmp['hmc_file_variable']
 
+                if 'hmc_file_filter' in list(dset_tmp.keys()):
+                    file_filters = dset_tmp['hmc_file_filter']
+                else:
+                    file_filters = None
+
                 if file_vars.__len__() > 0:
 
                     for var_key, var_data in file_vars.items():
@@ -89,6 +94,7 @@ class DSetManager:
                         dset_obj[dset_format][var_key][self.folder_name_tag] = file_folder
                         dset_obj[dset_format][var_key]['format'] = file_format
                         dset_obj[dset_format][var_key]['frequency'] = file_frequency
+                        dset_obj[dset_format][var_key]['filter'] = file_filters
                         dset_obj[dset_format][var_key]['var_name'] = var_name
                         dset_obj[dset_format][var_key]['var_check'] = var_check
                         dset_obj[dset_format][var_key]['var_mandatory'] = var_mandatory
@@ -132,15 +138,18 @@ class DSetManager:
         file_check_list = dset_source_static['file_check'].values
         file_mandatory_list = dset_source_static['file_mandatory'].values
         file_format_list = dset_source_static['file_format'].values
+        file_filter_list = dset_source_static['file_filter'].values
         file_var_list = dset_source_static['file_var'].values
 
         var_frame = {}
         dset_source = None
-        for var_name, file_name, file_check, file_mandatory, file_format, file_var in zip(
-                var_name_list, file_name_list, file_check_list, file_mandatory_list, file_format_list, file_var_list):
+        for var_name, file_name, file_check, file_mandatory, file_format, file_filter, file_var in zip(
+                var_name_list, file_name_list, file_check_list, file_mandatory_list, file_format_list,
+                file_filter_list, file_var_list):
 
-            file_info = {'var_format': file_format, 'var_mandatory':
-                         file_mandatory, 'var_check': file_check, 'var_file': file_var}
+            file_info = {'var_format': file_format, 'var_mandatory': file_mandatory,
+                         'var_filter': file_filter,
+                         'var_check': file_check, 'var_file': file_var}
 
             var_data = data_source_static[var_name]
 
@@ -217,13 +226,25 @@ class DSetManager:
                                     ' is already available')
 
                     len_check_data = check_data.__len__()
-                    for key, values in var_data.items():
-                        len_var_data = values.__len__()
-                        break
+                    len_var_data = list(var_data.keys()).__len__()
+                    # for key, values in var_data.items(): # commenteted for section obj format changes
+                    #    len_var_data = values.__len__()
+                    #    break
                     if len_check_data == len_var_data:
                         log_stream.info(' -------> The loaded datasets and the stored datasets have the same length')
                         log_stream.info(' -------> The instance will use the stored datasets.')
-                        obj_var = check_data
+
+                        # Merge information of the dictionaries
+                        common_data = {}
+                        for var_key, var_fields_step in check_data.items():
+                            if var_key in list(var_data.keys()):
+                                var_fields_tmp = var_data[var_key]
+                                var_fields_common = {**var_fields_tmp, **var_fields_step}
+                                common_data[var_key] = var_fields_common
+                            else:
+                                log_stream.error(' ===> Variable key ' + var_key + ' is not a common fields.')
+                                raise IOError('Obj key in merging procedures is not valid')
+                        obj_var = deepcopy(common_data)
                         log_stream.info(' ------> Check variable ' + var_name + ' ... DONE')
                     else:
                         log_stream.error(' -------> The loaded datasets and the stored datasets have different lengths')
@@ -283,6 +304,7 @@ class DSetManager:
             file_path_list = []
             file_format_list = []
             file_check_list = []
+            file_filter_list = []
             file_mandatory_list = []
             file_var_list = []
             for dset_key, dset_item in dset_workspace.items():
@@ -292,6 +314,7 @@ class DSetManager:
                 folder_name_raw = dset_item[self.folder_name_tag]
                 file_name_raw = dset_item[self.file_name_tag]
                 file_format = dset_item['format']
+                file_filter = dset_item['filter']
                 file_var = dset_item['var_name']
                 file_check = dset_item['var_check']
                 file_mandatory = dset_item['var_mandatory']
@@ -314,6 +337,7 @@ class DSetManager:
 
                 file_format_list.append(file_format)
                 file_check_list.append(file_check)
+                file_filter_list.append(file_filter)
                 file_mandatory_list.append(file_mandatory)
                 file_var_list.append(file_var)
 
@@ -324,6 +348,7 @@ class DSetManager:
             df_vars = pd.DataFrame(
                 {'dset_name': dset_key_list,
                  'file_name': file_path_list,
+                 'file_filter': file_filter_list,
                  'file_format': file_format_list,
                  'file_check': file_check_list,
                  'file_mandatory': file_mandatory_list,

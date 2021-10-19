@@ -16,6 +16,7 @@ import pandas as pd
 
 from copy import deepcopy
 
+from hmc.algorithm.utils.lib_utils_analysis import compute_runoff_coefficient
 from hmc.algorithm.io.lib_data_io_generic import create_darray_2d
 from hmc.algorithm.io.lib_data_io_json import write_time_series
 from hmc.algorithm.io.lib_data_io_nc import write_collections
@@ -240,6 +241,10 @@ class DSetManager:
 
             elif file_format == 'json_time_series' or file_format == 'json_time_series_discharge':
 
+                time_run = obj_attrs['time_run']
+                time_from = obj_attrs['time_from']
+                time_to = obj_attrs['time_to']
+                time_delta = obj_attrs['time_observed_delta']
                 outlet_workspace = obj_attrs['Section']
                 basin_list = file_attrs['basin_name'].split(self.list_sep)
                 section_list = file_attrs['section_name'].split(self.list_sep)
@@ -287,6 +292,15 @@ class DSetManager:
                         log_stream.warning(' ===> Rain datasets is null. Use array with ' +
                                            str(no_data) + ' values')
                         rain_data_obs = [no_data] * outlet_data_sim.__len__()
+
+                    #compute_runoff_coefficient(
+                    #    section_time_run=time_run,
+                    #    section_time_from=time_from, section_time_to=time_to, section_time_delta=time_delta,
+                    #    section_ts_time=list(file_data[var_name_rain].keys()),
+                    #    section_ts_rain=list(file_data[var_name_rain].values()),
+                    #    section_ts_discharge=list(file_data[var_name_sim].values()),
+                    #    section_area=outlet_workspace_default['section_drained_area'])
+
                     if var_name_airt in list(file_data.keys()):
                         airt_data_tmp = list(file_data[var_name_airt].values())
                         airt_data_obs = ['%.1f' % elem for elem in airt_data_tmp]

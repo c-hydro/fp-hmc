@@ -145,6 +145,11 @@ class DSetReader:
         else:
             self.file_src_check = None
 
+        if 'var_filter' in list(file_src_info.keys()):
+            self.file_src_filter = file_src_info['var_filter']
+        else:
+            self.file_src_filter = None
+
     def unzip_filename(self):
 
         unzip_message = False
@@ -213,7 +218,8 @@ class DSetReader:
 
             elif self.file_src_format == 'shapefile':
                 if var_name == 'Section':
-                    obj_var = read_data_shapefile_section(file_path)
+                    obj_var = read_data_shapefile_section(
+                        file_path, row_filter_type=self.file_src_filter)
                 else:
                     log_stream.error(' ===> Shapefile static variable is not valid in reading method')
                     raise IOError('Shapefile variable name is not allowed')
@@ -286,8 +292,9 @@ class DSetReader:
 
             if self.file_src_format == 'netcdf':
 
-                da_var, da_time, geo_x, geo_y = read_data_nc(file_path, var_name=file_var_name,
-                                                             var_time_start=var_time_start, var_time_end=var_time_end)
+                da_var, da_time, geo_x, geo_y = read_data_nc(
+                    file_path, var_name=file_var_name, var_time_start=var_time_start, var_time_end=var_time_end,
+                    coord_name_time='time', coord_name_geo_x='Longitude', coord_name_geo_y='Latitude')
 
                 if da_var is not None:
                     if var_name == 'ALL':
@@ -318,7 +325,9 @@ class DSetReader:
                                                   select_columns=['ref', 'section_discharge_obs'])
                     elif tag_datatype == 'outcome':
                         file_columns_var = {0: 'section_discharge_sim'}
+                        file_columns_remap = {'section_baseflow': {'limits': [0, None], 'type': 'constant'}}
                         obj_var = read_outcome_point(file_path, self.file_src_time, file_columns=file_columns_var,
+                                                     file_map=file_columns_remap,
                                                      file_ancillary=var_static_info)
                     else:
                         log_stream.error(' ===> File type point for discharge variable is not allowed!')

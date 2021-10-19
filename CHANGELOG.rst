@@ -8,6 +8,8 @@ Version 3.1.5 (20210628)
 - Add the writers for discharges, dams volume and dams level in json format; 
 - Add the condition for the section code in the section points file in character format;
 - Add the possibility of providing to the model time series of observed socket/release systems;
+- Add the choice of constant baseflow for each sections (adding a column in the sections shapefile) [experimental];
+- Add the selection of the sections using the "hmc_file_filter" dictionary in the datasets configuration file;
 - Extend the hmc tool for converting time-series adding the dam volume datasets;
 - Extend the hmc tool for preprocessing gridded sources adding the restart datasets in binary format;
 - Fix bugs in managing dam unavailable datasets in summary data structure;

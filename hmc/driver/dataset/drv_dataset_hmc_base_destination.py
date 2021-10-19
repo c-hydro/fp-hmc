@@ -80,7 +80,7 @@ class ModelDestination:
             template_time=self.obj_template_time, template_analysis_def=self.obj_template_analysis_def,
             file_compression_mode=True)
 
-        self.vars_outcome_analysis = {'Gridded': ['LST', 'SM'],
+        self.vars_outcome_analysis = {'Gridded': ['ET', 'ETCum', 'ETPotCum', 'LST', 'SM'],
                                       'Point': ['Discharge', 'DamV', 'DamL'],
                                       'TimeSeries': None}
 
@@ -107,6 +107,8 @@ class ModelDestination:
 
         self.nan_filled_value = -9998.0
         self.nan_filled_array = -9997.0
+
+        self.baseflow_updating = None
 
     # -------------------------------------------------------------------------------------
 
