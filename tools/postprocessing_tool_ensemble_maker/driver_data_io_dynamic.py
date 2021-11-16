@@ -370,8 +370,8 @@ class DriverDynamic:
                         ts_collections[tag_ts_sim_step] = ts_sim
 
                     else:
-                        logging.warning(' ===> Ensemble ' + ensemble_step + ' is not available.')
-                        ts_collections[tag_ts_sim_step] = None
+                        logging.warning(' ===> Point ' + point_tag +
+                                        ' datasets is null for the ' + ensemble_step + ' ensemble.')
 
                 if ts_collections is not None:
 

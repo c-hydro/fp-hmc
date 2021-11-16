@@ -39,10 +39,16 @@ class DriverStatic:
         self.alg_template_tags = alg_template_tags
         self.file_name_tag = 'file_name'
         self.folder_name_tag = 'folder_name'
+        self.file_data_filter_tag = 'file_data_filter'
 
         self.folder_name_section = src_dict[self.flag_section_data][self.folder_name_tag]
         self.file_name_section = src_dict[self.flag_section_data][self.file_name_tag]
         self.file_path_section = os.path.join(self.folder_name_section, self.file_name_section)
+
+        if self.file_data_filter_tag in list(src_dict[self.flag_section_data].keys()):
+            self.file_data_filter = src_dict[self.flag_section_data][self.file_data_filter_tag]
+        else:
+            self.file_data_filter = None
 
         self.flag_cleaning_static = flag_cleaning_static
 
@@ -59,7 +65,7 @@ class DriverStatic:
         data_collections = {}
 
         # Read section shapefile datasets
-        data_section = read_data_section(self.file_path_section)
+        data_section = read_data_section(self.file_path_section, file_filter=self.file_data_filter)
 
         # Collect datasets in a common object
         data_collections[self.flag_section_data] = data_section

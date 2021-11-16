@@ -40,7 +40,8 @@
     "static": {
       "section_data": {
         "file_name": "fp_sections_marche.shp",
-        "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/data/data_static/shapefile/"
+        "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/data/data_static/shapefile/",
+        "file_data_filter": {"domain": "nera"}
       }
     },
     "dynamic": {

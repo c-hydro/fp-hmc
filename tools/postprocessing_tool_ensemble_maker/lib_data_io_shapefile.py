@@ -14,6 +14,8 @@ import logging
 import pandas as pd
 import geopandas as gpd
 
+from copy import deepcopy
+
 logging.getLogger('fiona').setLevel(logging.WARNING)
 logging.getLogger('geopandas').setLevel(logging.WARNING)
 
@@ -59,7 +61,8 @@ def find_data_section(section_df, section_name=None, basin_name=None,
 
 # -------------------------------------------------------------------------------------
 # Method to read shapefile section(s)
-def read_data_section(file_name, columns_name_expected_in=None, columns_name_expected_out=None, columns_name_type=None):
+def read_data_section(file_name, file_filter=None,
+                      columns_name_expected_in=None, columns_name_expected_out=None, columns_name_type=None):
 
     if columns_name_expected_in is None:
         columns_name_expected_in = [
@@ -76,6 +79,22 @@ def read_data_section(file_name, columns_name_expected_in=None, columns_name_exp
 
     file_dframe_raw = gpd.read_file(file_name)
     file_rows = file_dframe_raw.shape[0]
+
+    if file_filter is not None:
+        file_dframe_step = deepcopy(file_dframe_raw)
+        for filter_key, filter_value in file_filter.items():
+            file_columns_check = [x.lower() for x in list(file_dframe_raw.columns)]
+            if filter_key.lower() in file_columns_check:
+                if isinstance(filter_value, str):
+                    id_key = file_columns_check.index(filter_key)
+                    filter_column = list(file_dframe_raw.columns)[id_key]
+
+                    file_dframe_step = file_dframe_step.loc[
+                        file_dframe_step[filter_column].str.lower() == filter_value.lower()]
+                else:
+                    raise NotImplementedError('Filter type not implemented yet')
+
+        file_dframe_raw = deepcopy(file_dframe_step)
 
     section_obj = {}
     for column_name_in, column_name_out, column_type in zip(columns_name_expected_in,

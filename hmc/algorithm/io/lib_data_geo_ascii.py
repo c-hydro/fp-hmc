@@ -39,36 +39,51 @@ import matplotlib.pylab as plt
 # Method to write file point section(s)
 def write_data_point_section(file_name, file_data, file_cols_expected=10):
 
-    file_keys = list(file_data.keys())
+    if isinstance(file_data, dict):
+        file_keys = list(file_data.keys())
+        if file_keys.__len__() >= 1:
+            for file_key in file_keys:
+                file_fields = file_data[file_key]
+                if isinstance(file_fields, dict):
+                    cols = file_fields.__len__()
+                    break
+                else:
+                    log_stream.error(' ===> Fields obj is not in a dictionary format.')
+                    raise NotImplementedError('Case not implemented yet')
+        else:
+            cols = None
+            log_stream.warning(' ===> Section list is equal to zero. No file section will be dumped.')
+    else:
+        log_stream.error(' ===> Section data obj is not in a dictionary format.')
+        raise NotImplementedError('Case not implemented yet')
 
-    cols = file_data.__len__()
+    # cols = file_data.__len__() --> previous
     if cols != file_cols_expected:
-        log_stream.error(' ===> File sections columns ' + str(cols) + ' found != columns expected' +
+        log_stream.error(' ===> File sections columns ' + str(cols) + ' found != columns expected ' +
                          str(file_cols_expected))
         raise IOError('File datasets are in a wrong format')
 
-    rows = -9999
-    for key in file_keys:
-        if rows != file_data[key].__len__():
-            rows = file_data[key].__len__()
-            break
+    if cols is not None:
 
-    file_obj = []
-    for i in range(0, rows):
-        row = []
+        file_obj = []
         for key in file_keys:
-            point = file_data[key][i]
-            row.append(point)
-        file_obj.append(row)
+            if isinstance(file_data, dict):
+                row = list(file_data[key].values())
+            else:
+                log_stream.error(' ===> Section data obj is not in a dictionary format.')
+                raise NotImplementedError('Case not implemented yet')
 
-    file_folder = os.path.split(file_name)[0]
-    create_folder(file_folder)
-    with open(file_name, "w", encoding='utf-8') as file:
-        for file_row in file_obj:
-            string_row = ' '.join(str(item) for item in file_row)
-            string_row = string_row + '\n'
-            file.write(string_row)
+            file_obj.append(row)
 
+        file_folder = os.path.split(file_name)[0]
+        create_folder(file_folder)
+        with open(file_name, "w", encoding='utf-8') as file:
+            for file_row in file_obj:
+                string_row = ' '.join(str(item) for item in file_row)
+                string_row = string_row + '\n'
+                file.write(string_row)
+    else:
+        log_stream.warning(' ===> Section data is None type. The file section will be undefined.')
 # -------------------------------------------------------------------------------------
 
 

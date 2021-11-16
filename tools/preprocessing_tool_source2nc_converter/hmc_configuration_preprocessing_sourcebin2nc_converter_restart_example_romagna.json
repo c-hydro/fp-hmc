@@ -1,0 +1,328 @@
+{
+  "algorithm": {
+    "general": {
+      "title": "TOOL SOURCE2NC CONVERTER",
+      "web-site": "",
+      "source": "Python library developed by CIMA Research Foundation",
+      "history": "1.1.0 [20211012]",
+      "project-info": "HMC - Hydrological Model Continuum",
+      "algorithm": "Source2NC converter postprocessing tool"
+    },
+    "ancillary": {
+      "__comments__": "datasets_type: [forcing_data, restart_data]",
+      "datasets_type": "restart_data"
+    },
+    "flags": {
+      "cleaning_dynamic_ancillary": true,
+      "cleaning_dynamic_data": true,
+      "cleaning_dynamic_tmp": true
+    },
+    "template": {
+      "source_file_datetime_generic": "%Y%m%d%H%M",
+      "source_folder_datetime_generic": "%Y/%m/%d/",
+      "ancillary_file_datetime_generic": "%Y%m%d%H%M",
+      "ancillary_folder_datetime_generic": "%Y/%m/%d/",
+      "destination_file_datetime_generic": "%Y%m%d%H%M",
+      "destination_folder_datetime_generic": "%Y/%m/%d/"
+    }
+  },
+  "data": {
+    "static" : {
+      "source": {
+        "Terrain": {
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/lexis/static_data/gridded/romagna/",
+          "file_name": "romagna.dem.txt"
+        }
+      },
+      "destination": {
+        "Terrain": {
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/lexis/static_data/gridded/romagna/",
+          "file_name": "romagna.dem.txt"
+        }
+      }
+    },
+    "dynamic": {
+      "source": {
+        "__comment__" : "file_type: binary, netcdf, tiff",
+        "SWE": {
+          "var_compute": true,
+          "var_name": "SWE",
+          "var_scale_factor": 1,
+          "var_format": "f",
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/lexis/dynamic_data/restart/romagna/gridded/{source_folder_datetime_generic}",
+          "file_name": "SWE_{source_file_datetime_generic}.bin.gz",
+          "file_compression": true,
+          "file_geo_reference": "Terrain",
+          "file_type": "binary",
+          "file_time_steps_expected": 1,
+          "file_time_steps_ref": 1,
+          "file_time_steps_flag": "time",
+          "file_coords": null,
+          "file_frequency": "H"
+        },
+        "T_5Days": {
+          "var_compute": true,
+          "var_name": "Ta_5Days",
+          "var_scale_factor": 1,
+          "var_format": "f",
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/lexis/dynamic_data/restart/romagna/gridded/{source_folder_datetime_generic}",
+          "file_name": "Ta_5Days_{source_file_datetime_generic}.bin.gz",
+          "file_compression": true,
+          "file_geo_reference": "Terrain",
+          "file_type": "binary",
+          "file_time_steps_expected": 120,
+          "file_time_steps_ref": 24,
+          "file_time_steps_flag": "day5_steps",
+          "file_coords": null,
+          "file_frequency": "H"
+        },
+        "VTot": {
+          "var_compute": true,
+          "var_name": "V",
+          "var_scale_factor": 10000,
+          "var_format": "i",
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/lexis/dynamic_data/restart/romagna/gridded/{source_folder_datetime_generic}",
+          "file_name": "V_{source_file_datetime_generic}.bin.gz",
+          "file_compression": true,
+          "file_geo_reference": "Terrain",
+          "file_type": "binary",
+          "file_time_steps_expected": 1,
+          "file_time_steps_ref": 1,
+          "file_time_steps_flag": "time",
+          "file_coords": null,
+          "file_frequency": "H"
+        },
+        "Tmk": {
+          "var_compute": true,
+          "var_name": "Tmk",
+          "var_scale_factor": 10000,
+          "var_format": "i",
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/lexis/dynamic_data/restart/romagna/gridded/{source_folder_datetime_generic}",
+          "file_name": "Tmk_{source_file_datetime_generic}.bin.gz",
+          "file_compression": true,
+          "file_geo_reference": "Terrain",
+          "file_type": "binary",
+          "file_time_steps_expected": 3,
+          "file_time_steps_ref": 3,
+          "file_time_steps_flag": "tmarked_steps",
+          "file_coords": null,
+          "file_frequency": "H"
+        },
+        "VRet": {
+          "var_compute": true,
+          "var_name": "Ret",
+          "var_scale_factor": 10000,
+          "var_format": "i",
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/lexis/dynamic_data/restart/romagna/gridded/{source_folder_datetime_generic}",
+          "file_name": "Ret_{source_file_datetime_generic}.bin.gz",
+          "file_compression": true,
+          "file_geo_reference": "Terrain",
+          "file_type": "binary",
+          "file_time_steps_expected": 1,
+          "file_time_steps_ref": 1,
+          "file_time_steps_flag": "time",
+          "file_coords": null,
+          "file_frequency": "H"
+        },
+        "Routing": {
+          "var_compute": true,
+          "var_name": "Rou",
+          "var_scale_factor": 100000,
+          "var_format": "i",
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/lexis/dynamic_data/restart/romagna/gridded/{source_folder_datetime_generic}",
+          "file_name": "Rou_{source_file_datetime_generic}.bin.gz",
+          "file_compression": true,
+          "file_geo_reference": "Terrain",
+          "file_type": "binary",
+          "file_time_steps_expected": 1,
+          "file_time_steps_ref": 1,
+          "file_time_steps_flag": "time",
+          "file_coords": null,
+          "file_frequency": "H"
+        },
+        "DFE": {
+          "var_compute": true,
+          "var_name": "DFE",
+          "var_scale_factor": 10000,
+          "var_format": "i",
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/lexis/dynamic_data/restart/romagna/gridded/{source_folder_datetime_generic}",
+          "file_name": "DFE_{source_file_datetime_generic}.bin.gz",
+          "file_compression": true,
+          "file_geo_reference": "Terrain",
+          "file_type": "binary",
+          "file_time_steps_expected": 1,
+          "file_time_steps_ref": 1,
+          "file_time_steps_flag": "time",
+          "file_coords": null,
+          "file_frequency": "H"
+        },
+        "WTLevel": {
+          "var_compute": true,
+          "var_name": "Vw",
+          "var_scale_factor": 10000,
+          "var_format": "i",
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/lexis/dynamic_data/restart/romagna/gridded/{source_folder_datetime_generic}",
+          "file_name": "Vw_{source_file_datetime_generic}.bin.gz",
+          "file_compression": true,
+          "file_geo_reference": "Terrain",
+          "file_type": "binary",
+          "file_time_steps_expected": 1,
+          "file_time_steps_ref": 1,
+          "file_time_steps_flag": "time",
+          "file_coords": null,
+          "file_frequency": "H"
+        },
+        "LST": {
+          "var_compute": true,
+          "var_name": "Ts",
+          "var_scale_factor": 10000,
+          "var_format": "i",
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/lexis/dynamic_data/restart/romagna/gridded/{source_folder_datetime_generic}",
+          "file_name": "Ts_{source_file_datetime_generic}.bin.gz",
+          "file_compression": true,
+          "file_geo_reference": "Terrain",
+          "file_type": "binary",
+          "file_time_steps_expected": 1,
+          "file_time_steps_ref": 1,
+          "file_time_steps_flag": "time",
+          "file_coords": null,
+          "file_frequency": "H"
+        },
+        "T24": {
+          "var_compute": true,
+          "var_name": "T24",
+          "var_scale_factor": 10000,
+          "var_format": "i",
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/lexis/dynamic_data/restart/romagna/gridded/{source_folder_datetime_generic}",
+          "file_name": "T24_{source_file_datetime_generic}.bin.gz",
+          "file_compression": true,
+          "file_geo_reference": "Terrain",
+          "file_type": "binary",
+          "file_time_steps_expected": 24,
+          "file_time_steps_ref": 24,
+          "file_time_steps_flag": "day_steps",
+          "file_coords": null,
+          "file_frequency": "H"
+        },
+        "HydroLevel": {
+          "var_compute": true,
+          "var_name": "Wl",
+          "var_scale_factor": 100000,
+          "var_format": "i",
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/lexis/dynamic_data/restart/romagna/gridded/{source_folder_datetime_generic}",
+          "file_name": "Wl_{source_file_datetime_generic}.bin.gz",
+          "file_compression": true,
+          "file_geo_reference": "Terrain",
+          "file_type": "binary",
+          "file_time_steps_expected": 1,
+          "file_time_steps_ref": 1,
+          "file_time_steps_flag": "time",
+          "file_coords": null,
+          "file_frequency": "H"
+        },
+        "WS": {
+          "var_compute": true,
+          "var_name": "WS",
+          "var_scale_factor": 1000000,
+          "var_format": "i",
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/lexis/dynamic_data/restart/romagna/gridded/{source_folder_datetime_generic}",
+          "file_name": "WS_{source_file_datetime_generic}.bin.gz",
+          "file_compression": true,
+          "file_geo_reference": "Terrain",
+          "file_type": "binary",
+          "file_time_steps_expected": 1,
+          "file_time_steps_ref": 1,
+          "file_time_steps_flag": "time",
+          "file_coords": null,
+          "file_frequency": "H"
+        },
+        "RhoS": {
+          "var_compute": true,
+          "var_name": "Density",
+          "var_scale_factor": 1,
+          "var_format": "f",
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/lexis/dynamic_data/restart/romagna/gridded/{source_folder_datetime_generic}",
+          "file_name": "Density_{source_file_datetime_generic}.bin.gz",
+          "file_compression": true,
+          "file_geo_reference": "Terrain",
+          "file_type": "binary",
+          "file_time_steps_expected": 1,
+          "file_time_steps_ref": 1,
+          "file_time_steps_flag": "time",
+          "file_coords": null,
+          "file_frequency": "H"
+        },
+        "AlbedoS": {
+          "var_compute": true,
+          "var_name": "AlbedoS",
+          "var_scale_factor": 1,
+          "var_format": "f",
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/lexis/dynamic_data/restart/romagna/gridded/{source_folder_datetime_generic}",
+          "file_name": "AlbedoS_{source_file_datetime_generic}.bin.gz",
+          "file_compression": true,
+          "file_geo_reference": "Terrain",
+          "file_type": "binary",
+          "file_time_steps_expected": 1,
+          "file_time_steps_ref": 1,
+          "file_time_steps_flag": "time",
+          "file_coords": null,
+          "file_frequency": "H"
+        },
+        "AgeS": {
+          "var_compute": true,
+          "var_name": "Age",
+          "var_scale_factor": 1,
+          "var_format": "f",
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/lexis/dynamic_data/restart/romagna/gridded/{source_folder_datetime_generic}",
+          "file_name": "Age_{source_file_datetime_generic}.bin.gz",
+          "file_compression": true,
+          "file_geo_reference": "Terrain",
+          "file_type": "binary",
+          "file_time_steps_expected": 1,
+          "file_time_steps_ref": 1,
+          "file_time_steps_flag": "time",
+          "file_coords": null,
+          "file_frequency": "H"
+        },
+        "T_1Days": {
+          "var_compute": true,
+          "var_name": "Ta_1Days",
+          "var_scale_factor": 1,
+          "var_format": "f",
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/lexis/dynamic_data/restart/romagna/gridded/{source_folder_datetime_generic}",
+          "file_name": "Ta_1Days_{source_file_datetime_generic}.bin.gz",
+          "file_compression": true,
+          "file_geo_reference": "Terrain",
+          "file_type": "binary",
+          "file_time_steps_expected": 24,
+          "file_time_steps_ref": 24,
+          "file_time_steps_flag": "day1_steps",
+          "file_coords": null,
+          "file_frequency": "H"
+        }
+      },
+      "ancillary": {
+        "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/lexis/dynamic_data/ancillary/romagna/{ancillary_folder_datetime_generic}",
+        "file_name": "hmc.forcing-grid.{ancillary_file_datetime_generic}.workspace"
+      },
+      "destination": {
+        "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/lexis/dynamic_data/restart/romagna/gridded/{destination_folder_datetime_generic}",
+        "file_name": "hmc.state-grid.{destination_file_datetime_generic}.nc",
+        "file_geo_reference": "Terrain",
+        "file_compression": true
+      }
+    }
+  },
+  "log": {
+    "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/lexis/log/",
+    "file_name": "hmc_preprocessing_source2nc_converter_romagna_log.txt",
+    "file_history": true
+  },
+  "time": {
+    "time_start": "2021-07-01 23:00",
+    "time_end": "2021-07-19 23:00",
+    "time_frequency": "D",
+    "time_rounding": "H"
+  }
+}
+
