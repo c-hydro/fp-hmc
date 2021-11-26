@@ -320,8 +320,10 @@ class DSetReader:
 
                     if tag_datatype == 'forcing':
                         file_columns_var = {0: 'ref', 1: 'section_discharge_obs', 2: 'section_tag'}
+                        file_columns_lut = {'section_tag': 'ref'}
                         obj_var = read_data_point(file_path, self.file_src_time, file_columns=file_columns_var,
                                                   file_ancillary=var_static_info,
+                                                  file_lut=file_columns_lut,
                                                   select_columns=['ref', 'section_discharge_obs'])
                     elif tag_datatype == 'outcome':
                         file_columns_var = {0: 'section_discharge_sim'}
@@ -337,8 +339,9 @@ class DSetReader:
 
                     if tag_datatype == 'forcing':
                         file_columns_var = {0: 'ref', 1: 'dam_volume_obs', 2: 'dam_volume_max'}
+                        file_columns_lut = None
                         obj_var = read_data_point(file_path, self.file_src_time, file_columns=file_columns_var,
-                                                  file_ancillary=var_static_info)
+                                                  file_ancillary=var_static_info, file_lut=file_columns_lut)
                     elif tag_datatype == 'outcome':
                         file_columns_var = {0: 'dam_volume_sim'}
                         obj_var = read_outcome_point(file_path, self.file_src_time, file_columns=file_columns_var,
@@ -351,8 +354,9 @@ class DSetReader:
 
                     if tag_datatype == 'forcing':
                         file_columns_var = {0: 'ref', 1: 'dam_level_obs', 2: 'dam_level_max'}
+                        file_columns_lut = None
                         obj_var = read_data_point(file_path, self.file_src_time, file_columns=file_columns_var,
-                                                  file_ancillary=var_static_info)
+                                                  file_ancillary=var_static_info, file_lut=file_columns_lut)
                     elif tag_datatype == 'outcome':
                         file_columns_var = {0: 'dam_level_sim'}
                         obj_var = read_outcome_point(file_path, self.file_src_time, file_columns=file_columns_var,

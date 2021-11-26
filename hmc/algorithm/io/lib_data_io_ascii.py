@@ -218,7 +218,8 @@ def read_outcome_point(file_name, file_time, file_columns=None, file_map=None, f
 
 # -------------------------------------------------------------------------------------
 # Method to read data point file
-def read_data_point(file_name, file_time, file_columns=None, file_ancillary=None, select_columns=None):
+def read_data_point(file_name, file_time, file_columns=None, file_lut=None, file_ancillary=None,
+                    select_columns=None):
 
     if file_columns is None:
         file_columns = {0: 'ref', 1: 'dset'}
@@ -228,9 +229,20 @@ def read_data_point(file_name, file_time, file_columns=None, file_ancillary=None
     if not isinstance(file_name, list):
         file_name = [file_name]
 
-    data_obj = {}
-    time_step_expected = []
-    time_step_exists = []
+    idxs_lut = []
+    if file_lut is not None:
+
+        list_lut = []
+        [list_lut.extend([k, v]) for k, v in file_lut.items()]
+
+        for step_lut in list_lut:
+            list_columns = list(file_columns.values())
+            if step_lut in list_columns:
+                idx_lut = list_columns.index(step_lut)
+                idxs_lut.append(idx_lut)
+
+    data_lut, data_obj = {}, {}
+    time_step_expected, time_step_exists = [], []
     for file_n, (file_step, time_step) in enumerate(zip(file_name, file_time)):
 
         time_step_expected.append(time_step)
@@ -247,10 +259,12 @@ def read_data_point(file_name, file_time, file_columns=None, file_ancillary=None
                 if isinstance(file_row, str):
                     file_row_strip = file_row.strip()
                     file_row_split = file_row_strip.split()
+
                 else:
                     log_stream.error(' ===> Data ascii point format is not allowed')
                     raise NotImplementedError(' ===> Case not implemented yet')
 
+                file_row_lut = deepcopy(file_row_split)
                 for row_n, row_value in enumerate(file_row_split):
 
                     col_type = file_columns[row_n]
@@ -262,6 +276,8 @@ def read_data_point(file_name, file_time, file_columns=None, file_ancillary=None
                             # string_no_code = 'no_code_{}'.format(file_idx)
                             id_nan += 1
                             row_value_upd = string_no_code
+                            # update codes to lut variable(s)
+                            file_row_lut[row_n] = row_value_upd
                         else:
                             row_value_upd = str(int(row_value))
                     else:
@@ -293,6 +309,16 @@ def read_data_point(file_name, file_time, file_columns=None, file_ancillary=None
                                 row_tmp.append(value_dset)
                                 data_obj[value_ref][col_type] = row_tmp
 
+                if file_lut is not None:
+                    key_lut = file_row_lut[idxs_lut[0]]
+                    value_lut = file_row_lut[idxs_lut[1]]
+
+                    if isinstance(key_lut, str):
+                        key_lut = key_lut.lower()
+
+                    if key_lut not in list(data_lut.keys()):
+                        data_lut[key_lut] = value_lut
+
     n_obs = data_obj.__len__()
     if file_ancillary is not None:
         n_anc = file_ancillary.__len__()
@@ -306,22 +332,43 @@ def read_data_point(file_name, file_time, file_columns=None, file_ancillary=None
     elif n_obs > n_anc:
         data_obj = dict(itertools.islice(data_obj.items(), n_anc))
         file_keys_sel = file_ancillary
+    else:
+        log_stream.error(' ===> Data ascii time-series length case is not allowed')
+        raise NotImplementedError('Case not implemented yet')
 
-    data_list = []
-    data_var = {}
-    for data_key, (data_ref, data_value) in zip(file_keys_sel, data_obj.items()):
-        for tag_columns in file_columns.values():
-            if tag_columns != 'ref':
-                if tag_columns in list(data_value.keys()):
-                    data_ts = data_value[tag_columns]
+    if isinstance(file_keys_sel[0], str):
+        file_keys_lut = [elem.lower() for elem in file_keys_sel]
+    else:
+        file_keys_lut = deepcopy(file_keys_sel)
 
-                    if tag_columns not in list(data_var.keys()):
-                        data_var[tag_columns] = {}
-                    data_var[tag_columns][data_key] = {}
-                    data_var[tag_columns][data_key] = data_ts
+    data_list, data_var = [], {}
+    for id_key, (data_key, lut_key) in enumerate(zip(file_keys_sel, file_keys_lut)):
 
-                    if data_key not in data_list:
-                        data_list.append(data_key)
+        if data_lut:
+            if lut_key in list(data_lut.keys()):
+                tag_lut = data_lut[lut_key]
+            else:
+                tag_lut = None
+                log_stream.warning(' ===> Data ascii time-series for point "' + data_key + '" not found.')
+        else:
+            tag_lut = list(data_obj.keys())[id_key]
+
+        if (tag_lut is not None) and (tag_lut in list(data_obj.keys())):
+
+            data_value = data_obj[tag_lut]
+
+            for tag_columns in file_columns.values():
+                if tag_columns != 'ref':
+                    if tag_columns in list(data_value.keys()):
+                        data_ts = data_value[tag_columns]
+
+                        if tag_columns not in list(data_var.keys()):
+                            data_var[tag_columns] = {}
+                        data_var[tag_columns][data_key] = {}
+                        data_var[tag_columns][data_key] = data_ts
+
+                        if data_key not in data_list:
+                            data_list.append(data_key)
 
     time_n = time_step_expected.__len__()
     var_data_expected = [-9999.0] * time_n
