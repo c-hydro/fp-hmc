@@ -680,7 +680,7 @@ class DriverDynamic:
                                 else:
                                     var_da_masked = deepcopy(var_da_dst)
 
-                                '''
+                                #'''
                                 plt.figure(1)
                                 plt.imshow(var_da_dst.values[:, :, 0])
                                 plt.colorbar()
@@ -695,7 +695,7 @@ class DriverDynamic:
                                 plt.imshow(geo_da_dst.values)
                                 plt.colorbar()
                                 plt.show()
-                                '''
+                                #'''
 
                                 # Organize data in a common datasets
                                 if self.dim_name_time in list(var_da_masked.dims):

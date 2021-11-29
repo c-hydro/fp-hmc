@@ -1,7 +1,7 @@
 """
 HMC Preprocessing Tool - Source2Netcdf converter
-__date__ = '20211012'
-__version__ = '1.1.0'
+__date__ = '20211126'
+__version__ = '1.2.0'
 __author__ =
         'Lorenzo Alfieri' (lorenzo.alfieri@cimafoundation.org',
         'Andrea Libertino (andrea.libertino@cimafoundation.org',
@@ -13,6 +13,7 @@ General command line:
 python hmc_tool_preprocessing_source2nc_converter.py -settings_file "configuration.json"
 
 Version(s):
+20211126 (1.2.0) --> Add the operational mode and the s3m datasets format to the sources
 20211012 (1.1.0) --> Add the restart datasets in binary format to the sources
 20210408 (1.0.0) --> Refactor to manage different format for source datasets
 20201214 (0.0.2) --> Various bug fixes
@@ -44,8 +45,8 @@ log_stream = logging.getLogger(logger_name)
 project_name = 'HMC'
 alg_name = 'TOOL SOURCE2NC CONVERTER'
 alg_type = 'Model'
-alg_version = '1.1.0'
-alg_release = '2021-10-12'
+alg_version = '1.2.0'
+alg_release = '2021-11-26'
 # -------------------------------------------------------------------------------------
 
 
@@ -80,10 +81,13 @@ def main():
 
     # -------------------------------------------------------------------------------------
     # Organize time run
-    time_chunks, time_range = set_time(
-        time_start=data_settings['time']['time_start'],
-        time_end=data_settings['time']['time_end'],
+    time_run, time_range, time_chunks = set_time(
+        time_run_args=alg_time,
+        time_run_file=data_settings['time']['time_run'],
+        time_run_file_start=data_settings['time']['time_start'],
+        time_run_file_end=data_settings['time']['time_end'],
         time_format=time_format_algorithm,
+        time_period=data_settings['time']['time_period'],
         time_frequency=data_settings['time']['time_frequency'],
         time_rounding=data_settings['time']['time_rounding']
     )

@@ -17,6 +17,7 @@ import numpy as np
 import xarray as xr
 import pandas as pd
 
+from copy import deepcopy
 from netCDF4 import Dataset
 
 from hmc.algorithm.default.lib_default_args import logger_name
@@ -84,8 +85,59 @@ def write_data_nc(file_name, file_obj_data, file_obj_dims_def, file_obj_dims_lis
 
 
 # -------------------------------------------------------------------------------------
+# Method to parser netcdf data
+def parser_data_nc(var_da):
+
+    var_values = var_da.values
+    var_attrs = var_da.attrs
+
+    var_geo_x = None
+    for var_geo_x_step in ['longitude', 'Longitude']:
+        if var_geo_x_step in list(list(var_da.coords.variables)):
+            var_geo_x = var_da[var_geo_x_step].values
+            break
+    if var_geo_x is None:
+        raise IOError('Longitude variable is is not available or not defined')
+    var_geo_y = None
+    for var_geo_y_step in ['latitude', 'Latitude']:
+        if var_geo_y_step in list(list(var_da.coords.variables)):
+            var_geo_y = var_da[var_geo_y_step].values
+            break
+    if var_geo_y is None:
+        raise IOError('Latitude variable is is not available or not defined')
+
+    if 'ncols' in list(var_attrs.keys()):
+        var_geo_x_n = int(var_attrs['ncols'])
+    else:
+        var_geo_x_n = var_values.shape[1]
+
+    if 'nrows' in list(var_attrs.keys()):
+        var_geo_y_n = int(var_attrs['nrows'])
+    else:
+        var_geo_y_n = var_values.shape[0]
+
+    if ('xllcorner' in list(var_attrs.keys()) and 'yllcorner' in list(var_attrs.keys())) and \
+            ('cellsize' in list(var_attrs.keys())):
+        var_geo_x_min = var_attrs['xllcorner']
+        var_geo_y_max = var_attrs['yllcorner']
+        var_geo_x_res = var_attrs['cellsize']
+        var_geo_y_res = var_attrs['cellsize']
+    else:
+        var_geo_x_min, var_geo_y_min, var_geo_x_max, var_geo_y_max = [var_geo_x.min(), var_geo_y.min(),
+                                                                      var_geo_x.max(), var_geo_y.max()]
+
+        var_geo_x_res = (var_geo_x_max - var_geo_x_min) / float(var_geo_x_n)
+        var_geo_y_res = (var_geo_y_max - var_geo_y_min) / float(var_geo_y_n)
+
+    var_geo_transform = (var_geo_x_min, var_geo_x_res, 0, var_geo_y_max, 0, -var_geo_y_res)
+
+    return var_values, var_geo_x, var_geo_y, var_geo_transform
+# -------------------------------------------------------------------------------------
+
+
+# -------------------------------------------------------------------------------------
 # Method to read data netcdf
-def read_data_nc(file_name, geo_ref_x, geo_ref_y, geo_ref_attrs,
+def read_data_nc(file_name, geo_ref_x=None, geo_ref_y=None, geo_ref_attrs=None,
                  var_coords=None, var_scale_factor=1, var_name=None, var_time=None, var_no_data=-9999.0,
                  coord_name_time='time', coord_name_geo_x='Longitude', coord_name_geo_y='Latitude',
                  dim_name_time='time', dim_name_geo_x='west_east', dim_name_geo_y='south_north',
@@ -97,6 +149,7 @@ def read_data_nc(file_name, geo_ref_x, geo_ref_y, geo_ref_attrs,
     if dims_order is None:
         dims_order = [dim_name_geo_y, dim_name_geo_x, dim_name_time]
 
+    var_data, file_attrs = None, None
     if os.path.exists(file_name):
 
         # Open file nc
@@ -120,31 +173,38 @@ def read_data_nc(file_name, geo_ref_x, geo_ref_y, geo_ref_attrs,
             var_data = file_handle[var_name].values
             var_data = np.float32(var_data / var_scale_factor)
 
-            if idx_coords['time'] is not None:
-                coord_name_time = file_coords[idx_coords['time']]
-                if file_handle[coord_name_time].size == 1:
-                    if var_data.shape.__len__() < file_coords.__len__():
-                        var_data = var_data[:, :, np.newaxis]
-                    elif var_data.shape.__len__() == file_coords.__len__():
-                        pass
+            if 'time' in list(idx_coords.keys()):
+                if idx_coords['time'] is not None:
+                    coord_name_time = file_coords[idx_coords['time']]
+                    if file_handle[coord_name_time].size == 1:
+                        if var_data.shape.__len__() < file_coords.__len__():
+                            var_data = var_data[:, :, np.newaxis]
+                        elif var_data.shape.__len__() == file_coords.__len__():
+                            pass
+                        else:
+                            raise NotImplemented('File shape is greater than expected coords')
                     else:
-                        raise NotImplemented('File shape is greater than expected coords')
+                        raise NotImplemented('Time size is greater than 1')
                 else:
-                    raise NotImplemented('Time size is greater than 1')
-            else:
-                raise IOError('Coord name "time" is not available')
+                    raise IOError('Coord name "time" is not available')
 
-            if idx_coords['x'] is not None:
-                coord_name_x = file_coords[idx_coords['x']]
-                geo_data_x = file_handle[coord_name_x].values
-            else:
-                raise IOError('Coord name "x" is not available')
+            geo_data_x = None
+            for step_coords_x in ['x', 'X']:
+                if step_coords_x in idx_coords:
+                    coord_name_x = file_coords[idx_coords[step_coords_x]]
+                    geo_data_x = file_handle[coord_name_x].values
+                    break
+            if geo_data_x is None:
+                raise IOError('Coord name "x" is not available or not defined')
 
-            if idx_coords['y'] is not None:
-                coord_name_y = file_coords[idx_coords['y']]
-                geo_data_y = file_handle[coord_name_y].values
-            else:
-                raise IOError('Coord name "y" is not available')
+            geo_data_y = None
+            for step_coords_y in ['y', 'Y']:
+                if step_coords_y in idx_coords:
+                    coord_name_y = file_coords[idx_coords[step_coords_y]]
+                    geo_data_y = file_handle[coord_name_y].values
+                    break
+            if geo_data_y is None:
+                raise IOError('Coord name "y" is not available or not defined')
 
             geo_y_upper = geo_data_y[0, 0]
             geo_y_lower = geo_data_y[-1, 0]
@@ -152,22 +212,25 @@ def read_data_nc(file_name, geo_ref_x, geo_ref_y, geo_ref_attrs,
                 geo_data_y = np.flipud(geo_data_y)
                 var_data = np.flipud(var_data)
 
-            geo_check_x, geo_check_y = np.meshgrid(geo_ref_x, geo_ref_y)
+            if (geo_ref_x is not None) and (geo_ref_y is not None):
+                geo_check_x, geo_check_y = np.meshgrid(geo_ref_x, geo_ref_y)
 
-            geo_check_start_x = np.float32(round(geo_check_x[0, 0], decimal_round))
-            geo_check_start_y = np.float32(round(geo_check_y[0, 0], decimal_round))
-            geo_check_end_x = np.float32(round(geo_check_x[-1, -1], decimal_round))
-            geo_check_end_y = np.float32(round(geo_check_y[-1, -1], decimal_round))
+                geo_check_start_x = np.float32(round(geo_check_x[0, 0], decimal_round))
+                geo_check_start_y = np.float32(round(geo_check_y[0, 0], decimal_round))
+                geo_check_end_x = np.float32(round(geo_check_x[-1, -1], decimal_round))
+                geo_check_end_y = np.float32(round(geo_check_y[-1, -1], decimal_round))
 
-            geo_data_start_x = np.float32(round(geo_data_x[0, 0], decimal_round))
-            geo_data_start_y = np.float32(round(geo_data_y[0, 0], decimal_round))
-            geo_data_end_x = np.float32(round(geo_data_x[-1, -1], decimal_round))
-            geo_data_end_y = np.float32(round(geo_data_y[-1, -1], decimal_round))
+                geo_data_start_x = np.float32(round(geo_data_x[0, 0], decimal_round))
+                geo_data_start_y = np.float32(round(geo_data_y[0, 0], decimal_round))
+                geo_data_end_x = np.float32(round(geo_data_x[-1, -1], decimal_round))
+                geo_data_end_y = np.float32(round(geo_data_y[-1, -1], decimal_round))
 
-            assert geo_check_start_x == geo_data_start_x, ' ===> Variable geo x start != Reference geo x start'
-            assert geo_check_start_y == geo_data_start_y, ' ===> Variable geo y start != Reference geo y start'
-            assert geo_check_end_x == geo_data_end_x, ' ===> Variable geo x end != Reference geo x end'
-            assert geo_check_end_y == geo_data_end_y, ' ===> Variable geo y end != Reference geo y end'
+                assert geo_check_start_x == geo_data_start_x, ' ===> Variable geo x start != Reference geo x start'
+                assert geo_check_start_y == geo_data_start_y, ' ===> Variable geo y start != Reference geo y start'
+                assert geo_check_end_x == geo_data_end_x, ' ===> Variable geo x end != Reference geo x end'
+                assert geo_check_end_y == geo_data_end_y, ' ===> Variable geo y end != Reference geo y end'
+            else:
+                log_stream.warning(' ===> GeoX and GeoY variables have not compared with a reference GeoX and GeoY')
 
         else:
             log_stream.warning(' ===> Variable ' + var_name + ' not available in loaded datasets!')
@@ -178,21 +241,37 @@ def read_data_nc(file_name, geo_ref_x, geo_ref_y, geo_ref_attrs,
 
     if var_data is not None:
 
-        if isinstance(var_time, pd.Timestamp):
-            var_time = pd.DatetimeIndex([var_time])
-        elif isinstance(var_time, pd.DatetimeIndex):
-            pass
+        if var_time is not None:
+            if isinstance(var_time, pd.Timestamp):
+                var_time = pd.DatetimeIndex([var_time])
+            elif isinstance(var_time, pd.DatetimeIndex):
+                pass
+            else:
+                log_stream.error(' ===> Time format is not allowed. Expected Timestamp or Datetimeindex')
+                raise NotImplemented('Case not implemented yet')
+
+            var_da = xr.DataArray(var_data, name=var_name, dims=dims_order,
+                                  coords={coord_name_time: ([dim_name_time], var_time),
+                                          coord_name_geo_x: ([dim_name_geo_x], geo_data_x[0, :]),
+                                          coord_name_geo_y: ([dim_name_geo_y], geo_data_y[:, 0])})
+
+        elif var_time is None:
+
+            var_da = xr.DataArray(var_data, name=var_name, dims=dims_order,
+                                  coords={coord_name_geo_x: ([dim_name_geo_x], geo_data_x[0, :]),
+                                          coord_name_geo_y: ([dim_name_geo_y], geo_data_y[:, 0])})
+
+        if file_attrs and geo_ref_attrs:
+            geo_attrs = {**file_attrs, **geo_ref_attrs}
+        elif (not file_attrs) and geo_ref_attrs:
+            geo_attrs = deepcopy(geo_ref_attrs)
+        elif file_attrs and (not geo_ref_attrs):
+            geo_attrs = deepcopy(file_attrs)
         else:
-            log_stream.error(' ===> Time format is not allowed. Expected Timestamp or Datetimeindex')
-            raise NotImplemented('Case not implemented yet')
+            geo_attrs = None
 
-        var_da = xr.DataArray(var_data, name=var_name, dims=dims_order,
-                              coords={coord_name_time: ([dim_name_time], var_time),
-                                      coord_name_geo_x: ([dim_name_geo_x], geo_data_x[0, :]),
-                                      coord_name_geo_y: ([dim_name_geo_y], geo_data_y[:, 0])})
-
-        if geo_ref_attrs is not None:
-            var_da.attrs = geo_ref_attrs
+        if geo_attrs is not None:
+            var_da.attrs = geo_attrs
 
     else:
         log_stream.warning(' ===> All filenames in the selected period are not available')

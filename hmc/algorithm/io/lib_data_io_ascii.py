@@ -341,37 +341,63 @@ def read_data_point(file_name, file_time, file_columns=None, file_lut=None, file
     else:
         file_keys_lut = deepcopy(file_keys_sel)
 
+    # Data expected
+    time_n = time_step_expected.__len__()
+    var_data_expected = [-9999.0] * time_n
+
     data_list, data_var = [], {}
     for id_key, (data_key, lut_key) in enumerate(zip(file_keys_sel, file_keys_lut)):
 
         if data_lut:
-            if lut_key in list(data_lut.keys()):
+            if (lut_key is not None) and (lut_key in list(data_lut.keys())):
                 tag_lut = data_lut[lut_key]
+            elif (lut_key is not None) and (lut_key not in list(data_lut.keys())):
+                tag_lut = 'NA'
+                log_stream.warning(' ===> Data ascii time-series for point "' + data_key +
+                                   '" not found due to the lacking of values in the dynamic files')
             else:
                 tag_lut = None
-                log_stream.warning(' ===> Data ascii time-series for point "' + data_key + '" not found.')
+                log_stream.warning(' ===> Data ascii time-series for point "' + data_key +
+                                   '" not found due to the mismatch between the static file and the dynamic files')
         else:
             tag_lut = list(data_obj.keys())[id_key]
 
-        if (tag_lut is not None) and (tag_lut in list(data_obj.keys())):
+        if tag_lut:
 
-            data_value = data_obj[tag_lut]
+            if tag_lut in list(data_obj.keys()):
+                data_value = data_obj[tag_lut]
+
+            elif (tag_lut != 'NA') and (tag_lut not in list(data_obj.keys())):
+                log_stream.warning(' ===> Code for point "' + data_key + '" not found in the dynamic file')
+                data_value = {}
+                for tag_columns in file_columns.values():
+                    if tag_columns != 'ref':
+                        data_value[tag_columns] = deepcopy(var_data_expected)
+
+            elif (tag_lut == 'NA') and (tag_lut not in list(data_obj.keys())):
+                log_stream.warning(' ===> Code for point "' + data_key + '" is undefined')
+                data_value = {}
+                for tag_columns in file_columns.values():
+                    if tag_columns != 'ref':
+                        data_value[tag_columns] = deepcopy(var_data_expected)
+            else:
+                log_stream.error(' ===> Time-series datasets fails in unknown error')
+                raise RuntimeError('Check the routine to fix the bug.')
 
             for tag_columns in file_columns.values():
                 if tag_columns != 'ref':
+
                     if tag_columns in list(data_value.keys()):
                         data_ts = data_value[tag_columns]
 
                         if tag_columns not in list(data_var.keys()):
                             data_var[tag_columns] = {}
-                        data_var[tag_columns][data_key] = {}
-                        data_var[tag_columns][data_key] = data_ts
+                        if data_key not in list(data_var[tag_columns].keys()):
+                            data_var[tag_columns][data_key] = {}
+                            data_var[tag_columns][data_key] = data_ts
 
                         if data_key not in data_list:
                             data_list.append(data_key)
-
-    time_n = time_step_expected.__len__()
-    var_data_expected = [-9999.0] * time_n
 
     dframe_summary = {}
     dframe_merged = pd.DataFrame(index=time_step_expected)
