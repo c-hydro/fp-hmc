@@ -241,7 +241,7 @@ def read_data_point(file_name, file_time, file_columns=None, file_lut=None, file
                 idx_lut = list_columns.index(step_lut)
                 idxs_lut.append(idx_lut)
 
-    data_lut, data_obj = {}, {}
+    data_lut, data_obj, time_obj = {}, {}, {}
     time_step_expected, time_step_exists = [], []
     for file_n, (file_step, time_step) in enumerate(zip(file_name, file_time)):
 
@@ -287,6 +287,8 @@ def read_data_point(file_name, file_time, file_columns=None, file_lut=None, file
                         value_ref = row_value_upd
                         if value_ref not in list(data_obj.keys()):
                             data_obj[value_ref] = {}
+                        if value_ref not in list(time_obj.keys()):
+                            time_obj[value_ref] = {}
                     else:
 
                         if col_type in select_columns:
@@ -304,10 +306,17 @@ def read_data_point(file_name, file_time, file_columns=None, file_lut=None, file
                             if col_type not in list(data_obj[value_ref].keys()):
                                 data_obj[value_ref][col_type] = {}
                                 data_obj[value_ref][col_type] = [value_dset]
+
+                                time_obj[value_ref][col_type] = {}
+                                time_obj[value_ref][col_type] = [time_step]
                             else:
                                 row_tmp = data_obj[value_ref][col_type]
                                 row_tmp.append(value_dset)
                                 data_obj[value_ref][col_type] = row_tmp
+
+                                time_tmp = time_obj[value_ref][col_type]
+                                time_tmp.append(time_step)
+                                time_obj[value_ref][col_type] = time_tmp
 
                 if file_lut is not None:
                     key_lut = file_row_lut[idxs_lut[0]]
@@ -319,107 +328,182 @@ def read_data_point(file_name, file_time, file_columns=None, file_lut=None, file
                     if key_lut not in list(data_lut.keys()):
                         data_lut[key_lut] = value_lut
 
-    n_obs = data_obj.__len__()
-    if file_ancillary is not None:
-        n_anc = file_ancillary.__len__()
-    else:
-        n_anc = 0
+    #if isinstance(file_ancillary[0], str):
+    #    file_keys_lut = [elem.lower() for elem in file_ancillary]
+    #else:
+    #    file_keys_lut = deepcopy(file_ancillary)
 
-    if n_obs < n_anc:
-        file_keys_sel = file_ancillary[0: n_obs]
-    elif n_obs == n_anc:
-        file_keys_sel = file_ancillary
-    elif n_obs > n_anc:
-        data_obj = dict(itertools.islice(data_obj.items(), n_anc))
-        file_keys_sel = file_ancillary
-    else:
-        log_stream.error(' ===> Data ascii time-series length case is not allowed')
-        raise NotImplementedError('Case not implemented yet')
-
-    if isinstance(file_keys_sel[0], str):
-        file_keys_lut = [elem.lower() for elem in file_keys_sel]
-    else:
-        file_keys_lut = deepcopy(file_keys_sel)
-
-    # Data expected
-    time_n = time_step_expected.__len__()
-    var_data_expected = [-9999.0] * time_n
-
-    data_list, data_var = [], {}
-    for id_key, (data_key, lut_key) in enumerate(zip(file_keys_sel, file_keys_lut)):
-
-        if data_lut:
-            if (lut_key is not None) and (lut_key in list(data_lut.keys())):
-                tag_lut = data_lut[lut_key]
-            elif (lut_key is not None) and (lut_key not in list(data_lut.keys())):
-                tag_lut = 'NA'
-                log_stream.warning(' ===> Data ascii time-series for point "' + data_key +
-                                   '" not found due to the lacking of values in the dynamic files')
-            else:
-                tag_lut = None
-                log_stream.warning(' ===> Data ascii time-series for point "' + data_key +
-                                   '" not found due to the mismatch between the static file and the dynamic files')
+    if data_obj:
+        n_obs = data_obj.__len__()
+        if file_ancillary is not None:
+            n_anc = file_ancillary.__len__()
         else:
-            tag_lut = list(data_obj.keys())[id_key]
+            n_anc = 0
 
-        if tag_lut:
+        if n_obs == n_anc:
+            file_keys_sel = deepcopy(file_ancillary)
+        elif n_obs != n_anc:
 
-            if tag_lut in list(data_obj.keys()):
-                data_value = data_obj[tag_lut]
+            data_obj_select, time_obj_select = {}, {}
+            file_ancillary_select = []
+            for name_ancillary in file_ancillary:
 
-            elif (tag_lut != 'NA') and (tag_lut not in list(data_obj.keys())):
-                log_stream.warning(' ===> Code for point "' + data_key + '" not found in the dynamic file')
-                data_value = {}
+                if name_ancillary.lower() in list(data_lut.keys()):
+                    code_ancillary = data_lut[name_ancillary.lower()]
+                    if code_ancillary in list(data_obj.keys()):
+
+                        data_ancillary = data_obj[code_ancillary]
+                        data_obj_select[code_ancillary] = data_ancillary
+                        file_ancillary_select.append(name_ancillary)
+
+                        time_ancillary = time_obj[code_ancillary]
+                        time_obj_select[code_ancillary] = time_ancillary
+
+                    else:
+                        log_stream.warning(' ===> Point "' + name_ancillary +
+                                           '" with code "' + code_ancillary + '" not found in the ascii datasets')
+                else:
+                    log_stream.warning(' ===> Point "' + name_ancillary +
+                                       '" not found in the code lut')
+            data_obj = deepcopy(data_obj_select)
+            time_obj = deepcopy(time_obj_select)
+            file_keys_sel = deepcopy(file_ancillary_select)
+        else:
+            log_stream.error(' ===> Data ascii time-series length case is not allowed')
+            raise NotImplementedError('Case not implemented yet')
+
+        # Data expected
+        time_n = time_step_expected.__len__()
+        var_data_expected = [-9999.0] * time_n
+
+        data_list, data_var, time_var = [], {}, {}
+        file_keys_lut = deepcopy(file_ancillary)
+        file_keys_tmp = [elem.lower() for elem in file_keys_sel]
+        for id_key, select_key in enumerate(file_keys_lut):
+
+            if select_key.lower() in file_keys_tmp:
+                idx_key = file_keys_tmp.index(select_key.lower())
+            else:
+                idx_key = None
+
+            if data_lut:
+                if idx_key is not None:
+                    name_key = file_keys_sel[idx_key]
+                    tag_lut = data_lut[name_key.lower()]
+                elif idx_key is None:
+                    tag_lut = 'NA'
+                    log_stream.warning(' ===> Data ascii time-series for point "' + select_key +
+                                       '" not found due to the lacking of values in the dynamic files')
+                else:
+                    tag_lut = None
+                    log_stream.warning(' ===> Data ascii time-series for point "' + select_key +
+                                       '" not found due to the mismatch between the static file and the dynamic files')
+            else:
+                tag_lut = list(data_obj.keys())[id_key]
+
+            if tag_lut:
+
+                if tag_lut in list(data_obj.keys()):
+
+                    data_value = data_obj[tag_lut]
+                    time_value = time_obj[tag_lut]
+
+                elif (tag_lut != 'NA') and (tag_lut not in list(data_obj.keys())):
+
+                    log_stream.warning(' ===> Code for point "' + select_key + '" not found in the dynamic file')
+                    data_value, time_value = {}, {}
+                    for tag_columns in file_columns.values():
+                        if tag_columns != 'ref':
+                            data_value[tag_columns] = deepcopy(var_data_expected)
+                            time_value[tag_columns] = deepcopy(time_step_expected)
+
+                elif (tag_lut == 'NA') and (tag_lut not in list(data_obj.keys())):
+
+                    log_stream.warning(' ===> Code for point "' + select_key + '" is undefined')
+                    data_value, time_value = {}, {}
+                    for tag_columns in file_columns.values():
+                        if tag_columns != 'ref':
+                            data_value[tag_columns] = deepcopy(var_data_expected)
+                            time_value[tag_columns] = deepcopy(time_step_expected)
+                else:
+                    log_stream.error(' ===> Time-series datasets fails in unknown error')
+                    raise RuntimeError('Check the routine to fix the bug.')
+
                 for tag_columns in file_columns.values():
                     if tag_columns != 'ref':
-                        data_value[tag_columns] = deepcopy(var_data_expected)
 
-            elif (tag_lut == 'NA') and (tag_lut not in list(data_obj.keys())):
-                log_stream.warning(' ===> Code for point "' + data_key + '" is undefined')
-                data_value = {}
-                for tag_columns in file_columns.values():
-                    if tag_columns != 'ref':
-                        data_value[tag_columns] = deepcopy(var_data_expected)
-            else:
-                log_stream.error(' ===> Time-series datasets fails in unknown error')
-                raise RuntimeError('Check the routine to fix the bug.')
+                        if tag_columns in list(data_value.keys()):
+                            data_ts = data_value[tag_columns]
+                            time_ts = time_value[tag_columns]
 
-            for tag_columns in file_columns.values():
-                if tag_columns != 'ref':
+                            if tag_columns not in list(data_var.keys()):
+                                data_var[tag_columns] = {}
+                                time_var[tag_columns] = {}
+                            if select_key not in list(data_var[tag_columns].keys()):
+                                data_var[tag_columns][select_key] = {}
+                                data_var[tag_columns][select_key] = data_ts
 
-                    if tag_columns in list(data_value.keys()):
-                        data_ts = data_value[tag_columns]
+                                time_var[tag_columns][select_key] = {}
+                                time_var[tag_columns][select_key] = time_ts
 
-                        if tag_columns not in list(data_var.keys()):
-                            data_var[tag_columns] = {}
-                        if data_key not in list(data_var[tag_columns].keys()):
-                            data_var[tag_columns][data_key] = {}
-                            data_var[tag_columns][data_key] = data_ts
+                            if select_key not in data_list:
+                                data_list.append(select_key)
 
-                        if data_key not in data_list:
-                            data_list.append(data_key)
+        dframe_summary = {}
+        dframe_merged = pd.DataFrame(index=time_step_expected)
+        for var_id, (var_key, var_ts) in enumerate(data_var.items()):
 
-    dframe_summary = {}
-    dframe_merged = pd.DataFrame(index=time_step_expected)
-    for var_id, (var_key, var_ts) in enumerate(data_var.items()):
-        for var_pivot, var_data_defined in var_ts.items():
+            flag_key = True
+            if select_columns is not None:
+                if var_key not in select_columns:
+                    flag_key = False
 
-            if var_data_defined.__len__() == var_data_expected.__len__():
+            if flag_key:
 
-                dframe_expected = pd.DataFrame(index=time_step_expected, data=var_data_expected, columns=[var_pivot])
-                dframe_expected.index.name = 'Time'
+                time_ts = time_var[var_key]
 
-                dframe_point_tmp = pd.DataFrame(index=time_step_exists, data=var_data_defined, columns=[var_pivot])
-                dframe_point_tmp.index.name = 'Time'
+                for (var_pivot, var_data_defined), \
+                        (time_pivot, time_data_defined) in zip(var_ts.items(), time_ts.items()):
 
-                dframe_expected.update(dframe_point_tmp)
-                series_filled = dframe_expected.iloc[:, 0]
-                dframe_merged[var_pivot] = series_filled
-            else:
-                log_stream.error(' ===> Data ascii time-series length is not correct')
-                raise IOError(' ===> Time-series defined have not the same length of time-series expected')
+                    if var_data_defined.__len__() == var_data_expected.__len__():
 
-        dframe_summary[var_key] = deepcopy(dframe_merged)
+                        dframe_expected = pd.DataFrame(index=time_step_expected, data=var_data_expected,
+                                                       columns=[var_pivot])
+                        dframe_expected.index.name = 'Time'
+
+                        dframe_point_tmp = pd.DataFrame(index=time_step_exists, data=var_data_defined,
+                                                        columns=[var_pivot])
+                        dframe_point_tmp.index.name = 'Time'
+
+                        dframe_expected.update(dframe_point_tmp)
+                        series_filled = dframe_expected.iloc[:, 0]
+                        dframe_merged[var_pivot] = series_filled
+                    else:
+                        log_stream.warning(
+                            ' ===> Data ascii time-series length for point "' + var_pivot +
+                            '" is less than the time period. Try to adapt to expected time period ... ')
+
+                        dframe_expected = pd.DataFrame(index=time_step_expected, data=var_data_expected,
+                                                       columns=[var_pivot])
+                        dframe_expected.index.name = 'Time'
+
+                        dframe_point_tmp = pd.DataFrame(index=time_data_defined, data=var_data_defined,
+                                                        columns=[var_pivot])
+                        dframe_point_tmp.index.name = 'Time'
+
+                        dframe_expected.update(dframe_point_tmp)
+                        series_filled = dframe_expected.iloc[:, 0]
+                        dframe_merged[var_pivot] = series_filled
+
+                        log_stream.warning(
+                            ' ===> Data ascii time-series length for point "' + var_pivot +
+                            '" is less than the time period. Try to adapt to expected time period ... DONE')
+
+                dframe_summary[var_key] = deepcopy(dframe_merged)
+
+    else:
+        dframe_summary = None
+        log_stream.warning(' ===> Data ascii points are undefined for all select period. Files do not exist.')
 
     return dframe_summary
 # -------------------------------------------------------------------------------------
