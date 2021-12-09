@@ -328,11 +328,6 @@ def read_data_point(file_name, file_time, file_columns=None, file_lut=None, file
                     if key_lut not in list(data_lut.keys()):
                         data_lut[key_lut] = value_lut
 
-    #if isinstance(file_ancillary[0], str):
-    #    file_keys_lut = [elem.lower() for elem in file_ancillary]
-    #else:
-    #    file_keys_lut = deepcopy(file_ancillary)
-
     if data_obj:
         n_obs = data_obj.__len__()
         if file_ancillary is not None:
@@ -503,7 +498,6 @@ def read_data_point(file_name, file_time, file_columns=None, file_lut=None, file
 
     else:
         dframe_summary = None
-        log_stream.warning(' ===> Data ascii points are undefined for all select period. Files do not exist.')
 
     return dframe_summary
 # -------------------------------------------------------------------------------------

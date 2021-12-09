@@ -1,0 +1,168 @@
+{
+  "algorithm": {
+    "general": {
+      "title": "Algorithm to mosaic datasets",
+      "web-site": "",
+      "source": "Python library developed by CIMA Research Foundation",
+      "history": "2.0.0 [20211201]",
+      "project-info": "HMC processing tools",
+      "algorithm": "Processing tools by CIMA Research Foundation"
+    },
+    "flags":{
+      "cleaning_static": false,
+      "cleaning_dynamic_ancillary": false,
+      "cleaning_dynamic_data": true,
+      "cleaning_dynamic_tmp": false
+    },
+    "ancillary": {
+      "domain_name" : ["toscana", "marche", "umbria", "lazio"],
+      "layer_name": ["AlbedoS", "SWE", "H_S", "MeltingS", "Theta_W"],
+      "layer_scale_factor": [1, 1, 1, 1, 1]
+    },
+    "template": {
+      "time": {
+        "source_sub_path_time": "%Y/%m/%d/",
+        "source_datetime": "%Y%m%d%H%M",
+        "ancillary_sub_path_time": "%Y/%m/%d/",
+        "ancillary_datetime": "%Y%m%d%H%M",
+        "destination_sub_path_time": "%Y/%m/%d/",
+        "destination_datetime": "%Y%m%d%H%M"
+      },
+      "data" : {
+        "layer_name": "string_layer",
+        "domain_name": "string_domain"
+      }
+    }
+  },
+  "data": {
+    "static": {
+      "source": {
+        "terrain_dataset": {
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/data/data_static/s3m/{domain_name}/",
+          "file_name": "Terrain_Data.nc.gz",
+          "file_compression": true,
+          "file_type": "netcdf",
+          "file_domain": {"flag": true, "value": null},
+          "file_layer": "Terrain",
+          "file_coords": {"x": "Longitude", "y": "Latitude"}
+        },
+        "terrain_reference": {
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/data/data_static/s3m/italy/",
+          "file_name": "DEM_Italy_200m_WGS84geog.tif",
+          "file_compression": false,
+          "file_type": "tiff",
+          "file_domain": {"flag": false, "value": "italy"},
+          "file_layer": "Terrain",
+          "file_coords": {"x": "Longitude", "y": "Latitude"}
+        }
+      },
+      "destination": {
+        "terrain_variable": {
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/data/data_static/gridded_marche/",
+          "file_name": "marche.dem.txt",
+          "file_compression": false,
+          "file_type": "ascii",
+          "file_domain": {"flag": false, "value": "marche"},
+          "file_layer": null,
+          "file_coords": {"x": null, "y": null}
+        }
+      },
+      "ancillary": {
+        "terrain_dataset": {
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/data/data_static/s3m/italy/",
+          "file_name": "info_{domain_name}_domain_src.workspace",
+          "file_type": "pickle",
+          "file_domain": {"flag": true, "value": null},
+          "file_layer": null,
+          "file_coords": {"x": null, "y": null}
+        },
+        "terrain_reference": {
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/data/data_static/s3m/italy/",
+          "file_name": "info_italy_domain_ref.workspace",
+          "file_type": "pickle",
+          "file_domain": {"flag": false, "value": "italy"},
+          "file_layer": null,
+          "file_coords": {"x": null, "y": null}
+        },
+        "terrain_variable": {
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/data/data_static/s3m/italy/",
+          "file_name": "info_marche_domain_dst.workspace",
+          "file_type": "pickle",
+          "file_domain": {"flag": false, "value": "marche"},
+          "file_layer": null,
+          "file_coords": {"x": null, "y": null}
+        }
+      }
+    },
+    "dynamic": {
+      "source": {
+        "dataset_s3m_01": {
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/data/data_dynamic/source/s3m/{domain_name}/{source_sub_path_time}",
+          "file_name": "S3M_{source_datetime}.nc.gz",
+          "file_include": true,
+          "file_compression": true,
+          "file_geo_reference": "terrain_dataset",
+          "file_type": "netcdf",
+          "file_domain": {"flag": false, "value": ["umbria", "toscana", "marche"]},
+          "file_layer": {"flag": false, "value": ["AlbedoS", "SWE", "MeltingS"]},
+          "file_coords": {"x":  "Longitude", "y":  "Latitude", "time":  "time"},
+          "file_frequency": "H"
+        },
+        "dataset_s3m_02": {
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/data/data_dynamic/source/s3m/lazio/{source_sub_path_time}",
+          "file_name": "S3M_{source_datetime}.nc.gz",
+          "file_include": true,
+          "file_compression": true,
+          "file_geo_reference": "terrain_dataset",
+          "file_type": "netcdf",
+          "file_domain": {"flag": false, "value": "lazio"},
+          "file_layer": {"flag": true, "value": null},
+          "file_coords": {"x":  "Longitude", "y":  "Latitude", "time":  "time"},
+          "file_frequency": "H"
+        }
+      },
+      "ancillary": {
+        "dataset": {
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/data/data_dynamic/ancillary/s3m/{ancillary_sub_path_time}",
+          "file_name": "s3m_reference_{domain_name}_{ancillary_datetime}.workspace",
+          "file_include": null,
+          "file_compression": null,
+          "file_geo_reference": "terrain_reference",
+          "file_type": "pickle",
+          "file_domain": {"flag": false, "value": "italy"},
+          "file_layer": {"flag": true, "value": null},
+          "file_coords": null,
+          "file_frequency": "H"
+        }
+      },
+      "destination": {
+        "dataset": {
+          "__comment__" : "tiff: s3m_{domain_name}_{layer_name}_{destination_datetime}.tiff nc: s3m_{domain_name}_{destination_datetime}.nc",
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/data/data_dynamic/outcome/s3m/{destination_sub_path_time}",
+          "file_name": "s3m_{domain_name}_{layer_name}_{destination_datetime}.tiff",
+          "file_include": true,
+          "file_compression": true,
+          "file_geo_reference": "terrain_variable",
+          "file_type": "tiff",
+          "file_domain": {"flag": false, "value": "marche"},
+          "file_layer": {"flag": false, "value": ["SWE", "AlbedoS", "MeltingS"]},
+          "file_coords": null,
+          "file_frequency": "H"
+        }
+      }
+    }
+  },
+  "time": {
+    "time_run": null,
+    "time_start": null,
+    "time_end": null,
+    "time_period": 2,
+    "time_frequency": "H",
+    "time_rounding": "H",
+    "time_reverse": true
+  },
+  "log": {
+    "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/log/",
+    "file_name": "hmc_tool_processing_merger.txt"
+  }
+}

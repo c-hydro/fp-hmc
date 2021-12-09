@@ -29,7 +29,7 @@ settings_datasets_runner_group2='/hydro/fp_tools_runner/rfarm_ecmwf0100_realtime
 settings_datasets_runner_group3='/hydro/fp_tools_runner/rfarm_ecmwf0100_realtime/hmc_model_settings_datasets_rfarm_ecmwf0100_realtime_group3.json'
 
 # Set model ensemble maker execution and settings filename(s)
-script_file_maker_ensemble='/hydro/library/fp_package_hmc/tools/postprocessing_tool_ensemble_maker/hmc_tool_postprocessing_ensemble_maker.py'
+script_file_maker_ensemble='/hydro/library/fp_package_hmc/tools/postprocessing_tool_ensemble_maker/hmc_tool_processing_ensemble_maker.py'
 settings_algorithm_maker_ensemble='/hydro/fp_tools_runner/rfarm_ecmwf0100_realtime/hmc_model_maker_ensemble_rfarm_ecmwf0100_realtime.json'
 
 # Set model json2dew converter execution and settings filename(s)

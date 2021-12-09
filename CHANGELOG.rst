@@ -10,12 +10,14 @@ Version 3.1.5 (20210628)
 - Add the possibility of providing to the model time series of observed socket/release systems;
 - Add the choice of constant baseflow for each sections (adding a column in the sections shapefile) [experimental];
 - Add the selection of the sections using the "hmc_file_filter" dictionary in the datasets configuration file;
+- Add the tool for merging datasets of different domains into a unique domain;
 - Extend the hmc tool for converting time-series adding the dam volume datasets;
 - Extend the hmc tool for preprocessing gridded sources adding the restart datasets in binary format;
 - Fix bugs in the hmc manager in adding observed time-series [discharge, dam volume and dam level] to the json and summary data structure;
 - Fix bugs in the hmc manager in adding dam unavailable datasets in summary data structure;
 - Fix bugs in the hmc tool for making ensemble time-series;
-- Fix bugs in the hmc tool for merging gridded output also in presence of clipped lon-lat matrices.
+- Fix bugs in the hmc tool for merging gridded output also in presence of clipped lon-lat matrices;
+- Refactoring of the tools section.
 
 Version 3.1.4 (20210308)
 ========================
