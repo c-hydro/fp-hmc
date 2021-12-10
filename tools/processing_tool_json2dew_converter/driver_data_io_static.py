@@ -12,7 +12,7 @@ Version:       '1.0.0'
 import logging
 import os
 
-from tools.postprocessing_tool_json2dew_converter.lib_data_io_shapefile import read_data_section, read_data_dam
+from tools.processing_tool_json2dew_converter.lib_data_io_shapefile import read_data_section, read_data_dam
 
 # Debug
 # import matplotlib.pylab as plt

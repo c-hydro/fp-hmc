@@ -10,8 +10,11 @@ Version:       '1.0.0'
 #######################################################################################
 # Libraries
 import logging
+import re
 import pandas as pd
+
 from datetime import date
+from copy import deepcopy
 
 from tools.processing_tool_datasets_merger.lib_info_args import logger_name
 
@@ -79,10 +82,13 @@ def set_time(time_run_args=None, time_run_file=None, time_format='%Y-%m-%d %H:$M
         log_stream.error(' ===> Arguments "time_start" and/or "time_end" is/are not correctly set')
         raise IOError('Time type or format is wrong')
 
+    time_chunks = set_chunks(time_range)
+
     if time_reverse:
         time_range = time_range[::-1]
-
-    time_chunks = set_chunks(time_range)
+        time_tmp, time_chunks = deepcopy(time_chunks), {}
+        for time_step in reversed(list(time_tmp.keys())):
+            time_chunks[time_step] = time_tmp[time_step][::-1]
 
     log_stream.info(' ----> Set time period ... DONE')
 
@@ -93,10 +99,33 @@ def set_time(time_run_args=None, time_run_file=None, time_format='%Y-%m-%d %H:$M
 
 # -------------------------------------------------------------------------------------
 # Method to set chunks
-def set_chunks(time_range, time_period='D'):
+def set_chunks(time_range, time_delta='3H'):
 
-    time_groups = time_range.to_period(time_period)
-    time_chunks = time_range.groupby(time_groups)
+    time_pvt_delta = '-' + time_delta
+    time_pvt_range = pd.date_range(start=time_range[-1], end=time_range[0], freq=time_pvt_delta)
+    time_steps, time_freq = split_time_parts(time_delta)
+
+    time_chunks = {}
+    for time_pvt_step in reversed(time_pvt_range):
+        time_prd_pvt_tmp = pd.date_range(start=time_pvt_step, periods=time_steps, freq=time_freq)
+        time_prd_pvt_flt = time_prd_pvt_tmp[(time_prd_pvt_tmp >= time_range[0]) & (time_prd_pvt_tmp <= time_range[-1])]
+        time_chunks[time_pvt_step] = time_prd_pvt_flt
+
+    #time_groups = time_range.to_period('D')
+    #time_chunks2 = time_range.groupby(time_groups)
 
     return time_chunks
+# -------------------------------------------------------------------------------------
+
+
+# -------------------------------------------------------------------------------------
+# Method to split time delta
+def split_time_parts(time_delta):
+    time_period = re.findall(r'\d+', time_delta)
+    if time_period.__len__() > 0:
+        time_period = int(time_period[0])
+    else:
+        time_period = 1
+    time_frequency = re.findall("[a-zA-Z]+", time_delta)[0]
+    return time_period, time_frequency
 # -------------------------------------------------------------------------------------

@@ -16,11 +16,11 @@ import pandas as pd
 
 from copy import deepcopy
 
-from tools.postprocessing_tool_json2dew_converter.lib_utils_io import read_obj, write_obj
-from tools.postprocessing_tool_json2dew_converter.lib_utils_system import fill_tags2string, make_folder
-from tools.postprocessing_tool_json2dew_converter.lib_info_args import time_format_algorithm
-from tools.postprocessing_tool_json2dew_converter.lib_data_io_json import read_file_ts_hydrograph, read_file_ts
-from tools.postprocessing_tool_json2dew_converter.lib_data_io_dewetra import prepare_info_dewetra, write_file_dewetra
+from tools.processing_tool_json2dew_converter.lib_utils_io import read_obj, write_obj
+from tools.processing_tool_json2dew_converter.lib_utils_system import fill_tags2string, make_folder
+from tools.processing_tool_json2dew_converter.lib_info_args import time_format_algorithm
+from tools.processing_tool_json2dew_converter.lib_data_io_json import read_file_ts_hydrograph, read_file_ts
+from tools.processing_tool_json2dew_converter.lib_data_io_dewetra import prepare_info_dewetra, write_file_dewetra
 
 # Debug
 # import matplotlib.pylab as plt
