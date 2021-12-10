@@ -15,9 +15,11 @@
       "cleaning_dynamic_tmp": false
     },
     "ancillary": {
+      "__comment__": "layer_nc_format: continuum, null",
       "domain_name" : ["toscana", "marche", "umbria", "lazio"],
       "layer_name": ["AlbedoS", "SWE", "H_S", "MeltingS", "Theta_W"],
-      "layer_scale_factor": [1, 1, 1, 1, 1]
+      "layer_scale_factor": [1, 1, 1, 1, 1],
+      "layer_nc_format": "continuum"
     },
     "template": {
       "time": {
@@ -139,11 +141,11 @@
         "dataset": {
           "__comment__" : "tiff: s3m_{domain_name}_{layer_name}_{destination_datetime}.tiff nc: s3m_{domain_name}_{destination_datetime}.nc",
           "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/data/data_dynamic/outcome/s3m/{destination_sub_path_time}",
-          "file_name": "s3m_{domain_name}_{layer_name}_{destination_datetime}.tiff",
+          "file_name": "s3m.mod.{destination_datetime}.nc",
           "file_include": true,
           "file_compression": true,
           "file_geo_reference": "terrain_variable",
-          "file_type": "tiff",
+          "file_type": "netcdf",
           "file_domain": {"flag": false, "value": "marche"},
           "file_layer": {"flag": false, "value": ["SWE", "AlbedoS", "MeltingS"]},
           "file_coords": null,

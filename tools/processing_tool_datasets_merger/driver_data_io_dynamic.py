@@ -19,6 +19,7 @@ from copy import deepcopy
 from tools.processing_tool_datasets_merger.lib_data_io_binary import read_data_binary
 from tools.processing_tool_datasets_merger.lib_data_io_tiff import read_data_tiff
 from tools.processing_tool_datasets_merger.lib_data_io_nc import read_data_nc
+from tools.processing_tool_datasets_merger.lib_data_io_remap import create_dset_continuum
 
 from tools.processing_tool_datasets_merger.lib_utils_interp import active_var_interp, apply_var_interp
 from tools.processing_tool_datasets_merger.lib_utils_io import read_obj, write_obj, write_dset_nc, write_dset_tiff, \
@@ -78,6 +79,7 @@ class DriverDynamic:
         self.tag_domain_name = 'domain_name'
         self.tag_layer_name = 'layer_name'
         self.tag_layer_scale_factor = 'layer_scale_factor'
+        self.tag_layer_nc_format = 'layer_nc_format'
 
         alg_layer_variable = alg_ancillary[self.tag_layer_name]
         if not isinstance(alg_layer_variable, list):
@@ -94,6 +96,11 @@ class DriverDynamic:
         if not isinstance(alg_domain_name, list):
             alg_domain_name = [alg_domain_name]
         self.alg_domain_name = alg_domain_name
+
+        if self.tag_layer_nc_format in list(alg_ancillary.keys()):
+            self.alg_layer_nc_format = alg_ancillary[self.tag_layer_nc_format]
+        else:
+            self.alg_layer_nc_format = 'continuum'
 
         self.alg_template_time = alg_template_tags['time']
         self.alg_template_data = alg_template_tags['data']
@@ -643,6 +650,7 @@ class DriverDynamic:
                                         dim_name_geo_x=self.dim_name_geo_x, dim_name_geo_y=self.dim_name_geo_y,
                                         coord_name_geo_x=self.coord_name_geo_x, coord_name_geo_y=self.coord_name_geo_y,
                                         interp_method=self.interp_method)
+                                    var_dset_dst.attrs = deepcopy(geo_da_dst.attrs)
                                 else:
                                     var_dset_dst = deepcopy(var_dset_anc)
 
@@ -695,8 +703,21 @@ class DriverDynamic:
                                     var_folder_name_dst, var_file_name_dst = os.path.split(var_file_obj_dst)
                                     make_folder(var_folder_name_dst)
 
+                                    if self.alg_layer_nc_format == 'continuum':
+                                        var_dset_remap = create_dset_continuum(
+                                            var_time, var_dset_masked, geo_da_dst.values,
+                                            geo_da_dst['longitude'].values, geo_da_dst['latitude'].values,
+                                            geo_da_dst.attrs)
+                                    elif self.alg_layer_nc_format is None:
+                                        var_dset_remap = deepcopy(var_dset_masked)
+                                    else:
+                                        log_stream.error(
+                                            ' ===> Remap type "' + str(self.alg_layer_nc_format) +
+                                            '" is not permitted. Only "continuum" or NoneType flag are activated')
+                                        raise NotImplementedError('Case not implemented yet')
+
                                     log_stream.info(' ------> Save datasets "' + var_file_name_dst + '" ... ')
-                                    write_dset_nc(var_file_obj_dst, var_dset_masked,
+                                    write_dset_nc(var_file_obj_dst, var_dset_remap,
                                                   dset_engine=self.nc_type_engine, dset_format=self.nc_type_file,
                                                   dset_compression=self.nc_compression_level, fill_data=-9999.0,
                                                   dset_type='float32')

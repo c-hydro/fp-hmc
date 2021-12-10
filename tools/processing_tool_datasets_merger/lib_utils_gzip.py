@@ -30,7 +30,6 @@ def unzip_filename(file_name_zip, file_name_unzip):
 
     file_handle_zip.close()
     file_handle_unzip.close()
-
 # --------------------------------------------------------------------------------
 
 
