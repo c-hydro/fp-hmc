@@ -4,21 +4,22 @@
       "title": "Algorithm to mosaic datasets",
       "web-site": "",
       "source": "Python library developed by CIMA Research Foundation",
-      "history": "2.0.0 [20211201]",
+      "history": "2.0.1 [20211222]",
       "project-info": "HMC processing tools",
       "algorithm": "Processing tools by CIMA Research Foundation"
     },
     "flags":{
       "cleaning_static": false,
-      "cleaning_dynamic_ancillary": false,
+      "cleaning_dynamic_ancillary": true,
       "cleaning_dynamic_data": true,
       "cleaning_dynamic_tmp": false
     },
     "ancillary": {
       "__comment__": "layer_nc_format: continuum, null",
-      "domain_name" : ["toscana", "marche", "umbria", "lazio"],
-      "layer_name": ["AlbedoS", "SWE", "H_S", "MeltingS", "Theta_W"],
-      "layer_scale_factor": [1, 1, 1, 1, 1],
+      "domain_name" : ["toscana", "marche", "umbria", "lazio", "emilia_romagna", "abruzzo"],
+      "layer_name": ["SnowMask", "AlbedoS", "SWE", "MeltingS"],
+      "layer_scale_factor": [1, 1, 1, 1],
+      "layer_no_data": [0, -9999.0, -9999.0, -9999.0],
       "layer_nc_format": "continuum"
     },
     "template": {
@@ -98,27 +99,15 @@
     },
     "dynamic": {
       "source": {
-        "dataset_s3m_01": {
+        "dataset_s3m": {
           "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/data/data_dynamic/source/s3m/{domain_name}/{source_sub_path_time}",
           "file_name": "S3M_{source_datetime}.nc.gz",
           "file_include": true,
           "file_compression": true,
           "file_geo_reference": "terrain_dataset",
           "file_type": "netcdf",
-          "file_domain": {"flag": false, "value": ["umbria", "toscana", "marche"]},
-          "file_layer": {"flag": false, "value": ["AlbedoS", "SWE", "MeltingS"]},
-          "file_coords": {"x":  "Longitude", "y":  "Latitude", "time":  "time"},
-          "file_frequency": "H"
-        },
-        "dataset_s3m_02": {
-          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/data/data_dynamic/source/s3m/lazio/{source_sub_path_time}",
-          "file_name": "S3M_{source_datetime}.nc.gz",
-          "file_include": true,
-          "file_compression": true,
-          "file_geo_reference": "terrain_dataset",
-          "file_type": "netcdf",
-          "file_domain": {"flag": false, "value": "lazio"},
-          "file_layer": {"flag": true, "value": null},
+          "file_domain": {"flag": true, "value": null},
+          "file_layer": {"flag": false, "value": ["SnowMask", "AlbedoS", "SWE", "MeltingS"]},
           "file_coords": {"x":  "Longitude", "y":  "Latitude", "time":  "time"},
           "file_frequency": "H"
         }
@@ -147,7 +136,7 @@
           "file_geo_reference": "terrain_variable",
           "file_type": "netcdf",
           "file_domain": {"flag": false, "value": "marche"},
-          "file_layer": {"flag": false, "value": ["SWE", "AlbedoS", "MeltingS"]},
+          "file_layer": {"flag": false, "value": ["SnowMask", "SWE", "AlbedoS", "MeltingS"]},
           "file_coords": null,
           "file_frequency": "H"
         }
@@ -158,7 +147,7 @@
     "time_run": null,
     "time_start": null,
     "time_end": null,
-    "time_period": 17,
+    "time_period": 5,
     "time_frequency": "H",
     "time_rounding": "H",
     "time_reverse": true

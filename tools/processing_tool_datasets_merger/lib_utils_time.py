@@ -56,7 +56,7 @@ def set_time(time_run_args=None, time_run_file=None, time_format='%Y-%m-%d %H:$M
             time_range = pd.date_range(end=time_run, periods=time_period, freq=time_frequency)
         else:
             log_stream.warning(' ===> TimePeriod must be greater then 0. TimePeriod is set automatically to 1')
-            time_range = pd.DatetimeIndex([time_now], freq=time_frequency)
+            time_range = pd.DatetimeIndex([time_run], freq=time_frequency)
 
         log_stream.info(' -----> Time info defined by "time_run" argument ... DONE')
 
@@ -101,18 +101,21 @@ def set_time(time_run_args=None, time_run_file=None, time_format='%Y-%m-%d %H:$M
 # Method to set chunks
 def set_chunks(time_range, time_delta='3H'):
 
-    time_pvt_delta = '-' + time_delta
-    time_pvt_range = pd.date_range(start=time_range[-1], end=time_range[0], freq=time_pvt_delta)
     time_steps, time_freq = split_time_parts(time_delta)
+
+    if time_range.__len__() > time_steps:
+        time_pvt_delta = deepcopy(time_delta)
+        time_pvt_range = pd.date_range(start=time_range[0], end=time_range[-1], freq=time_pvt_delta)
+    else:
+        time_pvt_range = deepcopy(time_range)
+        time_steps = 1
+        time_freq = time_range.freqstr
 
     time_chunks = {}
     for time_pvt_step in reversed(time_pvt_range):
         time_prd_pvt_tmp = pd.date_range(start=time_pvt_step, periods=time_steps, freq=time_freq)
         time_prd_pvt_flt = time_prd_pvt_tmp[(time_prd_pvt_tmp >= time_range[0]) & (time_prd_pvt_tmp <= time_range[-1])]
         time_chunks[time_pvt_step] = time_prd_pvt_flt
-
-    #time_groups = time_range.to_period('D')
-    #time_chunks2 = time_range.groupby(time_groups)
 
     return time_chunks
 # -------------------------------------------------------------------------------------

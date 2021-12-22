@@ -36,14 +36,6 @@ log_stream = logging.getLogger(logger_name)
 import matplotlib.pylab as plt
 ######################################################################################
 
-# -------------------------------------------------------------------------------------
-# Default definition(s)
-var_fields_accepted = [
-    "var_compute", "var_name", "var_scale_factor",
-    "folder_name", "file_name", "file_compression", "file_type", "file_frequency"]
-time_format_reference = '%Y-%m-%d'
-# -------------------------------------------------------------------------------------
-
 
 # -------------------------------------------------------------------------------------
 # Class DriverDynamic
@@ -62,7 +54,7 @@ class DriverDynamic:
 
         self.time_reference = time_reference
         self.time_period = time_period
-        self.time_str = self.time_reference.strftime(time_format_reference)
+        self.time_str = self.time_reference.strftime(time_format_algorithm)
 
         self.src_dict = src_dict
         self.anc_dict = anc_dict
@@ -79,6 +71,7 @@ class DriverDynamic:
         self.tag_domain_name = 'domain_name'
         self.tag_layer_name = 'layer_name'
         self.tag_layer_scale_factor = 'layer_scale_factor'
+        self.tag_layer_no_data = 'layer_no_data'
         self.tag_layer_nc_format = 'layer_nc_format'
 
         alg_layer_variable = alg_ancillary[self.tag_layer_name]
@@ -91,7 +84,11 @@ class DriverDynamic:
             alg_layer_scale_factor = [alg_layer_scale_factor]
         self.alg_layer_scale_factor = alg_layer_scale_factor
 
-        self.alg_layer_scale_factor = alg_ancillary[self.tag_layer_scale_factor]
+        alg_layer_no_data = alg_ancillary[self.tag_layer_no_data]
+        if not isinstance(alg_layer_no_data, list):
+            alg_layer_no_data = [alg_layer_no_data]
+        self.alg_layer_no_data = alg_layer_no_data
+
         alg_domain_name = alg_ancillary[self.tag_domain_name]
         if not isinstance(alg_domain_name, list):
             alg_domain_name = [alg_domain_name]
@@ -814,6 +811,7 @@ class DriverDynamic:
 
         file_layers_name = self.alg_layer_variable
         file_layers_scale_factor = self.alg_layer_scale_factor
+        file_layers_no_data = self.alg_layer_no_data
 
         file_check_ancillary = self.file_check_ancillary
         file_check_destination = self.file_check_destination
@@ -887,8 +885,10 @@ class DriverDynamic:
                                             var_file_path_tmp, geo_file_x, geo_file_y, geo_file_attrs,
                                             var_coords=file_coords_src,
                                             var_scale_factor=file_layers_scale_factor, var_name=file_layers_name,
+                                            var_no_data=file_layers_no_data,
                                             var_time=var_time,
-                                            coord_name_geo_x=self.coord_name_geo_x, coord_name_geo_y=self.coord_name_geo_y,
+                                            coord_name_geo_x=self.coord_name_geo_x,
+                                            coord_name_geo_y=self.coord_name_geo_y,
                                             coord_name_time=self.coord_name_time,
                                             dim_name_geo_x=self.dim_name_geo_x, dim_name_geo_y=self.dim_name_geo_y,
                                             dim_name_time=self.dim_name_time,
@@ -951,10 +951,16 @@ class DriverDynamic:
                                             var_dset_merged.attrs = attrs_dset_tmp
                                             dset_collection_tmp[var_name_tmp][var_time] = var_dset_merged
 
-                                            # plt.figure()
-                                            # plt.imshow(var_dset_merged['AlbedoS'].values[:,:,0])
-                                            # plt.colorbar()
-                                            # plt.show()
+                                        '''
+                                        # DEBUG
+                                        plt.figure()
+                                        plt.imshow(var_dset_masked['SnowMask'].values[:,:,0])
+                                        plt.colorbar()
+                                        plt.figure()
+                                        plt.imshow(dset_collection_tmp[var_name_tmp][var_time]['SnowMask'].values[:, :, 0])
+                                        plt.colorbar()
+                                        plt.show()
+                                        '''
 
                                     else:
                                         log_stream.warning(' ===> Datasets is undefined. Data not found')
@@ -989,9 +995,11 @@ class DriverDynamic:
                         file_path_collections_anc = file_path_obj_anc[var_name_anc]
 
                         if file_compression_anc is not None:
-                            log_stream.warning(' ==> Compression flag is not available for ancillary datasets by default')
+                            log_stream.warning(
+                                ' ===> Compression flag is not available for ancillary datasets by default')
                         if file_type_anc != 'pickle':
-                            log_stream.error(' ===> Only "pickle" format is supported for ancillary datasets by default ')
+                            log_stream.error(
+                                ' ===> Only "pickle" format is supported for ancillary datasets by default ')
                             raise NotImplementedError('Case not implemented yet')
 
                         for var_time, var_path_list_anc in file_path_collections_anc.items():

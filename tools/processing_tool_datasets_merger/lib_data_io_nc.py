@@ -102,8 +102,12 @@ def read_data_nc(file_name, geo_ref_x=None, geo_ref_y=None, geo_ref_attrs=None,
         var_name = [var_name]
     if not isinstance(var_scale_factor, list):
         var_scale_factor = [var_scale_factor]
+    if not isinstance(var_no_data, list):
+        var_no_data = [var_no_data]
     if var_name.__len__() != var_scale_factor.__len__():
         raise RuntimeError('Variable name(s) and scale factor(s) must have the same dimension.')
+    if var_name.__len__() != var_no_data.__len__():
+        raise RuntimeError('Variable name(s) and no data value(s) must have the same dimension.')
 
     data_workspace, file_attrs = None, None
     if os.path.exists(file_name):
@@ -124,7 +128,7 @@ def read_data_nc(file_name, geo_ref_x=None, geo_ref_y=None, geo_ref_attrs=None,
                 coord_idx = None
             idx_coords[coord_key] = coord_idx
 
-        for var_name_step, var_scale_factor_step in zip(var_name, var_scale_factor):
+        for var_name_step, var_scale_factor_step, var_no_data_step in zip(var_name, var_scale_factor, var_no_data):
 
             if data_workspace is None:
                 data_workspace = {}
@@ -134,6 +138,16 @@ def read_data_nc(file_name, geo_ref_x=None, geo_ref_y=None, geo_ref_attrs=None,
 
                 var_data = file_handle[var_name_step].values
                 var_data = np.float32(var_data / var_scale_factor_step)
+                var_data[var_data == var_no_data_step] = np.nan
+
+                '''
+                # DEBUG
+                import matplotlib.pylab as plt
+                plt.figure()
+                plt.imshow(var_data)
+                plt.colorbar()
+                plt.show()
+                '''
 
                 if 'time' in list(idx_coords.keys()):
                     if idx_coords['time'] is not None:

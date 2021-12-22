@@ -3,8 +3,8 @@
 """
 HYDROLOGICAL MODEL CONTINUUM - Tool mosaic datasets
 
-__date__ = '20211201'
-__version__ = '2.0.0'
+__date__ = '20211221'
+__version__ = '2.0.1'
 __author__ =
         'Francesco Avanzi (francesco.avanzi@cimafoundation.org'
         'Andrea Libertino (andrea.libertino@cimafoundation.org',
@@ -15,6 +15,7 @@ General command line:
 python hmc_tool_processing_datasets_merger.py -settings_file configuration.json -time "YYYY-MM-DD HH:MM"
 
 Version(s):
+20211222 (2.0.1) --> Add no data filter
 20211201 (2.0.0) --> Upgrade codes and routines
 20211029 (1.0.0) --> First release
 """
@@ -44,8 +45,8 @@ log_stream = logging.getLogger(logger_name)
 project_name = 'HMC'
 alg_name = 'TOOL MOSAIC DATASETS'
 alg_type = 'Model'
-alg_version = '2.0.0'
-alg_release = '2021-12-01'
+alg_version = '2.0.1'
+alg_release = '2021-12-22'
 # Algorithm parameter(s)
 time_format = '%Y-%m-%d %H:%M'
 # -------------------------------------------------------------------------------------
@@ -96,7 +97,7 @@ def main():
     # -------------------------------------------------------------------------------------
 
     # -------------------------------------------------------------------------------------
-    # Driver and method of static datasets ### template era in algorithm da modificare o aggiornare simile agli altri
+    # Driver and method of static datasets
     driver_data_static = DriverStatic(
         src_dict=data_settings['data']['static']['source'],
         anc_dict=data_settings['data']['static']['ancillary'],
