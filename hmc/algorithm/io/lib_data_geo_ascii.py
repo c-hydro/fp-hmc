@@ -15,6 +15,7 @@ import os
 
 import numpy as np
 
+from copy import deepcopy
 from rasterio.crs import CRS
 from collections import OrderedDict
 from decimal import Decimal
@@ -182,7 +183,7 @@ def read_data_point_dam(file_name, line_delimiter='#'):
 
     if dam_n > 0:
 
-        point_frame = OrderedDict()
+        point_frame = None
         for dam_id in range(0, dam_n):
             row_id += 1
             _ = parse_row2string(file_lines[row_id], line_delimiter)
@@ -221,34 +222,89 @@ def read_data_point_dam(file_name, line_delimiter='#'):
                 row_id += 1
                 plant_discharge_flag = int(parse_row2string(file_lines[row_id], line_delimiter))
 
+                # define dam and plant tag(s)
                 if plant_name != '':
                     dam_key = ':'.join([dam_name, plant_name])
                 else:
                     dam_key = dam_name
 
-                point_frame[dam_key] = {}
-                point_frame[dam_key]['dam_name'] = dam_name
-                point_frame[dam_key]['dam_idx_ji'] = dam_idx_ji
-                point_frame[dam_key]['dam_plant_n'] = dam_plant_n
-                point_frame[dam_key]['dam_lake_code'] = dam_cell_lake_code
-                point_frame[dam_key]['dam_volume_max'] = dam_volume_max
-                point_frame[dam_key]['dam_volume_init'] = dam_volume_init
-                point_frame[dam_key]['dam_discharge_max'] = dam_discharge_max
-                point_frame[dam_key]['dam_level_max'] = dam_level_max
-                point_frame[dam_key]['dam_h_max'] = dam_h_max
-                point_frame[dam_key]['dam_lin_coeff'] = dam_lin_coeff
-                point_frame[dam_key]['dam_storage_curve'] = dam_storage_curve
-                point_frame[dam_key]['plant_name'] = plant_name
-                point_frame[dam_key]['plant_idx_ji'] = plant_idx_ji
-                point_frame[dam_key]['plant_tc'] = plant_tc
-                point_frame[dam_key]['plant_discharge_max'] = plant_discharge_max
-                point_frame[dam_key]['plant_discharge_flag'] = plant_discharge_flag
+                if point_frame is None:
+                    point_frame = OrderedDict()
+                if dam_key not in list(point_frame.keys()):
+                    point_frame[dam_key] = {}
+                    point_frame[dam_key]['dam_name'] = dam_name
+                    point_frame[dam_key]['dam_idx_ji'] = dam_idx_ji
+                    point_frame[dam_key]['dam_plant_n'] = dam_plant_n
+                    point_frame[dam_key]['dam_lake_code'] = dam_cell_lake_code
+                    point_frame[dam_key]['dam_volume_max'] = dam_volume_max
+                    point_frame[dam_key]['dam_volume_init'] = dam_volume_init
+                    point_frame[dam_key]['dam_discharge_max'] = dam_discharge_max
+                    point_frame[dam_key]['dam_level_max'] = dam_level_max
+                    point_frame[dam_key]['dam_h_max'] = dam_h_max
+                    point_frame[dam_key]['dam_lin_coeff'] = dam_lin_coeff
+                    point_frame[dam_key]['dam_storage_curve'] = dam_storage_curve
+
+                    point_frame[dam_key]['plant_name'] = plant_name
+                    point_frame[dam_key]['plant_idx_ji'] = plant_idx_ji
+                    point_frame[dam_key]['plant_tc'] = plant_tc
+                    point_frame[dam_key]['plant_discharge_max'] = plant_discharge_max
+                    point_frame[dam_key]['plant_discharge_flag'] = plant_discharge_flag
+                else:
+                    log_stream.error(' ===> Dam name "' + dam_key + '" is already saved in the obj structure ')
+                    raise IOError('Key value must be different for adding it in the dam object')
 
     else:
 
         log_stream.warning(' ===> File info for dams was found; dams are equal to zero. Datasets is None')
         log_stream.warning(' ===> Filename ' + os.path.split(file_name)[1])
         point_frame = None
+
+    if point_frame is not None:
+        point_frame_reorder, point_frame_root = {}, []
+        for point_key, point_fields in point_frame.items():
+
+            point_name_root, point_name_other = point_key.split(':')
+
+            if point_name_root not in point_frame_root:
+                point_frame_reorder[point_key] = point_fields
+                point_frame_root.append(point_name_root)
+            else:
+                point_idx_root = point_frame_root.index(point_name_root)
+
+                point_key_root = list(point_frame_reorder.keys())[point_idx_root]
+                point_values_root = point_frame_reorder[point_key_root]
+
+                point_key_tmp, point_other_tmp = point_key_root.split(':')
+                point_other_joined = '_'.join([point_other_tmp, point_name_other])
+                point_key_joined = ':'.join([point_key_tmp, point_other_joined])
+
+                point_value_joined = {}
+                for point_tag, point_data in point_fields.items():
+                    if point_tag in list(point_values_root.keys()):
+
+                        root_data = point_values_root[point_tag]
+
+                        if isinstance(root_data, float):
+                            tmp_data = [root_data, point_data]
+                        elif isinstance(root_data, int):
+                            tmp_data = [root_data, point_data]
+                        elif isinstance(root_data, str):
+                            tmp_data = [root_data, point_data]
+                        elif isinstance(root_data, list):
+                            tmp_data = [root_data, point_data]
+                        else:
+                            log_stream.warning(
+                                ' ===> Type of key "' + point_tag +
+                                '" is not implemented yet for dam merged object')
+
+                        point_value_joined[point_tag] = tmp_data
+                    else:
+                        point_value_joined[point_tag] = point_data
+
+                point_frame_reorder[point_key_joined] = point_value_joined
+                point_frame_reorder.pop(point_key_root)
+
+        point_frame = deepcopy(point_frame_reorder)
 
     return point_frame
 # -------------------------------------------------------------------------------------

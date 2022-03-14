@@ -3,8 +3,8 @@
   "Flags": {
     "__comment": " --- Flags configuration --- ",
     "cleaning_ancillary_data_static": true,
-    "cleaning_ancillary_data_dynamic_source": true,
-    "cleaning_ancillary_data_dynamic_execution": true,
+    "cleaning_ancillary_data_dynamic_source": false,
+    "cleaning_ancillary_data_dynamic_execution": false,
     "cleaning_ancillary_data_dynamic_outcome": true,
     "cleaning_run_execution": false,
     "cleaning_run_logging": false,
@@ -40,9 +40,25 @@
           "var_file_name"   : "hydrograph_{string_var_name_summary_section}_{string_var_name_summary_basin}_{dset_datetime_summary}.json",
           "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/archive/{run_name}/{dset_sub_path_summary}/outcome/collections/{run_mode}/",
           "var_file_dset"	: "Discharge",
-          "var_file_format"	: "json_time_series",
+          "var_file_format"	: "json_time_series_discharge",
           "var_file_limits"	: [0, null],
           "var_file_units"  : "m^3/s"
+        },
+        "DamV"		  : {
+          "var_file_name"   : "damv_{string_var_name_summary_dam}_{dset_datetime_summary}.json",
+          "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/archive/{run_name}/{dset_sub_path_summary}/outcome/collections/{run_mode}/",
+          "var_file_dset"	: "DamV",
+          "var_file_format"	: "json_time_series_dam_volume",
+          "var_file_limits"	: [0, null],
+          "var_file_units"  : "m^3"
+        },
+        "DamL"		  : {
+          "var_file_name"   : "daml_{string_var_name_summary_dam}_{dset_datetime_summary}.json",
+          "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/archive/{run_name}/{dset_sub_path_summary}/outcome/collections/{run_mode}/",
+          "var_file_dset"	: "DamL",
+          "var_file_format"	: "json_time_series_dam_level",
+          "var_file_limits"	: [0, null],
+          "var_file_units"  : "m"
         }
       }
     }
@@ -73,6 +89,7 @@
       "hmc_file_folder"   : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_static/{run_domain}/gridded/",
       "hmc_file_format"   : "ascii_grid",
       "hmc_file_frequency": null,
+      "hmc_file_filter"   : null,
       "hmc_file_variable" : {
         "Alpha"                   : {"var_name": "alpha",             "check": true,   "mandatory": false },
         "Beta"                    : {"var_name": "beta",              "check": true,   "mandatory": false },
@@ -91,7 +108,8 @@
         "Vegetation_Type"         : {"var_name": "cn",                "check": true,   "mandatory": true  },
         "Terrain"                 : {"var_name": "dem",               "check": true,   "mandatory": true  },
         "Mask"                    : {"var_name": "mask",              "check": true,   "mandatory": false },
-        "Water_Source"            : {"var_name": "ws",                "check": true,   "mandatory": false },
+        "WaterTable_Source"       : {"var_name": "ws",                "check": true,   "mandatory": false },
+        "WaterTable_Deep_Losses"  : {"var_name": "wdl",               "check": true,   "mandatory": false },
         "Nature"                  : {"var_name": "nature",            "check": true,   "mandatory": false },
         "Width"                   : {"var_name": "width",             "check": true,   "mandatory": false },
         "Fracturation"            : {"var_name": "fr",                "check": true,   "mandatory": false },
@@ -111,21 +129,23 @@
       "hmc_file_folder"   : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_static/{run_domain}/point/",
       "hmc_file_format"   : "ascii_point",
       "hmc_file_frequency": null,
+      "hmc_file_filter"   : null,
       "hmc_file_variable" : {
         "Dam"                   : {"var_name": "dam",               "check": true,   "mandatory": false  },
         "Intake"                : {"var_name": "intake",            "check": true,   "mandatory": true  },
         "Joint"                 : {"var_name": "joint",             "check": true,   "mandatory": false },
         "Lake"                  : {"var_name": "lake",              "check": true,   "mandatory": false },
-        "Section"               : {"var_name": "section",           "check": true,   "mandatory": true  }
+        "Section"               : {"var_name": "section",           "check": false,  "mandatory": false  }
       }
     },
     "Shapefile": {
-      "hmc_file_name"     : null,
-      "hmc_file_folder"   : null,
+      "hmc_file_name"     : "fp_sections_liguria.shp",
+      "hmc_file_folder"   : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_static/Shapefile/",
       "hmc_file_format"   : "shapefile",
       "hmc_file_frequency": null,
+      "hmc_file_filter"   : {"DOMAIN": "MagraDomain"},
       "hmc_file_variable" : {
-        "Section"               : {"var_name": "section",           "check": false,   "mandatory": false  }
+        "Section"               : {"var_name": "section",           "check": true,   "mandatory": true }
       }
     }
   },
@@ -146,7 +166,7 @@
           "var_list"         : {
             "Rain"            : {
               "var_file_name"   : "Rain_{dset_datetime_forcing_obs}.tif",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_dynamic/LiguriaDomain/forcing_obs/{dset_sub_path_forcing_obs}",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_dynamic/LiguriaDomain/forcing/{dset_sub_path_forcing_obs}",
               "var_file_dset"	: "Rain",
               "var_file_format"	: "tiff",
               "var_file_limits"	: [0, null],
@@ -154,7 +174,7 @@
             },
             "AirTemperature"  : {
               "var_file_name"   : "Temperature_{dset_datetime_forcing_obs}.tif",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_dynamic/LiguriaDomain/forcing_obs/{dset_sub_path_forcing_obs}",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_dynamic/LiguriaDomain/forcing/{dset_sub_path_forcing_obs}",
               "var_file_dset"	: "Air_Temperature",
               "var_file_format"	: "tiff",
               "var_file_limits"	: [-20, 40],
@@ -162,7 +182,7 @@
             },
             "Wind"            : {
               "var_file_name"   : "Wind_{dset_datetime_forcing_obs}.tif",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_dynamic/LiguriaDomain/forcing_obs/{dset_sub_path_forcing_obs}",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_dynamic/LiguriaDomain/forcing/{dset_sub_path_forcing_obs}",
               "var_file_dset"	: "Wind",
               "var_file_format"	: "tiff",
               "var_file_limits"	: [0, 10],
@@ -170,7 +190,7 @@
             },
             "RelHumidity"     : {
               "var_file_name"   : "RelUmid_{dset_datetime_forcing_obs}.tif",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_dynamic/LiguriaDomain/forcing_obs/{dset_sub_path_forcing_obs}",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_dynamic/LiguriaDomain/forcing/{dset_sub_path_forcing_obs}",
               "var_file_dset"   : "Relative_Humidity",
               "var_file_format"	: "tiff",
               "var_file_limits"	: [0, 100],
@@ -178,7 +198,7 @@
             },
             "IncRadiation"	  : {
               "var_file_name"   : "Radiation_{dset_datetime_forcing_obs}.tif",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_dynamic/LiguriaDomain/forcing_obs/{dset_sub_path_forcing_obs}",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_dynamic/LiguriaDomain/forcing/{dset_sub_path_forcing_obs}",
               "var_file_dset"	: "Incoming_Radiation",
               "var_file_format"	: "tiff",
               "var_file_limits"	: [-100, 1200],
@@ -186,7 +206,7 @@
             },
             "AirPressure"	  : {
               "var_file_name"   : "Pressure_{dset_datetime_forcing_obs}.tif",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_dynamic/LiguriaDomain/forcing_obs/{dset_sub_path_forcing_obs}",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_dynamic/LiguriaDomain/forcing/{dset_sub_path_forcing_obs}",
               "var_file_dset"	: "AirPressure",
               "var_file_format"	: "tiff",
               "var_file_limits"	: [1010.0, 1020.0],
@@ -583,7 +603,7 @@
           "var_list"        : {
             "ALL"			  : {
               "var_file_name"   : "hmc.state-grid.{dset_datetime_restart}.nc.gz",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/archive/restart-centa_domain/gridded/",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/archive/MagraDomain/restart/gridded/",
               "var_file_dset"	: "ALL",
               "var_file_format"	: "netcdf",
               "var_file_limits"	: [null, null],
@@ -608,7 +628,7 @@
           "var_list"        : {
             "ALL"			  : {
               "var_file_name"   : "hmc.state-point.{dset_datetime_restart}.txt",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/restart-centa_domain/point/",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/archive/MagraDomain/restart/point/",
               "var_file_dset"	: "ALL",
               "var_file_format"	: "ascii_point",
               "var_file_limits"	: [null, null],

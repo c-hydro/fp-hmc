@@ -85,6 +85,7 @@ class ModelSource:
         self.tag_mask_list = 'mask_name_list'
 
         self.list_sep = ':'
+        self.sublist_sep = '_'
 
         self.reader_geo = DSetManager_Static(dset=self.dset_geo,
                                              template_static_ref=self.obj_template_dset_static_ref,
@@ -183,7 +184,38 @@ class ModelSource:
             else:
                 dset_source_values_merged = dset_source_frame_merge[reader_dataset.datasets_tag]
                 dset_source_values_raw = dset_source_frame_raw[reader_dataset.datasets_tag]
-                dset_source_frame_merge[reader_dataset.datasets_tag] = {**dset_source_values_merged, **dset_source_values_raw}
+
+                var_list_merged = list(dset_source_values_merged.keys())
+                var_list_raw = list(dset_source_values_raw.keys())
+                var_list_tmp = list(set(var_list_merged + var_list_raw))
+
+                dset_source_values_tmp = {}
+                for var_key in var_list_tmp:
+
+                    if var_key in list(dset_source_values_merged.keys()):
+                        var_fields_merged = dset_source_values_merged[var_key]
+                    else:
+                        var_fields_merged = None
+                    if var_key in list(dset_source_values_raw.keys()):
+                        var_fields_raw = dset_source_values_raw[var_key]
+                    else:
+                        var_fields_raw = None
+
+                    if (var_fields_merged is not None) and (var_fields_raw is not None):
+                        var_fields_tmp = {**var_fields_merged, **var_fields_raw}
+                    elif (var_fields_merged is not None) and (var_fields_raw is None):
+                        var_fields_tmp = deepcopy(var_fields_merged)
+                    elif (var_fields_merged is None) and (var_fields_raw is not None):
+                        var_fields_tmp = deepcopy(var_fields_raw)
+                    elif (var_fields_merged is None) and (var_fields_raw is None):
+                        var_fields_tmp = None
+                    else:
+                        log_stream.error(' ===> Type of format for variable "' + var_key + '" is not supported')
+                        raise IOError('Unexpected type of object, check the procedure.')
+
+                    dset_source_values_tmp[var_key] = var_fields_tmp
+
+                dset_source_frame_merge[reader_dataset.datasets_tag] = dset_source_values_tmp
 
                 dset_collections_static = dset_source_frame_merge[reader_dataset.datasets_tag]
 
@@ -200,24 +232,34 @@ class ModelSource:
                     dam_list = dam_parts[0]
                     plant_list = dam_parts[0]
                 else:
-                    logging.error(' ===> Dam parts are in a unsupported format')
+                    log_stream.error(' ===> Dam parts are in a unsupported format')
                     raise NotImplementedError('Case not implemented yet')
 
                 if dam_list.__len__() != plant_list.__len__():
-                    logging.error(' ===> Dams list and plants list have not the same elements length')
+                    log_stream.error(' ===> Dams list and plants list have not the same elements length')
                     raise NotImplementedError('Case not implemented yet')
 
+                dam_system_dict = {}
+                for dam_step, plant_step in zip(dam_list, plant_list):
+                    if dam_step not in list(dam_system_dict.keys()):
+                        dam_system_dict[dam_step] = [plant_step]
+                    else:
+                        tmp_step = dam_system_dict[dam_step]
+                        tmp_step.append(plant_step)
+                        dam_system_dict[dam_step] = tmp_step
+
                 dam_system_list = []
-                for dam, plant in zip(dam_list, plant_list):
-                    dam_system_step = self.list_sep.join([dam, plant])
-                    dam_system_list.append(dam_system_step)
+                for dam_system_name_str, dam_system_plant_list in dam_system_dict.items():
+                    dam_system_name_value = self.sublist_sep.join(dam_system_plant_list)
+                    dam_system_conn_str = self.list_sep.join([dam_system_name_str, dam_system_name_value])
+                    dam_system_list.append(dam_system_conn_str)
 
             else:
                 dam_system_list = None
                 dam_list = None
                 plant_list = None
         else:
-            logging.error(' ===> "Dam" key in static collections does not exist')
+            log_stream.error(' ===> "Dam" key in static collections does not exist')
             raise NotImplementedError('Key not available in data collections')
 
         if 'Intake' in list(dset_collections_static.keys()):                                # add20210604 --start
@@ -229,13 +271,13 @@ class ModelSource:
                     release_list = intake_parts[0]
                     socket_list = intake_parts[1]
                 else:
-                    logging.error(' ===> Intake parts are in a unsupported format')
+                    log_stream.error(' ===> Intake parts are in a unsupported format')
                     raise NotImplementedError('Case not implemented yet')
             else:
                 release_list = None
                 socket_list = None
         else:
-            logging.error(' ===> "Intake" key in static collections does not exist')
+            log_stream.error(' ===> "Intake" key in static collections does not exist')
             raise NotImplementedError('Key not available in data collections')              # add20210604 --end
 
         if 'Section' in list(dset_collections_static.keys()):
@@ -248,7 +290,7 @@ class ModelSource:
                 outlet_list.append(outlet_step)
 
         else:
-            logging.error(' ===> "Section" key in static collections does not exist')
+            log_stream.error(' ===> "Section" key in static collections does not exist')
             raise NotImplementedError('Key not available in data collections')
 
         if ('Section' in list(dset_collections_static.keys())) and (
@@ -262,7 +304,7 @@ class ModelSource:
 
         else:
             mask_obj = None
-            logging.warning(' ===> "Section" or/and "Flow_Directions" keys in static collections does not exist')
+            log_stream.warning(' ===> "Section" or/and "Flow_Directions" keys in static collections does not exist')
 
         if release_list is not None:                                            #add20210607 ---start
             if plant_list is None:

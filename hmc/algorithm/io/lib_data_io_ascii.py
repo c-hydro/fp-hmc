@@ -176,25 +176,32 @@ def read_outcome_point(file_name, file_time, file_columns=None, file_map=None, f
                 if file_map is not None:
                     if var_pivot in list(file_ancillary.keys()):
                         for map_key, map_fields in file_map.items():
-                            var_data_ancillary = file_ancillary[var_pivot][map_key]
-                            var_lim_min = map_fields['limits'][0]
-                            var_lim_max = map_fields['limits'][1]
-                            if map_fields['type'] == 'constant':
-                                assert np.isscalar(var_data_ancillary)
-                            else:
-                                log_stream.error(' ===> Map key "' + map_key + '" type is not allowed.')
-                                raise NotImplementedError('Case not implemented yet')
 
-                            if map_key == 'section_baseflow':
-                                var_data_tmp = deepcopy(var_data_defined)
-                                var_data_defined = []
-                                for value_tmp in var_data_tmp:
-                                    value_step = value_tmp + var_data_ancillary
-                                    if (var_lim_min is not None) and (value_step < var_lim_min):
-                                        value_step = value_tmp
-                                    if (var_lim_max is not None) and (value_step > var_lim_max):
-                                        value_step = var_lim_max
-                                    var_data_defined.append(value_step)
+                            if map_key in list(file_ancillary[var_pivot].keys()):
+                                var_data_ancillary = file_ancillary[var_pivot][map_key]
+                                var_lim_min = map_fields['limits'][0]
+                                var_lim_max = map_fields['limits'][1]
+                                if map_fields['type'] == 'constant':
+                                    assert np.isscalar(var_data_ancillary)
+                                else:
+                                    log_stream.error(' ===> Map key "' + map_key + '" type is not allowed.')
+                                    raise NotImplementedError('Case not implemented yet')
+
+                                if map_key == 'section_baseflow':
+                                    var_data_tmp = deepcopy(var_data_defined)
+                                    var_data_defined = []
+                                    for value_tmp in var_data_tmp:
+                                        value_step = value_tmp + var_data_ancillary
+                                        if (var_lim_min is not None) and (value_step < var_lim_min):
+                                            value_step = value_tmp
+                                        if (var_lim_max is not None) and (value_step > var_lim_max):
+                                            value_step = var_lim_max
+                                        var_data_defined.append(value_step)
+
+                            else:
+                                log_stream.warning(' ===> Expected key "' + map_key + '" for point "' + var_pivot +
+                                                   '" is not available. Data saved is not filtered or modified by' +
+                                                   ' the application of this parameter')
 
                 dframe_expected = pd.DataFrame(index=time_step_expected, data=var_data_expected, columns=[var_pivot])
                 dframe_expected.index.name = 'Time'

@@ -59,24 +59,35 @@ def compute_section_mask(fdir_values, fdir_map=None, fdir_nodata=0, geo_referenc
         section_i = section_idx_ji[1] - 1
         section_mask = 'section_mask'
 
-        grid.catchment(data=grid.fdir, x=section_i, y=section_j,
-                       dirmap=fdir_map, out_name=section_mask,
-                       recursionlimit=15000, nodata_out=0, ytype='index')
-        section_mask = np.array(grid.section_mask).astype(np.float32)
+        try:
+            grid.catchment(data=grid.fdir, x=section_i, y=section_j,
+                           dirmap=fdir_map, out_name=section_mask,
+                           recursionlimit=15000, nodata_out=0, ytype='index')
+            section_mask = np.array(grid.section_mask).astype(np.float32)
 
-        section_mask[section_mask == 0] = 0
-        section_mask[geo_values < 0] = 0
-        section_mask[section_mask >= 1] = 1
+            section_mask[section_mask == 0] = 0
+            section_mask[geo_values < 0] = 0
+            section_mask[section_mask >= 1] = 1
 
-        geo_latitude = np.flipud(geo_latitude)
+            geo_latitude = np.flipud(geo_latitude)
 
-        section_da = create_darray_2d(section_mask, geo_longitude, geo_latitude,
-                                      coord_name_x='Longitude', coord_name_y='Latitude',
-                                      dim_name_x='west_east', dim_name_y='south_north',
-                                      dims_order=['south_north', 'west_east'])
+            section_da = create_darray_2d(section_mask, geo_longitude, geo_latitude,
+                                          coord_name_x='Longitude', coord_name_y='Latitude',
+                                          dim_name_x='west_east', dim_name_y='south_north',
+                                          dims_order=['south_north', 'west_east'])
+            # DEBUG
+            # plt.figure()
+            # plt.imshow(section_da.values)
+            # plt.show()
 
-        section_obj[section_tag] = {}
-        section_obj[section_tag] = section_da
+            section_obj[section_tag] = {}
+            section_obj[section_tag] = section_da
+
+        except BaseException as base_exc:
+
+            log_stream.error(' ===> Compute mask for point "' + section_tag + ' failed unexpectedly.')
+            log_stream.error(' ===> Error occurred in compute_section_mask function "' + str(base_exc) + '"')
+            raise IOError('Point to compute mask is not correct. Check your (j,i).')
 
     return section_obj
 
@@ -184,6 +195,7 @@ def compute_drainage_area(terrain, cell_area, no_data=-9999, units='Km^2'):
     return drainage_area
 
 # -------------------------------------------------------------------------------------
+
 
 # -------------------------------------------------------------------------------------
 # Method to compute corrivation time

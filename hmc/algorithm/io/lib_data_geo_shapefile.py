@@ -37,7 +37,7 @@ def read_data_shapefile_section(file_name, columns_name_expected=None, columns_n
                                  'Q_THR1', 'Q_THR2', 'DOMAIN', 'BASEFLOW']
     if columns_name_type is None:
         columns_name_type = ['int', 'int', 'str', 'str', 'int', 'float', 'float',
-                             'float', 'float', 'str', 'float']
+                             'float', 'str', 'float']
 
     if columns_name_defined is None:
         columns_name_defined = ['section_idx_j', 'section_idx_i',
@@ -78,10 +78,45 @@ def read_data_shapefile_section(file_name, columns_name_expected=None, columns_n
 
         if column_name_exp in file_dframe_raw.columns:
             column_data = file_dframe_raw[column_name_exp].values.tolist()
+
+            if column_type == 'int':
+                column_res = type(column_data[0]) == int
+            elif column_type == 'str':
+                column_res = type(column_data[0]) == str
+            elif column_type == 'float':
+                column_res = type(column_data[0]) == float
+            else:
+                log_stream.error(' ===> Datatype for defined columns in the section shapefile is not allowed')
+                raise NotImplementedError('Datatype not implemented yet')
+
+            if not column_res:
+                log_stream.warning(
+                    ' ===> Column "' + column_name_exp +
+                    '" format is not expected in this format. '
+                    'Try to parse again in the case of int/float column or int/str column(s).')
+                if column_name_exp == 'SEC_RS':
+                    column_res = type(column_data[0]) == str
+                    if column_res:
+                        log_stream.warning(' ===> Column "' + column_name_exp + '" is parsed using the "string" format')
+                if column_name_exp in ['AREA', 'Q_THR1', 'Q_THR2']:
+                    column_res = type(column_data[0]) == int
+                    if column_res:
+                        log_stream.warning(
+                            ' ===> Column "' + column_name_exp +
+                            '" is parsed using the "int" format. '
+                            'To obtain the expected format the data is converted from "int" to "float" format')
+                        tmp_data = [float(el) for el in column_data]
+                        column_data = deepcopy(tmp_data)
+
+            if not column_res:
+                log_stream.error(' ===> Column "' + column_name_exp +
+                                 '" in the section shapefile is not expected in this format')
+                raise IOError('Change format in the input file')
+
         else:
 
-            log_stream.warning(' ===> Column ' + column_name_exp +
-                               ' not available in shapefile. Initialized with undefined values according with datatype')
+            log_stream.warning(' ===> Column "' + column_name_exp +
+                               '" not available in shapefile. Initialized with undefined values according with datatype')
             if column_type == 'int':
                 column_data = [-9999] * file_rows
             elif column_type == 'str':
@@ -130,6 +165,18 @@ def read_data_shapefile_section(file_name, columns_name_expected=None, columns_n
         type_obj[column_name_def] = type_data
 
     file_points = convert_obj_list2point(file_obj, file_pivot_order=['section_domain', 'section_name'])
+
+    for point_key, point_fields in file_points.items():
+        if 'section_idx_ji' not in list(point_fields.keys()):
+            if 'section_idx_j' in list(point_fields.keys()) and 'section_idx_i' in list(point_fields.keys()):
+                section_j = point_fields['section_idx_j']
+                section_i = point_fields['section_idx_i']
+                section_ji = [section_j, section_i]
+
+                point_fields['section_idx_ji'] = section_ji
+            else:
+                log_stream.error(' ===> Point (j,i) for "' + point_key + '" are not defined.')
+                raise IOError('Point (j,i) must be defined in the shapefile. Check your input.')
 
     return file_points
 # -------------------------------------------------------------------------------------

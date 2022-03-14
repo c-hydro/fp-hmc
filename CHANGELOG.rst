@@ -13,6 +13,8 @@ Version 3.1.5 (20210628)
 - Add the tool for merging datasets of different domains into a unique domain;
 - Extend the hmc tool for converting time-series adding the dam volume datasets;
 - Extend the hmc tool for preprocessing gridded sources adding the restart datasets in binary format;
+- Fix bugs in the hmc manager in managing the point static datasets of dams, joints, lakes, intakes and sections;
+- Fix bugs in the hmc manager in managing the compatibility for sections file in shp or ascii format;
 - Fix bugs in the hmc manager in adding observed time-series [discharge, dam volume and dam level] to the json and summary data structure;
 - Fix bugs in the hmc manager in adding dam unavailable datasets in summary data structure;
 - Fix bugs in the hmc tool for making ensemble time-series;

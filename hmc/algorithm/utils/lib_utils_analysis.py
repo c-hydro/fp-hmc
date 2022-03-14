@@ -32,8 +32,11 @@ variable_excluded_default = ['terrain', 'Terrain', 'mask', 'Mask']
 #######################################################################################
 
 
+# -------------------------------------------------------------------------------------
 def compute_baseflow():
-    print('ciao')
+    pass
+# -------------------------------------------------------------------------------------
+
 
 # -------------------------------------------------------------------------------------
 # Method to compute runoff coefficient
@@ -50,10 +53,8 @@ def compute_runoff_coefficient(section_time_run=None,
     section_dframe_rain_select = section_dframe_rain[section_time_from:section_time_to]
     section_dframe_discharge_select = section_dframe_discharge[section_time_from:section_time_to]
 
-
-
-
 # -------------------------------------------------------------------------------------
+
 
 # -------------------------------------------------------------------------------------
 # Method to compute mean values over domain

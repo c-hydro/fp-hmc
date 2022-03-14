@@ -369,7 +369,7 @@ class ModelDestination:
 
                         file_dict_tmp = obj_filename[dset_key].to_dict()
 
-                        log_stream.info(' -------> Dump summary outcome ... ')
+                        log_stream.info(' -------> Dump summary outcome "' + lut_name + '" ... ')
                         if lut_name in list(file_dict_tmp.keys()):
                             file_name_tmp = file_dict_tmp[lut_name]
                             file_name_filter = [i for i in file_name_tmp.values() if isinstance(i, str)][0]
@@ -383,12 +383,14 @@ class ModelDestination:
                                                          obj_time=obj_time, obj_static=obj_static,
                                                          no_data=self.nan_filled_array)
 
-                                log_stream.info(' -------> Dump summary outcome ... DONE')
+                                log_stream.info(' -------> Dump summary outcome "' + lut_name +
+                                                '" ... DONE')
                             else:
-                                log_stream.info(' -------> Dump summary outcome ... SKIPPED. Dump not activated')
+                                log_stream.info(' -------> Dump summary outcome "' + lut_name +
+                                                '" ... SKIPPED. Dump not activated')
                         else:
-                            log_stream.info(
-                                ' -------> Dump summary outcome ... SKIPPED. Datasets undefined and dump not activated')
+                            log_stream.info(' -------> Dump summary outcome "' + lut_name +
+                                            '" ... SKIPPED. Datasets undefined and dump not activated')
                     # Info
                     log_stream.info(' ------> Datasets ' + dset_key + ' ... DONE')
 

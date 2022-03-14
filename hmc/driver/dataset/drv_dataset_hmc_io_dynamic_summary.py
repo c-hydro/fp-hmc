@@ -370,7 +370,7 @@ class DSetManager:
                     else:
                         dam_system_name = self.list_sep.join([dam_name, plant_name])
 
-                    log_stream.info(' --------> Dam Volume ' + system_name +
+                    log_stream.info(' --------> Dam Volume ' + dam_system_name +
                                     ' time-series file ' + file_name + '... ')
 
                     dam_workspace_default = dam_workspace[dam_system_name]
@@ -417,11 +417,11 @@ class DSetManager:
                         # Dump data to json file
                         write_time_series(file_path, dam_workspace_obj)
 
-                        log_stream.info(' --------> Dam Volume ' + dam_name +
+                        log_stream.info(' --------> Dam Volume ' + dam_system_name +
                                         ' time-series file ' + file_name + '... DONE')
 
                     else:
-                        log_stream.info(' --------> Dam Volume ' + dam_name +
+                        log_stream.info(' --------> Dam Volume ' + dam_system_name +
                                         ' time-series file ' + file_name + '... FAILED')
                         log_stream.warning(' ===> Observed and simulated datasets are null')
 
@@ -444,7 +444,7 @@ class DSetManager:
                     else:
                         dam_system_name = self.list_sep.join([dam_name, plant_name])
 
-                    log_stream.info(' --------> Dam Level ' + system_name +
+                    log_stream.info(' --------> Dam Level ' + dam_system_name +
                                     ' time-series file ' + file_name + '... ')
 
                     dam_workspace_default = dam_workspace[dam_system_name]
@@ -491,11 +491,11 @@ class DSetManager:
                         # Dump data to json file
                         write_time_series(file_path, dam_workspace_obj)
 
-                        log_stream.info(' --------> Dam Level ' + dam_name +
+                        log_stream.info(' --------> Dam Level ' + dam_system_name +
                                         ' time-series file ' + file_name + '... DONE')
 
                     else:
-                        log_stream.info(' --------> Dam Level ' + dam_name +
+                        log_stream.info(' --------> Dam Level ' + dam_system_name +
                                         ' time-series file ' + file_name + '... FAILED')
                         log_stream.warning(' ===> Observed and simulated datasets are null')
 

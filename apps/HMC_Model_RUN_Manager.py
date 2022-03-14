@@ -27,7 +27,7 @@ Parameters:
         Time of the simulation in YYYY-MM-DD HH:MM format
 
 Version(s):
-20210308 (3.1.5) --> Development of run manager application for version 3.1.5 of HMC models
+20210628 (3.1.5) --> Development of run manager application for version 3.1.5 of HMC models
 20210308 (3.1.4) --> Development of run manager application for version 3.1.4 of HMC models
 20201102 (3.1.3) --> Development of run manager application for version 3.1.3 of HMC models
 20200723 (3.1.2) --> Development of run manager application for version 3.1.2 of HMC models
@@ -67,7 +67,7 @@ def main(settings_algorithm=None, settings_datasets=None, settings_time=None):
 
     # Get script argument(s)
     script_name, script_settings_algorithm, \
-    script_settings_datasets, script_time = get_args(settings_algorithm, settings_datasets, settings_time)
+        script_settings_datasets, script_time = get_args(settings_algorithm, settings_datasets, settings_time)
 
     # Set logging file
     driver_hmc_logging = ModelLogging(script_settings_algorithm)
