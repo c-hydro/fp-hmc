@@ -38,7 +38,21 @@ import matplotlib.pylab as plt
 
 # -------------------------------------------------------------------------------------
 # Method to write file point section(s)
-def write_data_point_section(file_name, file_data, file_cols_expected=10):
+def write_data_point_section(file_name, file_data, file_cols_expected=10, file_name_expected=None):
+
+    if file_name_expected is None:
+        file_name_expected = ['section_idx_j', 'section_idx_i', 'section_domain', 'section_name',
+                              'section_code', 'section_drained_area',
+                              'section_discharge_thr_alert', 'section_discharge_thr_alarm',
+                              'section_reference', 'section_baseflow']
+
+    file_data_expected = {}
+    for file_key, file_fields in file_data.items():
+        file_data_expected[file_key] = {}
+        for field_key, field_value in file_fields.items():
+            if field_key in file_name_expected:
+                file_data_expected[file_key][field_key] = field_value
+    file_data = deepcopy(file_data_expected)
 
     if isinstance(file_data, dict):
         file_keys = list(file_data.keys())

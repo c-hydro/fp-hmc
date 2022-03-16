@@ -11,11 +11,9 @@ Version:       '1.0.0'
 # Libraries
 import logging
 import geopandas as gpd
-import numpy as np
+import pandas as pd
 
 from copy import deepcopy
-
-import pandas as pd
 
 from hmc.algorithm.default.lib_default_args import logger_name
 
@@ -166,6 +164,7 @@ def read_data_shapefile_section(file_name, columns_name_expected=None, columns_n
 
     file_points = convert_obj_list2point(file_obj, file_pivot_order=['section_domain', 'section_name'])
 
+    # Update point fields with custom values
     for point_key, point_fields in file_points.items():
         if 'section_idx_ji' not in list(point_fields.keys()):
             if 'section_idx_j' in list(point_fields.keys()) and 'section_idx_i' in list(point_fields.keys()):

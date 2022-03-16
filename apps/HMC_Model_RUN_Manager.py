@@ -31,7 +31,7 @@ Version(s):
 20210308 (3.1.4) --> Development of run manager application for version 3.1.4 of HMC models
 20201102 (3.1.3) --> Development of run manager application for version 3.1.3 of HMC models
 20200723 (3.1.2) --> Development of run manager application for version 3.1.2 of HMC models
-20200401 (3.0.0) --> Beta release of run manager application for 3th generation of HMC models
+20200401 (3.0.0) --> Beta release of run manager application for 3-th generation of HMC models
 """
 
 # -------------------------------------------------------------------------------------

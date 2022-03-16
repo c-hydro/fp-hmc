@@ -123,7 +123,7 @@
     "time_forecast_rounding": "H",
     "time_observed_rounding": "H",
     "time_check_rounding": "D",
-    "time_restart_rounding": "H",
+    "time_restart_rounding": "D",
     "time_tc": 2,
     "time_vegetation_max": 720
   },
