@@ -276,9 +276,28 @@ def read_data_point(file_name, file_time, file_columns=None, file_lut=None, file
 
                     col_type = file_columns[row_n]
                     if col_type == 'ref':
-                        row_value = float(row_value)
 
-                        if row_value < 0:
+                        if row_value.isalpha() or row_value == '-':
+                            row_value = deepcopy(row_value)
+                            row_type = 'alpha'
+                            if row_value == '-':
+                                row_check = False
+                            else:
+                                row_check = True
+
+                        elif row_value.isdigit():
+                            row_value = float(row_value)
+                            row_type = 'digit'
+                            if row_value < 0:
+                                row_check = False
+                            else:
+                                row_check = True
+
+                        else:
+                            log_stream.error(' ===> Column format must be "alphabet" or "digit"')
+                            raise NotImplementedError('Case not implemented yet')
+
+                        if not row_check:
                             string_no_code = 'no_code_{}'.format(id_nan)
                             # string_no_code = 'no_code_{}'.format(file_idx)
                             id_nan += 1
@@ -286,7 +305,10 @@ def read_data_point(file_name, file_time, file_columns=None, file_lut=None, file
                             # update codes to lut variable(s)
                             file_row_lut[row_n] = row_value_upd
                         else:
-                            row_value_upd = str(int(row_value))
+                            if row_type == 'alpha':
+                                row_value_upd = deepcopy(row_value)
+                            elif row_type == 'digit':
+                                row_value_upd = str(int(row_value))
                     else:
                         row_value_upd = row_value
 

@@ -140,7 +140,7 @@
     },
     "Shapefile": {
       "hmc_file_name"     : "fp_sections_liguria.shp",
-      "hmc_file_folder"   : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_static/Shapefile/",
+      "hmc_file_folder"   : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_static/LiguriaDomain/shapefile/",
       "hmc_file_format"   : "shapefile",
       "hmc_file_frequency": null,
       "hmc_file_filter"   : {"DOMAIN": "MagraDomain"},
@@ -288,7 +288,7 @@
           "var_list"        : {
             "Discharge"		  : {
               "var_file_name"   : "rs.db.{dset_datetime_forcing_obs}.txt",
-              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_dynamic/river_stations/{dset_sub_path_forcing_obs}",
+              "var_file_folder" : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_dynamic/LiguriaDomain/river_stations/{dset_sub_path_forcing_obs}",
               "var_file_dset"	: "discharge",
               "var_file_format"	: "ascii_point",
               "var_file_limits"	: [0, null],
