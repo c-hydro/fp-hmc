@@ -364,11 +364,7 @@ class DSetManager:
 
                     folder_name, file_name = os.path.split(file_path)
                     create_folder(folder_name)
-
-                    if dam_name == plant_name:
-                        dam_system_name = dam_name
-                    else:
-                        dam_system_name = self.list_sep.join([dam_name, plant_name])
+                    dam_system_name = self.list_sep.join([dam_name, plant_name])
 
                     log_stream.info(' --------> Dam Volume ' + dam_system_name +
                                     ' time-series file ' + file_name + '... ')
@@ -438,11 +434,7 @@ class DSetManager:
 
                     folder_name, file_name = os.path.split(file_path)
                     create_folder(folder_name)
-
-                    if dam_name == plant_name:
-                        dam_system_name = dam_name
-                    else:
-                        dam_system_name = self.list_sep.join([dam_name, plant_name])
+                    dam_system_name = self.list_sep.join([dam_name, plant_name])
 
                     log_stream.info(' --------> Dam Level ' + dam_system_name +
                                     ' time-series file ' + file_name + '... ')

@@ -240,7 +240,8 @@ def read_data_point_dam(file_name, line_delimiter='#'):
                 if plant_name != '':
                     dam_key = ':'.join([dam_name, plant_name])
                 else:
-                    dam_key = dam_name
+                    plant_name = 'plant_{:}'.format(plant_id)
+                    dam_key = ':'.join([dam_name, plant_name])
 
                 if point_frame is None:
                     point_frame = OrderedDict()
