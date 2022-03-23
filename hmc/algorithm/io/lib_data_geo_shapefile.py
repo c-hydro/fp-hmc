@@ -97,13 +97,32 @@ def read_data_shapefile_section(file_name, columns_name_expected=None, columns_n
                     if column_res:
                         log_stream.warning(' ===> Column "' + column_name_exp + '" is parsed using the "string" format')
                 if column_name_exp in ['AREA', 'Q_THR1', 'Q_THR2']:
-                    column_res = type(column_data[0]) == int
+
+                    if isinstance(column_data[0], int):
+                        column_res = type(column_data[0]) == int
+                    elif isinstance(column_data[0], str):
+                        column_res = type(column_data[0]) == str
+
+                    if column_res:
+                        log_stream.warning(
+                            ' ===> Column "' + column_name_exp +
+                            '" is parsed using the "float" format. '
+                            'To obtain the expected format the data is converted from "int" to "float" format')
+                        tmp_data = [float(el) for el in column_data]
+                        column_data = deepcopy(tmp_data)
+                if column_name_exp in ['HMC_X', 'HMC_Y']:
+
+                    if isinstance(column_data[0], float):
+                        column_res = type(column_data[0]) == float
+                    elif isinstance(column_data[0], str):
+                        column_res = type(column_data[0]) == str
+
                     if column_res:
                         log_stream.warning(
                             ' ===> Column "' + column_name_exp +
                             '" is parsed using the "int" format. '
                             'To obtain the expected format the data is converted from "int" to "float" format')
-                        tmp_data = [float(el) for el in column_data]
+                        tmp_data = [int(el) for el in column_data]
                         column_data = deepcopy(tmp_data)
 
             if not column_res:

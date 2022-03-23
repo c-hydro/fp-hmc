@@ -387,8 +387,7 @@ def read_data_point(file_name, file_time, file_columns=None, file_lut=None, file
                         log_stream.warning(' ===> Point "' + name_ancillary +
                                            '" with code "' + code_ancillary + '" not found in the ascii datasets')
                 else:
-                    log_stream.warning(' ===> Point "' + name_ancillary +
-                                       '" not found in the code lut')
+                    log_stream.warning(' ===> Point "' + name_ancillary + '" not found in the code lut')
             data_obj = deepcopy(data_obj_select)
             time_obj = deepcopy(time_obj_select)
             file_keys_sel = deepcopy(file_ancillary_select)
