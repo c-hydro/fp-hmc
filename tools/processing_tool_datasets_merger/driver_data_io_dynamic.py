@@ -73,6 +73,7 @@ class DriverDynamic:
         self.tag_layer_scale_factor = 'layer_scale_factor'
         self.tag_layer_no_data = 'layer_no_data'
         self.tag_layer_nc_format = 'layer_nc_format'
+        # self.tag_layer_fx_merging = 'layer_fx_merging'
 
         alg_layer_variable = alg_ancillary[self.tag_layer_name]
         if not isinstance(alg_layer_variable, list):
@@ -98,6 +99,12 @@ class DriverDynamic:
             self.alg_layer_nc_format = alg_ancillary[self.tag_layer_nc_format]
         else:
             self.alg_layer_nc_format = 'continuum'
+
+        # if self.tag_layer_fx_merging in list(alg_ancillary.keys()):
+        #     self.alg_layer_fx_merging = alg_ancillary[self.tag_layer_fx_merging]
+        # else:
+        #     alg_layer_fx_merging = [{"fx": "interpolate", "method": "nearest"}]
+        #     self.alg_layer_fx_merging = alg_layer_fx_merging * self.alg_layer_variable.__len__()
 
         self.alg_template_time = alg_template_tags['time']
         self.alg_template_data = alg_template_tags['data']
@@ -911,6 +918,26 @@ class DriverDynamic:
                                         # Active (if needed) interpolation method to the variable source data-array
                                         active_interp = active_var_interp(var_dset_src.attrs, geo_da_anc.attrs)
 
+                                        # var_dset_reindex = var_dset_src.reindex(
+                                        #     {'latitude': geo_da_anc.latitude, 'longitude': geo_da_anc.longitude},
+                                        #     method='pad')
+                                        '''
+                                        # DEBUG
+                                        plt.figure()
+                                        plt.imshow(var_dset_src['SM'].values[:, :, 0])
+                                        plt.colorbar()
+                                        plt.figure()
+                                        plt.imshow(var_dset_reindex['SM'].values[:, :, 0])
+                                        plt.colorbar()
+
+                                        plt.figure()
+                                        plt.imshow(var_dset_src['LST'].values[:, :, 0])
+                                        plt.colorbar()
+                                        plt.figure()
+                                        plt.imshow(var_dset_reindex['LST'].values[:, :, 0])
+                                        plt.colorbar()
+                                        '''
+
                                         # Apply the interpolation method to the variable source data-array
                                         if active_interp:
                                             var_dset_anc = apply_var_interp(
@@ -945,8 +972,27 @@ class DriverDynamic:
                                             var_dset_tmp_adj, var_dset_masked_adj = adjust_dset_vars(
                                                 var_dset_tmp, var_dset_masked)
 
-                                            var_dset_merged = xr.where(
-                                                np.isnan(var_dset_tmp_adj), var_dset_masked_adj, var_dset_tmp_adj)
+                                            # Iterate over variables to aggregate layers
+                                            for file_layer_name, file_layer_no_data in zip(
+                                                    file_layers_name, file_layers_no_data):
+
+                                                if (file_layer_name in list(var_dset_masked_adj.variables)) and \
+                                                        (file_layer_name in list(var_dset_masked_adj.variables)):
+
+                                                    var_da_masked_adj = var_dset_masked_adj[file_layer_name]
+                                                    var_da_tmp_adj = var_dset_tmp_adj[file_layer_name]
+
+                                                    var_da_filled_adj = xr.where(
+                                                        (var_da_tmp_adj != file_layer_no_data)
+                                                        & (np.isfinite(var_da_masked_adj)),
+                                                        var_da_masked_adj, var_da_tmp_adj)
+
+                                                    var_dset_masked_adj[file_layer_name] = deepcopy(var_da_filled_adj)
+
+                                            #var_dset_merged = xr.where(
+                                            #    np.isnan(var_dset_tmp_adj), var_dset_masked_adj, var_dset_tmp_adj)
+
+                                            var_dset_merged = deepcopy(var_dset_masked_adj)
 
                                             var_dset_merged.attrs = attrs_dset_tmp
                                             dset_collection_tmp[var_name_tmp][var_time] = var_dset_merged
@@ -954,10 +1000,13 @@ class DriverDynamic:
                                         '''
                                         # DEBUG
                                         plt.figure()
-                                        plt.imshow(var_dset_masked['SnowMask'].values[:,:,0])
+                                        plt.imshow(var_dset_src['LST'].values[:, :, 0])
                                         plt.colorbar()
                                         plt.figure()
-                                        plt.imshow(dset_collection_tmp[var_name_tmp][var_time]['SnowMask'].values[:, :, 0])
+                                        plt.imshow(var_dset_masked['LST'].values[:, :, 0])
+                                        plt.colorbar()
+                                        plt.figure()
+                                        plt.imshow(dset_collection_tmp[var_name_tmp][var_time]['LST'].values[:, :, 0])
                                         plt.colorbar()
                                         plt.show()
                                         '''

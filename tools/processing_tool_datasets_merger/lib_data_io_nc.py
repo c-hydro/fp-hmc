@@ -202,6 +202,87 @@ def read_data_nc(file_name, geo_ref_x=None, geo_ref_y=None, geo_ref_attrs=None,
                     geo_data_end_x = np.float32(round(geo_data_x[-1, -1], decimal_round))
                     geo_data_end_y = np.float32(round(geo_data_y[-1, -1], decimal_round))
 
+                    # Check geo x rounding
+                    if geo_check_x[0, 0] != 0:
+                        if np.float32(round(geo_check_x[0, 0], decimal_round)) == 0:
+                            log_stream.error(' ===> Variable "geo_check_x_start" was rounded to zero')
+                            raise RuntimeError('The used "decimal round" is not suitable for the grid resolution')
+                    if geo_check_x[1, -1] != 0:
+                        if np.float32(round(geo_check_x[1, -1], decimal_round)) == 0:
+                            log_stream.error(' ===> Variable "geo_check_x_end" was rounded to zero')
+                            raise RuntimeError('The used "decimal round" is not suitable for the grid resolution')
+                    if geo_data_x[0, 0] != 0:
+                        if np.float32(round(geo_data_x[0, 0], decimal_round)) == 0:
+                            log_stream.error(' ===> Variable "geo_data_x_start" was rounded to zero')
+                            raise RuntimeError('The used "decimal round" is not suitable for the grid resolution')
+                    if geo_data_x[1, -1] != 0:
+                        if np.float32(round(geo_data_x[1, -1], decimal_round)) == 0:
+                            log_stream.error(' ===> Variable "geo_data_x_end" was rounded to zero')
+                            raise RuntimeError('The used "decimal round" is not suitable for the grid resolution')
+                    # Check geo y rounding
+                    if geo_check_y[0, 0] != 0:
+                        if np.float32(round(geo_check_y[0, 0], decimal_round)) == 0:
+                            log_stream.error(' ===> Variable "geo_check_y_start" was rounded to zero')
+                            raise RuntimeError('The used "decimal round" is not suitable for the grid resolution')
+                    if geo_check_y[1, -1] != 0:
+                        if np.float32(round(geo_check_y[1, -1], decimal_round)) == 0:
+                            log_stream.error(' ===> Variable "geo_check_y_end" was rounded to zero')
+                            raise RuntimeError('The used "decimal round" is not suitable for the grid resolution')
+                    if geo_data_y[0, 0] != 0:
+                        if np.float32(round(geo_data_y[0, 0], decimal_round)) == 0:
+                            log_stream.error(' ===> Variable "geo_data_y_start" was rounded to zero')
+                            raise RuntimeError('The used "decimal round" is not suitable for the grid resolution')
+                    if geo_data_y[1, -1] != 0:
+                        if np.float32(round(geo_data_y[1, -1], decimal_round)) == 0:
+                            log_stream.error(' ===> Variable "geo_data_y_end" was rounded to zero')
+                            raise RuntimeError('The used "decimal round" is not suitable for the grid resolution')
+
+                    # Check geo grid(s)
+                    geo_cellsize = np.float32(round(geo_ref_attrs['cellsize'], decimal_round) / 2)
+                    if (not geo_check_start_x == geo_data_start_x) or (not geo_check_end_x == geo_data_end_x):
+                        geo_diff_start_x = np.float32(
+                            round(np.abs(geo_check_x[0, 0] - geo_data_x[0, 0]), decimal_round))
+                        geo_diff_end_x = np.float32(
+                            round(np.abs(geo_check_x[-1, -1] - geo_data_x[-1, -1]), decimal_round))
+                        log_stream.warning(
+                            ' ===> Variable "geo x start" or/and "geo x end" is/are not the same; try to correct using '
+                            'the reference "cellsize" to correct the "geo x grid" ')
+
+                        assert geo_diff_start_x == geo_cellsize, \
+                            ' ===> Variable "geo x start" is not verified by the "cellsize"'
+                        assert geo_diff_end_x == geo_cellsize, \
+                            ' ===> Variable "geo x end" is not verified by the "cellsize"'
+
+                        geo_data_x = deepcopy(geo_check_x)
+                        geo_data_start_x = np.float32(round(geo_data_x[0, 0], decimal_round))
+                        geo_data_end_x = np.float32(round(geo_data_x[-1, -1], decimal_round))
+
+                        log_stream.warning(
+                            ' ===> Variable "geo x grid" is corrected by the reference grid by checking the difference'
+                            'in terms of the "cellsize"; the grids have a difference at maximum of "cellsize / 2"')
+
+                    if (not geo_check_start_y == geo_data_start_y) or (not geo_check_end_y == geo_data_end_y):
+                        geo_diff_start_y = np.float32(
+                            round(np.abs(geo_check_y[0, 0] - geo_data_y[0, 0]), decimal_round))
+                        geo_diff_end_y = np.float32(
+                            round(np.abs(geo_check_y[-1, -1] - geo_data_y[-1, -1]), decimal_round))
+                        log_stream.warning(
+                            ' ===> Variable "geo y start" or/and "geo y end" is/are not the same; try to correct using '
+                            'the reference "cellsize" to correct the "geo y grid" ')
+
+                        assert geo_diff_start_y == geo_cellsize, \
+                            ' ===> Variable "geo y start" is not verified by the "cellsize"'
+                        assert geo_diff_end_y == geo_cellsize, \
+                            ' ===> Variable "geo y end" is not verified by the "cellsize"'
+
+                        geo_data_y = deepcopy(geo_check_y)
+                        geo_data_start_y = np.float32(round(geo_data_y[0, 0], decimal_round))
+                        geo_data_end_y = np.float32(round(geo_data_y[-1, -1], decimal_round))
+
+                        log_stream.warning(
+                            ' ===> Variable "geo y grid" is corrected by the reference grid by checking the difference'
+                            'in terms of the "cellsize"; the grids have a difference at maximum of "cellsize / 2"')
+
                     assert geo_check_start_x == geo_data_start_x, ' ===> Variable geo x start != Reference geo x start'
                     assert geo_check_start_y == geo_data_start_y, ' ===> Variable geo y start != Reference geo y start'
                     assert geo_check_end_x == geo_data_end_x, ' ===> Variable geo x end != Reference geo x end'
@@ -213,7 +294,7 @@ def read_data_nc(file_name, geo_ref_x=None, geo_ref_y=None, geo_ref_attrs=None,
 
             else:
                 log_stream.warning(' ===> Variable ' + var_name_step + ' not available in loaded datasets!')
-
+                data_workspace[var_name_step] = None
 
     else:
         log_stream.warning(' ===> File ' + file_name + ' not available in loaded datasets!')
@@ -234,20 +315,22 @@ def read_data_nc(file_name, geo_ref_x=None, geo_ref_y=None, geo_ref_attrs=None,
             var_dset.coords[coord_name_time] = var_dset.coords[coord_name_time].astype('datetime64[ns]')
 
             for var_name, var_data in data_workspace.items():
-                var_da = xr.DataArray(var_data, name=var_name, dims=dims_order,
-                                      coords={coord_name_time: ([dim_name_time], var_data_time),
-                                              coord_name_geo_x: ([dim_name_geo_x], geo_data_x[0, :]),
-                                              coord_name_geo_y: ([dim_name_geo_y], geo_data_y[:, 0])})
-                var_dset[var_name] = var_da
+                if var_data is not None:
+                    var_da = xr.DataArray(var_data, name=var_name, dims=dims_order,
+                                          coords={coord_name_time: ([dim_name_time], var_data_time),
+                                                  coord_name_geo_x: ([dim_name_geo_x], geo_data_x[0, :]),
+                                                  coord_name_geo_y: ([dim_name_geo_y], geo_data_y[:, 0])})
+                    var_dset[var_name] = var_da
 
         elif var_time is None:
 
             var_dset = xr.Dataset()
             for var_name, var_data in data_workspace.items():
-                var_da = xr.DataArray(var_data, name=var_name, dims=dims_order,
-                                      coords={coord_name_geo_x: ([dim_name_geo_x], geo_data_x[0, :]),
-                                              coord_name_geo_y: ([dim_name_geo_y], geo_data_y[:, 0])})
-                var_dset[var_name] = var_da
+                if var_data is not None:
+                    var_da = xr.DataArray(var_data, name=var_name, dims=dims_order,
+                                          coords={coord_name_geo_x: ([dim_name_geo_x], geo_data_x[0, :]),
+                                                  coord_name_geo_y: ([dim_name_geo_y], geo_data_y[:, 0])})
+                    var_dset[var_name] = var_da
 
         else:
             log_stream.error(' ===> Error in creating time information for dataset object')

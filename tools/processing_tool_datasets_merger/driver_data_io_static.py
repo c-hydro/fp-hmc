@@ -11,6 +11,7 @@ Version:       '1.0.0'
 # Library
 import logging
 import os
+import numpy as np
 
 from copy import deepcopy
 
@@ -19,9 +20,10 @@ from tools.processing_tool_datasets_merger.lib_data_io_tiff import read_data_tif
 from tools.processing_tool_datasets_merger.lib_data_io_ascii import read_data_grid, create_data_grid
 from tools.processing_tool_datasets_merger.lib_data_io_generic import parse_data_grid, extract_data_grid
 
-from tools.processing_tool_datasets_merger.lib_utils_io import write_obj
+from tools.processing_tool_datasets_merger.lib_utils_io import read_obj, write_obj
 from tools.processing_tool_datasets_merger.lib_utils_system import fill_tags2string, make_folder
 from tools.processing_tool_datasets_merger.lib_utils_gzip import unzip_filename
+from tools.processing_tool_datasets_merger.lib_utils_geo import create_map_idx
 
 from tools.processing_tool_datasets_merger.lib_info_args import logger_name, zip_extension
 
@@ -79,6 +81,8 @@ class DriverStatic:
 
         self.flag_dset_cleaning = flag_dset_cleaning
 
+        self.coord_x_default = 'longitude'
+        self.coord_y_default = 'latitude'
     # -------------------------------------------------------------------------------------
 
     # -------------------------------------------------------------------------------------
@@ -301,6 +305,11 @@ class DriverStatic:
                             obj_data_grid = extract_data_grid(obj_values, obj_geo_x, obj_geo_y, obj_geo_transform)
 
                         elif obj_type_ref == 'tiff':
+
+                            if obj_coords_ref['y'] is None:
+                                obj_coords_ref['y'] = self.coord_y_default
+                            if obj_coords_ref['x'] is None:
+                                obj_coords_ref['x'] = self.coord_x_default
 
                             obj_dims_ref = [obj_coords_ref['y'], obj_coords_ref['x']]
                             obj_data_tmp = read_data_tiff(file_path_tmp,
