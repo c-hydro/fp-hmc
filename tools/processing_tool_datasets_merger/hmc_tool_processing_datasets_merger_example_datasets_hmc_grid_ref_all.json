@@ -9,7 +9,7 @@
       "algorithm": "Processing tools by CIMA Research Foundation"
     },
     "flags":{
-      "cleaning_static": true,
+      "cleaning_static": false,
       "cleaning_dynamic_ancillary": true,
       "cleaning_dynamic_data": true,
       "cleaning_dynamic_tmp": false

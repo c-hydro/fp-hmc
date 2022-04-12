@@ -766,7 +766,7 @@ class DriverDynamic:
                                             '" is not permitted. Only "continuum" or NoneType flag are activated')
                                         raise NotImplementedError('Case not implemented yet')
 
-                                    '''
+
                                     # DEBUG
                                     plt.figure()
                                     plt.imshow(var_dset_dst['SM'].values[:, :, 0])
@@ -778,7 +778,7 @@ class DriverDynamic:
                                     plt.imshow(var_dset_remap['SM'].values)
                                     plt.colorbar()
                                     plt.show()
-                                    '''
+
 
                                     log_stream.info(' ------> Save datasets "' + var_file_name_dst + '" ... ')
                                     write_dset_nc(var_file_obj_dst, var_dset_remap,

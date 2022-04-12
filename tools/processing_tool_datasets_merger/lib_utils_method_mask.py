@@ -91,6 +91,9 @@ def apply_var_mask(var_obj_in, mask_data, mask_value=1):
         log_stream.error(' ===> Mask dimensions must be equal to 2')
         raise NotImplementedError('Case not implemented yet')
 
+    mask_data = mask_data.astype(int)
+    mask_value = int(mask_value)
+
     var_obj_out = var_obj_in.where(mask_data == mask_value)
 
     return var_obj_out
