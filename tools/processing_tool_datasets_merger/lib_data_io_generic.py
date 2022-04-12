@@ -34,7 +34,7 @@ def extract_data_grid(geo_data, geo_x_values, geo_y_values, geo_transform, geo_b
                      tag_geo_x: geo_x_values, tag_geo_y: geo_y_values}
     elif geo_bbox is None:
         data_grid = {'nrows': geo_y_values.shape[0], 'ncols': geo_x_values.shape[0], 'xllcorner': geo_transform[0],
-                     'yllcorner': geo_transform[5], 'cellsize': abs(geo_transform[1]), tag_geo_values: geo_data,
+                     'yllcorner': geo_transform[3], 'cellsize': abs(geo_transform[1]), tag_geo_values: geo_data,
                      tag_geo_x: geo_x_values, tag_geo_y: geo_y_values}
 
     if tag_nodata not in list(data_grid.keys()):

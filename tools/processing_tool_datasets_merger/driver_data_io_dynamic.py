@@ -16,12 +16,13 @@ import xarray as xr
 
 from copy import deepcopy
 
-from tools.processing_tool_datasets_merger.lib_data_io_binary import read_data_binary
-from tools.processing_tool_datasets_merger.lib_data_io_tiff import read_data_tiff
 from tools.processing_tool_datasets_merger.lib_data_io_nc import read_data_nc
 from tools.processing_tool_datasets_merger.lib_data_io_remap import create_dset_continuum
 
-from tools.processing_tool_datasets_merger.lib_utils_interp import active_var_interp, apply_var_interp
+from tools.processing_tool_datasets_merger.lib_utils_method_interpolate import active_var_interpolate, \
+    apply_var_interpolate, apply_var_sample
+from tools.processing_tool_datasets_merger.lib_utils_method_mask import active_var_mask, \
+    apply_var_mask
 from tools.processing_tool_datasets_merger.lib_utils_io import read_obj, write_obj, write_dset_nc, write_dset_tiff, \
     filter_dset_vars, adjust_dset_vars
 from tools.processing_tool_datasets_merger.lib_utils_gzip import unzip_filename, zip_filename
@@ -45,7 +46,7 @@ class DriverDynamic:
     # Initialize class
     def __init__(self, time_reference, time_period,
                  src_dict, anc_dict=None, dst_dict=None,
-                 static_data_collection=None, interp_method='nearest',
+                 static_data_collection=None,
                  alg_ancillary=None, alg_template_tags=None, alg_datasets_type='generic',
                  tag_terrain_data='Terrain', tag_grid_data='Grid',
                  tag_static_source='source', tag_static_destination='destination',
@@ -73,7 +74,6 @@ class DriverDynamic:
         self.tag_layer_scale_factor = 'layer_scale_factor'
         self.tag_layer_no_data = 'layer_no_data'
         self.tag_layer_nc_format = 'layer_nc_format'
-        # self.tag_layer_fx_merging = 'layer_fx_merging'
 
         alg_layer_variable = alg_ancillary[self.tag_layer_name]
         if not isinstance(alg_layer_variable, list):
@@ -117,6 +117,7 @@ class DriverDynamic:
         self.file_include_tag = 'file_include'
         self.file_compression_tag = 'file_compression'
         self.file_geo_reference_tag = 'file_geo_reference'
+        self.file_geo_mask_tag = 'file_geo_mask'
         self.file_type_tag = 'file_type'
         self.file_coords_tag = 'file_coords'
         self.file_frequency_tag = 'file_frequency'
@@ -160,7 +161,19 @@ class DriverDynamic:
         self.geo_dst_tag, self.geo_dst_data = self.select_geo_reference(dst_dict, self.static_data_dst)
         self.geo_dst_da = self.set_geo_reference(self.geo_dst_data, self.geo_dst_tag)
 
-        self.interp_method = interp_method
+        self.method_interpolate_source = 'nearest'
+        if 'layer_method_interpolate_source' in list(alg_ancillary.keys()):
+            self.method_interpolate_source = alg_ancillary['layer_method_interpolate_source']
+        self.method_interpolate_destination = 'nearest'
+        if 'layer_method_interpolate_destination' in list(alg_ancillary.keys()):
+            self.method_interpolate_destination = alg_ancillary['layer_method_interpolate_destination']
+
+        self.method_mask_source = None
+        if 'layer_method_mask_source' in list(alg_ancillary.keys()):
+            self.method_mask_source = alg_ancillary['layer_method_mask_source']
+        self.method_mask_destination = None
+        if 'layer_method_mask_destination' in list(alg_ancillary.keys()):
+            self.method_mask_destination = alg_ancillary['layer_method_mask_destination']
 
         self.nc_compression_level = 9
         self.nc_type_file = 'NETCDF4'
@@ -322,7 +335,9 @@ class DriverDynamic:
     # -------------------------------------------------------------------------------------
     # Method to set geographical attributes
     @staticmethod
-    def set_geo_attributes(dict_info, tag_data='data', tag_geo_x='geo_x', tag_geo_y='geo_y'):
+    def set_geo_attributes(dict_info, tag_data='data', tag_geo_x='geo_x', tag_geo_y='geo_y',
+                           tag_i_cols_ref='i_cols_ref', tag_j_rows_ref='j_rows_ref',
+                           tag_i_cols_dom='i_cols_dom', tag_j_rows_dom='j_rows_dom'):
 
         if tag_data in list(dict_info.keys()):
             data_values = dict_info[tag_data]
@@ -340,10 +355,21 @@ class DriverDynamic:
             log_stream.error(' ===> Tag "' + tag_geo_y + '" is not available. Values are not found')
             raise IOError('Check your static datasets')
 
+        # Section to get sample method indexes
+        i_cols_ref, j_rows_ref, i_cols_dom, j_rows_dom = None, None, None, None
+        if tag_i_cols_ref in list(dict_info.keys()):
+            i_cols_ref = dict_info[tag_i_cols_ref]
+        if tag_j_rows_ref in list(dict_info.keys()):
+            j_rows_ref = dict_info[tag_j_rows_ref]
+        if tag_i_cols_dom in list(dict_info.keys()):
+            i_cols_dom = dict_info[tag_i_cols_dom]
+        if tag_j_rows_dom in list(dict_info.keys()):
+            j_rows_dom = dict_info[tag_j_rows_dom]
+
         data_attrs = deepcopy(dict_info)
         [data_attrs.pop(key) for key in [tag_data, tag_geo_x, tag_geo_y]]
 
-        return data_values, data_geo_x, data_geo_y, data_attrs
+        return data_values, data_geo_x, data_geo_y, data_attrs, i_cols_ref, j_rows_ref, i_cols_dom, j_rows_dom
     # -------------------------------------------------------------------------------------
 
     # -------------------------------------------------------------------------------------
@@ -509,30 +535,32 @@ class DriverDynamic:
         file_coords = var_dict[self.file_coords_tag]
         file_freq = var_dict[self.file_frequency_tag]
 
+        file_geo_mask = None
+        if self.file_geo_mask_tag in list(var_dict.keys()):
+            file_geo_mask = var_dict[self.file_geo_mask_tag]
+
+        file_time_steps_expected = 1
         if self.file_time_steps_expected_tag in list(var_dict.keys()):
             file_time_steps_expected = var_dict[self.file_time_steps_expected_tag]
-        else:
-            file_time_steps_expected = 1
+
+        file_time_steps_ref = 1
         if self.file_time_steps_ref_tag in list(var_dict.keys()):
             file_time_steps_ref = var_dict[self.file_time_steps_ref_tag]
-        else:
-            file_time_steps_ref = 1
+
+        file_time_steps_flag = self.dim_name_time
         if self.file_time_steps_flag_tag in list(var_dict.keys()):
             file_time_steps_flag = var_dict[self.file_time_steps_flag_tag]
-        else:
-            file_time_steps_flag = self.dim_name_time
 
+        file_domain = {"flag": True, "value": None}
         if self.file_domain_tag in list(var_dict.keys()):
             file_domain = var_dict[self.file_domain_tag]
-        else:
-            file_domain = {"flag": True, "value": None}
 
+        file_layer = {"flag": True, "value": None}
         if self.file_layer_tag in list(var_dict.keys()):
             file_layer = var_dict[self.file_layer_tag]
-        else:
-            file_layer = {"flag": True, "value": None}
 
-        return (file_include, file_compression, file_geo_reference, file_type, file_coords, file_freq,
+        return (file_include, file_compression, file_geo_reference, file_geo_mask,
+                file_type, file_coords, file_freq,
                 file_time_steps_expected, file_time_steps_ref, file_time_steps_flag,
                 file_domain, file_layer)
     # -------------------------------------------------------------------------------------
@@ -593,6 +621,9 @@ class DriverDynamic:
 
         file_check_destination = self.file_check_destination
 
+        method_mask = self.method_mask_destination
+        method_interpolate = self.method_interpolate_destination
+
         log_stream.info(' ---> Dump dynamic datasets [' + time_str + '] ... ')
 
         # Check elements availability
@@ -602,8 +633,8 @@ class DriverDynamic:
 
                 log_stream.info(' ----> Save datasets destination "' + var_name_dst + '" ... ')
 
-                file_include_dst, file_compression_dst, file_geo_reference_dst, file_type_dst, \
-                    file_coords_dst, file_freq_dst, \
+                file_include_dst, file_compression_dst, file_geo_reference_dst, file_geo_mask_dst, \
+                    file_type_dst, file_coords_dst, file_freq_dst, \
                     file_time_steps_expected_dst, file_time_steps_ref_dst, \
                     file_time_steps_flag_dst,\
                     file_domain_dst, file_layer_dst = self.extract_var_fields(dst_dict[var_name_dst])
@@ -641,25 +672,33 @@ class DriverDynamic:
 
                             if var_dset_anc:
 
-                                log_stream.info(' ------> Interp from ancillary domain "' + var_domain_name_anc +
-                                                '" to destination domain "' + var_domain_name_dst + '" ... ')
-
                                 # Active (if needed) interpolation method to the variable source data-array
-                                active_interp = active_var_interp(var_dset_anc.attrs, geo_da_dst.attrs)
+                                active_interp = active_var_interpolate(var_dset_anc.attrs, geo_da_dst.attrs)
 
                                 # Apply the interpolation method to the variable source data-array
                                 if active_interp:
-                                    var_dset_dst = apply_var_interp(
-                                        var_dset_anc, geo_da_dst,
-                                        dim_name_geo_x=self.dim_name_geo_x, dim_name_geo_y=self.dim_name_geo_y,
-                                        coord_name_geo_x=self.coord_name_geo_x, coord_name_geo_y=self.coord_name_geo_y,
-                                        interp_method=self.interp_method)
-                                    var_dset_dst.attrs = deepcopy(geo_da_dst.attrs)
+
+                                    log_stream.info(
+                                        ' ------> Interpolate from ancillary domain "' + var_domain_name_anc +
+                                        '" to destination domain "' + var_domain_name_dst + '" ... ')
+
+                                    if method_interpolate in ['nearest']:
+                                        var_dset_dst = apply_var_interpolate(
+                                            var_dset_anc, geo_da_dst,
+                                            dim_name_geo_x=self.dim_name_geo_x, dim_name_geo_y=self.dim_name_geo_y,
+                                            coord_name_geo_x=self.coord_name_geo_x, coord_name_geo_y=self.coord_name_geo_y,
+                                            interp_method=method_interpolate)
+                                        var_dset_dst.attrs = deepcopy(geo_da_dst.attrs)
+
+                                        log_stream.info(
+                                            ' ------> Interpolate from ancillary domain "' + var_domain_name_anc +
+                                            '" to destination domain "' + var_domain_name_dst + '" ... DONE')
+                                    else:
+                                        log_stream.error(' ===> Interpolating method "'
+                                                         + method_interpolate + '" is not allowed')
+                                        raise NotImplementedError('Case not implemented yet')
                                 else:
                                     var_dset_dst = deepcopy(var_dset_anc)
-
-                                log_stream.info(' ------> Interp from ancillary domain "' + var_domain_name_anc +
-                                                '" to destination domain "' + var_domain_name_dst + '" ... DONE')
 
                                 # Mask the variable destination data-array
                                 geo_nodata = None
@@ -704,6 +743,13 @@ class DriverDynamic:
                                         log_stream.error(' ===> File name must be a string')
                                         raise RuntimeError('Remove {layer_name} tag from the filename')
 
+                                    # Remove file (unzipped and/or zipped) previously created
+                                    if os.path.exists(var_file_obj_dst):
+                                        os.remove(var_file_obj_dst)
+                                    var_file_obj_zip = self.define_file_name_zip(var_file_obj_dst)
+                                    if os.path.exists(var_file_obj_zip):
+                                        os.remove(var_file_obj_zip)
+
                                     var_folder_name_dst, var_file_name_dst = os.path.split(var_file_obj_dst)
                                     make_folder(var_folder_name_dst)
 
@@ -719,6 +765,20 @@ class DriverDynamic:
                                             ' ===> Remap type "' + str(self.alg_layer_nc_format) +
                                             '" is not permitted. Only "continuum" or NoneType flag are activated')
                                         raise NotImplementedError('Case not implemented yet')
+
+                                    '''
+                                    # DEBUG
+                                    plt.figure()
+                                    plt.imshow(var_dset_dst['SM'].values[:, :, 0])
+                                    plt.colorbar()
+                                    plt.figure()
+                                    plt.imshow(var_dset_masked['SM'].values[:, :, 0])
+                                    plt.colorbar()
+                                    plt.figure()
+                                    plt.imshow(var_dset_remap['SM'].values)
+                                    plt.colorbar()
+                                    plt.show()
+                                    '''
 
                                     log_stream.info(' ------> Save datasets "' + var_file_name_dst + '" ... ')
                                     write_dset_nc(var_file_obj_dst, var_dset_remap,
@@ -801,6 +861,7 @@ class DriverDynamic:
 
         src_dict = self.src_dict
         anc_dict = self.anc_dict
+
         geo_da_anc = self.geo_anc_da
 
         file_path_obj_src = self.file_path_obj_src
@@ -823,6 +884,9 @@ class DriverDynamic:
         file_check_ancillary = self.file_check_ancillary
         file_check_destination = self.file_check_destination
 
+        method_mask = self.method_mask_source
+        method_interpolate = self.method_interpolate_source
+
         log_stream.info(' ---> Organize dynamic datasets [' + time_str + '] ... ')
 
         # Check elements availability
@@ -835,8 +899,8 @@ class DriverDynamic:
 
                     log_stream.info(' ----> Get datasets source "' + var_name_src + '" ... ')
 
-                    file_include_src, file_compression_src, file_geo_reference_src, file_type_src, \
-                        file_coords_src, file_freq_src, \
+                    file_include_src, file_compression_src, file_geo_reference_src, file_geo_mask_src, \
+                        file_type_src, file_coords_src, file_freq_src, \
                         file_time_steps_expected_src, file_time_steps_ref_src, \
                         file_time_steps_flag_src,\
                         file_domain_src, file_layer_src = self.extract_var_fields(src_dict[var_name_src])
@@ -858,20 +922,53 @@ class DriverDynamic:
 
                                 log_stream.info(' ------> Domain "' + var_domain_name_src + '" ... ')
 
-                                geo_file_obj = self.static_data_src[file_geo_reference_src]
+                                geo_file_obj = None
+                                if file_geo_reference_src is not None:
+                                    if file_geo_reference_src in list(self.static_data_src.keys()):
+                                        geo_file_obj = self.static_data_src[file_geo_reference_src]
+                                    else:
+                                        log_stream.error(' ===> Geographical info must be defined in the static object')
+                                        raise RuntimeError('Algorithm will produce unexpected errors.')
+                                else:
+                                    log_stream.error(' ===> Geographical info is defined by NoneType object')
+                                    raise RuntimeError('Algorithm will produce unexpected errors.')
+
+                                mask_file_obj = None
+                                if file_geo_mask_src is not None:
+                                    if file_geo_mask_src in list(self.static_data_src.keys()):
+                                        mask_file_obj = self.static_data_src[file_geo_mask_src]
+
+                                if method_mask is not None:
+                                    if mask_file_obj is None:
+                                        log_stream.warning(' ===> Mask info is defined by NoneType object')
 
                                 if var_domain_name_src in list(geo_file_obj.keys()):
                                     geo_file_name = geo_file_obj[var_domain_name_src]
                                     if os.path.exists(geo_file_name):
                                         geo_file_data = read_obj(geo_file_name)
-                                        geo_file_values, geo_file_x, geo_file_y, geo_file_attrs = \
+                                        geo_file_values, geo_file_x, geo_file_y, geo_file_attrs,\
+                                            i_cols_ref, j_rows_ref, i_cols_dom, j_rows_dom = \
                                             self.set_geo_attributes(geo_file_data)
                                     else:
                                         log_stream.error(' ===> Geographical datasets "' + geo_file_name + '" not found')
                                         raise IOError('Geographical datasets not available. Check your settings file')
                                 else:
-                                    log_stream.error(' ===> Geographical domain "' + var_domain_name + '" not found')
+                                    log_stream.error(' ===> Geographical domain "' + var_domain_name_src + '" not found')
                                     raise IOError('Geographical domain not available. Check your settings file')
+
+                                mask_file_data, mask_file_values = None, None
+                                mask_file_x, mask_file_y, mask_file_attrs = None, None, None
+                                if mask_file_obj is not None:
+                                    if var_domain_name_src in list(mask_file_obj.keys()):
+                                        mask_file_name = mask_file_obj[var_domain_name_src]
+                                        if os.path.exists(mask_file_name):
+                                            mask_file_data = read_obj(mask_file_name)
+                                            mask_file_values, mask_file_x, mask_file_y, mask_file_attrs, _, _, _, _ = \
+                                                self.set_geo_attributes(mask_file_data)
+                                        else:
+                                            log_stream.warning(' ===> Mask datasets "' + mask_file_name + '" not found')
+                                    else:
+                                        log_stream.warning(' ===> Mask domain "' + var_domain_name_src + '" not found')
 
                                 if os.path.exists(var_file_path_src):
 
@@ -915,36 +1012,49 @@ class DriverDynamic:
                                     # Organize destination dataset
                                     if var_dset_src is not None:
 
-                                        # Active (if needed) interpolation method to the variable source data-array
-                                        active_interp = active_var_interp(var_dset_src.attrs, geo_da_anc.attrs)
+                                        # Active (if needed) mask method to the variable source data-array
+                                        active_mask = False
+                                        if method_mask is not None and mask_file_obj is not None:
+                                            active_mask = active_var_mask(var_dset_src.attrs, mask_file_attrs)
 
-                                        # var_dset_reindex = var_dset_src.reindex(
-                                        #     {'latitude': geo_da_anc.latitude, 'longitude': geo_da_anc.longitude},
-                                        #     method='pad')
+                                        # Active (if needed) interpolation method to the variable source data-array
+                                        active_interp = active_var_interpolate(var_dset_src.attrs, self.geo_anc_da.attrs)
+
                                         '''
                                         # DEBUG
                                         plt.figure()
                                         plt.imshow(var_dset_src['SM'].values[:, :, 0])
                                         plt.colorbar()
                                         plt.figure()
-                                        plt.imshow(var_dset_reindex['SM'].values[:, :, 0])
-                                        plt.colorbar()
-
-                                        plt.figure()
                                         plt.imshow(var_dset_src['LST'].values[:, :, 0])
                                         plt.colorbar()
-                                        plt.figure()
-                                        plt.imshow(var_dset_reindex['LST'].values[:, :, 0])
-                                        plt.colorbar()
+                                        plt.show()
                                         '''
+
+                                        if active_mask:
+                                            if method_mask == 'watermark':
+                                                var_dset_src = apply_var_mask(var_dset_src, mask_file_values)
+                                            else:
+                                                log_stream.error(' ===> Masking method "'
+                                                                 + method_mask + '" is not allowed')
+                                                raise NotImplementedError('Case not implemented yet')
 
                                         # Apply the interpolation method to the variable source data-array
                                         if active_interp:
-                                            var_dset_anc = apply_var_interp(
-                                                var_dset_src, geo_da_anc,
-                                                dim_name_geo_x=self.dim_name_geo_x, dim_name_geo_y=self.dim_name_geo_y,
-                                                coord_name_geo_x=self.coord_name_geo_x, coord_name_geo_y=self.coord_name_geo_y,
-                                                interp_method=self.interp_method)
+                                            if method_interpolate in ['nearest', 'linear']:
+                                                var_dset_anc = apply_var_interpolate(
+                                                    var_dset_src, geo_da_anc,
+                                                    dim_name_geo_x=self.dim_name_geo_x, dim_name_geo_y=self.dim_name_geo_y,
+                                                    coord_name_geo_x=self.coord_name_geo_x, coord_name_geo_y=self.coord_name_geo_y,
+                                                    interp_method=method_interpolate)
+                                            elif method_interpolate == 'sample':
+                                                var_dset_anc = apply_var_sample(
+                                                    var_dset_src, geo_da_anc,
+                                                    i_cols_ref, j_rows_ref, i_cols_dom, j_rows_dom)
+                                            else:
+                                                log_stream.error(' ===> Interpolating method "'
+                                                                 + method_interpolate + '" is not allowed')
+                                                raise NotImplementedError('Case not implemented yet')
                                         else:
                                             var_dset_anc = deepcopy(var_dset_src)
 
@@ -989,9 +1099,6 @@ class DriverDynamic:
 
                                                     var_dset_masked_adj[file_layer_name] = deepcopy(var_da_filled_adj)
 
-                                            #var_dset_merged = xr.where(
-                                            #    np.isnan(var_dset_tmp_adj), var_dset_masked_adj, var_dset_tmp_adj)
-
                                             var_dset_merged = deepcopy(var_dset_masked_adj)
 
                                             var_dset_merged.attrs = attrs_dset_tmp
@@ -1000,13 +1107,13 @@ class DriverDynamic:
                                         '''
                                         # DEBUG
                                         plt.figure()
-                                        plt.imshow(var_dset_src['LST'].values[:, :, 0])
+                                        plt.imshow(var_dset_src['SM'].values[:, :, 0])
                                         plt.colorbar()
                                         plt.figure()
-                                        plt.imshow(var_dset_masked['LST'].values[:, :, 0])
+                                        plt.imshow(var_dset_masked['SM'].values[:, :, 0])
                                         plt.colorbar()
                                         plt.figure()
-                                        plt.imshow(dset_collection_tmp[var_name_tmp][var_time]['LST'].values[:, :, 0])
+                                        plt.imshow(dset_collection_tmp[var_name_tmp][var_time]['SM'].values[:, :, 0])
                                         plt.colorbar()
                                         plt.show()
                                         '''
@@ -1033,8 +1140,8 @@ class DriverDynamic:
 
                     if (dset_collection_tmp is not None) and (var_name_anc in list(dset_collection_tmp.keys())):
 
-                        file_include_anc, file_compression_anc, file_geo_reference_anc, file_type_anc, \
-                            file_coords_anc, file_freq_anc, \
+                        file_include_anc, file_compression_anc, file_geo_reference_anc, file_geo_mask_anc, \
+                            file_type_anc, file_coords_anc, file_freq_anc, \
                             file_time_steps_expected_anc, file_time_steps_ref_anc, \
                             file_time_steps_flag_anc, \
                             file_domain_anc, file_layer_anc = self.extract_var_fields(anc_dict[var_name_anc])

@@ -12,6 +12,7 @@ Version 3.1.5 (20210628)
 - Add the selection of the sections using the "hmc_file_filter" dictionary in the datasets configuration file;
 - Add the tool for merging datasets of different domains into a unique domain;
 - Extend the hmc tool for converting time-series adding the dam volume datasets;
+- Extend the hmc tool for merging gridded sources (continuum and s3m datasets);
 - Extend the hmc tool for preprocessing gridded sources adding the restart datasets in binary format;
 - Fix bugs in the hmc manager in managing the point static datasets of dams, joints, lakes, intakes and sections;
 - Fix bugs in the hmc manager in managing the compatibility for sections file in shp or ascii format;

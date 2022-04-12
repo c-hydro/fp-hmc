@@ -23,7 +23,7 @@ from tools.processing_tool_datasets_merger.lib_data_io_generic import parse_data
 from tools.processing_tool_datasets_merger.lib_utils_io import read_obj, write_obj
 from tools.processing_tool_datasets_merger.lib_utils_system import fill_tags2string, make_folder
 from tools.processing_tool_datasets_merger.lib_utils_gzip import unzip_filename
-from tools.processing_tool_datasets_merger.lib_utils_geo import create_map_idx
+from tools.processing_tool_datasets_merger.lib_utils_geo import create_idx_partial2global
 
 from tools.processing_tool_datasets_merger.lib_info_args import logger_name, zip_extension
 
@@ -31,7 +31,7 @@ from tools.processing_tool_datasets_merger.lib_info_args import logger_name, zip
 log_stream = logging.getLogger(logger_name)
 
 # Debug
-# import matplotlib.pylab as plt
+import matplotlib.pylab as plt
 ######################################################################################
 
 
@@ -66,7 +66,7 @@ class DriverStatic:
         self.file_coords_tag = 'file_coords'
 
         self.file_obj_fields = [self.file_name_tag, self.folder_name_tag]
-        self.grid_obj_fields = ["xll", "yll", "res", "nrows", "ncols"]
+        self.grid_obj_fields = ["xll_corner", "yll_corner", "cell_size", "rows", "cols"]
 
         self.src_obj = self.define_collection_obj(src_dict)
         self.anc_obj = self.define_collection_obj(anc_dict)
@@ -78,6 +78,22 @@ class DriverStatic:
         if not isinstance(domain_name, list):
             domain_name = [domain_name]
         self.domain_name = domain_name
+
+        self.method_interpolate_source = 'nearest'
+        if 'layer_method_interpolate_source' in list(alg_ancillary.keys()):
+            self.method_interpolate_source = alg_ancillary['layer_method_interpolate_source']
+
+        self.method_mask_source = None
+        if 'layer_method_mask_source' in list(alg_ancillary.keys()):
+            self.method_mask_source = alg_ancillary['layer_method_mask_source']
+
+        if self.method_mask_source is not None:
+            if 'watermark_dataset' not in list(src_dict.keys()):
+                log_stream.error(' ===> "WaterMark" source file must be defined if "WaterMark masking" is activated')
+                raise RuntimeError('Check your settings and set the "watermark_dataset" in source files')
+            if 'watermark_dataset' not in list(anc_dict.keys()):
+                log_stream.error(' ===> "WaterMark" ancillary file must be defined if "WaterMark masking" is activated')
+                raise RuntimeError('Check your settings and set the "watermark_dataset" in ancillary files')
 
         self.flag_dset_cleaning = flag_dset_cleaning
 
@@ -102,6 +118,8 @@ class DriverStatic:
         for obj_key, obj_fields in obj_dict_in.items():
 
             if all(key in list(obj_fields.keys()) for key in self.file_obj_fields):
+
+                # file data case
                 obj_folder_name = obj_fields[self.folder_name_tag]
                 obj_file_name = obj_fields[self.file_name_tag]
                 obj_file_path = os.path.join(obj_folder_name, obj_file_name)
@@ -125,8 +143,9 @@ class DriverStatic:
 
             elif all(key in list(obj_fields.keys()) for key in self.grid_obj_fields):
 
+                # grid data case
                 obj_collections = self.zip_var_fields(
-                    obj_fields, self.flag_file_data,
+                    obj_fields, self.flag_grid_data,
                     obj_compression=False, obj_type=None,
                     obj_layer=None, obj_coords=None, obj_domain=None)
             else:
@@ -183,12 +202,27 @@ class DriverStatic:
     # -------------------------------------------------------------------------------------
     # Method to extract variable field(s)
     @staticmethod
+    def extract_geo_fields(obj_collections):
+        obj_x, obj_y = None, None
+        obj_yllcorner, obj_xllcorner, obj_cellsize = None, None, None
+        if obj_collections is not None:
+            obj_x = obj_collections['geo_x']
+            obj_y = obj_collections['geo_y']
+            obj_yllcorner = obj_collections['yllcorner']
+            obj_xllcorner = obj_collections['xllcorner']
+            obj_cellsize = obj_collections['cellsize']
+        return obj_x, obj_y, obj_xllcorner, obj_yllcorner, obj_cellsize
+    # -------------------------------------------------------------------------------------
+
+    # -------------------------------------------------------------------------------------
+    # Method to extract variable field(s)
+    @staticmethod
     def extract_var_fields(obj_collections):
 
         obj_source, obj_format = None, None
         obj_compression, obj_type = None, None
         obj_variable, obj_x, obj_y = None, None, None
-        obj_coords, obj_domain = None, None
+        obj_coords, obj_domain, obj_layer = None, None, None
         if obj_collections is not None:
             obj_source = obj_collections['source']
             obj_format = obj_collections['format']
@@ -230,9 +264,20 @@ class DriverStatic:
         obj_collections_fields = {}
         for obj_key, obj_collections_ref in obj_ref.items():
 
-            obj_data_ref_raw, obj_format_ref, obj_compression_ref, \
-                obj_type_ref, obj_layer_ref,  \
-                obj_coords_ref, obj_domain_ref = self.extract_var_fields(obj_collections_ref)
+            # Info start
+            log_stream.info(' ----> Get "' + obj_key + '" datasets ... ')
+
+            if obj_collections_ref['format'] in ['file_obj', 'grid_obj']:
+                obj_data_ref_raw, obj_format_ref, obj_compression_ref, \
+                    obj_type_ref, obj_layer_ref,  \
+                    obj_coords_ref, obj_domain_ref = self.extract_var_fields(obj_collections_ref)
+            else:
+                log_stream.error(' ===> Source format for variable "' + obj_key + '" is badly defined.')
+                raise IOError('Only "file_obj" and "grid_obj" are allowed as flag format')
+
+            if obj_data_ref_raw is None:
+                log_stream.error(' ===> Source datasets for variable "' + obj_key + '" is not defined.')
+                raise IOError('Both source and ancillary "folder_name" and "file_name" are needed by the procedure')
 
             domain_list_ref = self.parse_var_domain(obj_domain_ref)
 
@@ -243,6 +288,10 @@ class DriverStatic:
             obj_data_anc_raw, obj_format_anc, obj_compression_anc, \
                 obj_type_anc, obj_layer_anc, \
                 obj_coords_anc, obj_domain_anc = self.extract_var_fields(obj_collections_anc)
+
+            if obj_data_anc_raw is None:
+                log_stream.error(' ===> Ancillary datasets for variable "' + obj_key + '" is not defined.')
+                raise IOError('Both source and ancillary "folder_name" and "file_name" are needed by the procedure')
 
             alg_data_ref_obj, alg_data_anc_obj = {}, {}
             if domain_list_ref is not None:
@@ -343,7 +392,111 @@ class DriverStatic:
                 else:
                     obj_collections_fields[obj_key][data_key] = file_path_anc
 
+            # Info ending
+            log_stream.info(' ----> Get "' + obj_key + '" datasets ... DONE')
+
         return obj_collections_fields
+    # -------------------------------------------------------------------------------------
+
+    # -------------------------------------------------------------------------------------
+    # Method to define merging info
+    def define_merging_info(self, ws_collection_data):
+
+        # Info start
+        log_stream.info(' ----> Define merging info ... ')
+        # Get merging method
+        method_interpolate = self.method_interpolate_source
+
+        log_stream.info(' -----> Select method "' + method_interpolate + '" ... ')
+        if method_interpolate == 'sample':
+
+            file_obj_terrain_ref = ws_collection_data['terrain_reference']
+            file_obj_terrain_dom = ws_collection_data['terrain_dataset']
+
+            if isinstance(file_obj_terrain_ref, dict) and file_obj_terrain_ref.__len__() == 1:
+                file_name_terrain_ref = list(file_obj_terrain_ref.values())[0]
+                obj_terrain_ref = read_obj(file_name_terrain_ref)
+
+                geo_x_ref, geo_y_ref, geo_xllcorner_ref, \
+                    geo_yllcorner_ref, geo_cellsize_ref = self.extract_geo_fields(obj_terrain_ref)
+
+                grid_x_ref, grid_y_ref = np.meshgrid(geo_x_ref, geo_y_ref)
+
+            else:
+                log_stream.error(' ===> Terrain reference obj is not in supported format')
+                raise NotImplementedError('Case not implemented yet')
+
+            geo_idx_i_ref = np.zeros(shape=(grid_x_ref.shape[0], grid_y_ref.shape[1]))
+            geo_idx_i_ref[:, :] = np.nan
+            geo_idx_j_ref = np.zeros(shape=(grid_x_ref.shape[0], grid_y_ref.shape[1]))
+            geo_idx_j_ref[:, :] = np.nan
+            geo_mask_ref = np.zeros(shape=(grid_x_ref.shape[0], grid_y_ref.shape[1]))
+            geo_mask_ref[:, :] = np.nan
+            for id_dom, (key_dom, file_name_terrain_dom) in enumerate(file_obj_terrain_dom.items()):
+
+                log_stream.info(' ------> Compute idxs between domain "' + key_dom + '" and domain reference ... ')
+
+                obj_terrain_dom = read_obj(file_name_terrain_dom)
+                geo_x_dom, geo_y_dom, geo_xllcorner_dom, \
+                    geo_yllcorner_dom, geo_cellsize_dom = self.extract_geo_fields(obj_terrain_dom)
+
+                if 'i_cols_ref' not in list(obj_terrain_dom.keys()) or 'j_rows_ref' not in list(obj_terrain_dom.keys()):
+
+                    grid_x_dom, grid_y_dom = np.meshgrid(geo_x_dom, geo_y_dom)
+
+                    geo_idx_i_dom = np.zeros(shape=(grid_x_dom.shape[0], grid_y_dom.shape[1]))
+                    geo_idx_i_dom[:, :] = np.nan
+                    geo_idx_j_dom = np.zeros(shape=(grid_x_dom.shape[0], grid_y_dom.shape[1]))
+                    geo_idx_j_dom[:, :] = np.nan
+                    for i in range(0, grid_x_dom.shape[0]):
+                        for j in range(0, grid_y_dom.shape[1]):
+
+                            i_cols = round((grid_x_dom[i, j] - geo_xllcorner_ref) / geo_cellsize_ref)
+                            j_rows = round((grid_y_dom[i, j] - geo_yllcorner_ref) / geo_cellsize_ref)
+
+                            j_rows = grid_y_ref.shape[0] - j_rows
+
+                            if (0 <= j_rows < geo_mask_ref.shape[0]) and (0 <= i_cols < geo_mask_ref.shape[1]):
+
+                                geo_idx_i_ref[i, j] = i_cols
+                                geo_idx_j_ref[i, j] = j_rows
+                                geo_idx_i_dom[i, j] = i
+                                geo_idx_j_dom[i, j] = j
+
+                                geo_mask_ref[j_rows, i_cols] = id_dom
+
+                    # Debug
+                    # plt.figure()
+                    # plt.imshow(geo_mask_ref)
+                    # plt.colorbar()
+                    # plt.show()
+
+                    obj_terrain_dom['i_cols_ref'] = geo_idx_i_ref.astype(int)
+                    obj_terrain_dom['j_rows_ref'] = geo_idx_j_ref.astype(int)
+                    obj_terrain_dom['i_cols_dom'] = geo_idx_i_dom.astype(int)
+                    obj_terrain_dom['j_rows_dom'] = geo_idx_j_dom.astype(int)
+
+                    if os.path.exists(file_name_terrain_dom):
+                        os.remove(file_name_terrain_dom)
+
+                    write_obj(file_name_terrain_dom, obj_terrain_dom)
+
+                    log_stream.info(' ------> Compute idxs between domain "' + key_dom +
+                                    '" and domain reference ... DONE')
+
+                else:
+                    log_stream.info(' ------> Compute idxs between domain "' + key_dom +
+                                    '" and domain reference ... SKIPPED. Datasets are previously computed.')
+
+        elif method_interpolate == 'nearest':
+            log_stream.info(' -----> Select method "' + method_interpolate + '" ... DONE')
+        else:
+            log_stream.info(' -----> Select method "' + method_interpolate + '" ... FAILED')
+            log_stream.error(' ===> Merging method not available')
+            raise NotImplementedError('Case not implemented yet')
+
+        # Info end
+        log_stream.info(' ----> Define merging info ... DONE')
     # -------------------------------------------------------------------------------------
 
     # -------------------------------------------------------------------------------------
@@ -361,6 +514,9 @@ class DriverStatic:
         # Get data collections obj
         collections_src = self.get_collections_fields(obj_src, obj_anc)
         collections_dst = self.get_collections_fields(obj_dst, obj_anc)
+
+        # Add merging method info
+        self.define_merging_info(collections_src)
 
         # Store workspace collections obj
         ws_collections_data = {self.flag_dset_source: collections_src, self.flag_dset_destination: collections_dst}

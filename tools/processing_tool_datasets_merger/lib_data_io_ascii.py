@@ -31,7 +31,7 @@ import matplotlib.pylab as plt
 
 # -------------------------------------------------------------------------------------
 # Default method variable(s)
-info_default_fields = ['nrows', 'ncols', 'xll', 'yll', 'res']
+info_default_fields = ['rows', 'cols', 'xll_corner', 'yll_corner', 'cell_size']
 map_default_fields = ['nrows', 'ncols', 'xllcorner', 'yllcorner', 'cellsize']
 # -------------------------------------------------------------------------------------
 

@@ -4,7 +4,7 @@
       "title": "Algorithm to mosaic datasets",
       "web-site": "",
       "source": "Python library developed by CIMA Research Foundation",
-      "history": "2.0.2 [20220324]",
+      "history": "2.0.3 [20220412]",
       "project-info": "HMC processing tools",
       "algorithm": "Processing tools by CIMA Research Foundation"
     },
@@ -15,12 +15,20 @@
       "cleaning_dynamic_tmp": false
     },
     "ancillary": {
-      "__comment__": "layer_nc_format: continuum, null",
-      "domain_name" : ["EntellaDomain","MagraDomain", "RoiaDomain", "TanaroDomain"],
+      "__comment__": "layer_nc_format: continuum, null; layer_method_merging: nearest, sample; layer_method_masking: watermark, null",
+      "domain_name" : [
+        "EntellaDomain","MagraDomain", "RoiaDomain", "TanaroDomain", "AvetoTrebbiaDomain",
+        "CentaDomain", "BormidaSDomain", "BormidaMDomain",
+        "LevanteGenoveseDomain", "PonenteGenoveseDomain", "CentroPonenteDomain", "PonenteDomain",
+        "ScriviaDomain", "OrbaSturaDomain", "ErroDomain", "FinaleseDomain", "ImperieseDomain", "SavoneseDomain"],
       "layer_name": ["LST", "SM", "SnowMask"],
       "layer_scale_factor": [1, 1, 1],
       "layer_no_data": [0, -9999.0, 0],
-      "layer_nc_format": "continuum"
+      "layer_nc_format": "continuum",
+      "layer_method_interpolate_source": "sample",
+      "layer_method_interpolate_destination": "nearest",
+      "layer_method_mask_source": "watermark",
+      "layer_method_mask_destination": null
     },
     "template": {
       "time": {
@@ -49,11 +57,22 @@
           "file_layer": null,
           "file_coords": {"x": null, "y": null}
         },
-        "terrain_reference": {
-          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_static/LiguriaDomain/gridded/",
-          "file_name": "geo_liguria.tiff",
+        "watermark_dataset": {
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_static/{domain_name}/gridded/",
+          "file_name": "{domain_name}.WaterMark.txt",
           "file_compression": false,
-          "file_type": "tiff",
+          "file_type": "ascii",
+          "file_domain": {"flag": true, "value": null},
+          "file_layer": null,
+          "file_coords": {"x": null, "y": null}
+        },
+        "terrain_reference": {
+          "xll_corner": 7.3402,
+          "yll_corner": 43.7587,
+          "rows": 600,
+          "cols": 1625,
+          "cell_size": 0.001801,
+          "file_type": "grid",
           "file_domain": {"flag": false, "value": "liguria"},
           "file_layer": null,
           "file_coords": {"x": null, "y": null}
@@ -61,10 +80,12 @@
       },
       "destination": {
         "terrain_variable": {
-          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_static/LiguriaDomain/gridded/",
-          "file_name": "geo_liguria.tiff",
-          "file_compression": false,
-          "file_type": "tiff",
+          "xll_corner": 7.3402,
+          "yll_corner": 43.7587,
+          "rows": 600,
+          "cols": 1625,
+          "cell_size": 0.001801,
+          "file_type": "grid",
           "file_domain": {"flag": false, "value": "liguria"},
           "file_layer": null,
           "file_coords": {"x": null, "y": null}
@@ -73,7 +94,15 @@
       "ancillary": {
         "terrain_dataset": {
           "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_static/LiguriaDomain/gridded/",
-          "file_name": "info_{domain_name}_domain_src.workspace",
+          "file_name": "info_{domain_name}_domain_terrain_src.workspace",
+          "file_type": "pickle",
+          "file_domain": {"flag": true, "value": null},
+          "file_layer": null,
+          "file_coords": {"x": null, "y": null}
+        },
+        "watermark_dataset": {
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_static/LiguriaDomain/gridded/",
+          "file_name": "info_{domain_name}_domain_watermark_src.workspace",
           "file_type": "pickle",
           "file_domain": {"flag": true, "value": null},
           "file_layer": null,
@@ -81,7 +110,7 @@
         },
         "terrain_reference": {
           "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_static/LiguriaDomain/gridded/",
-          "file_name": "info_liguria_domain_ref.workspace",
+          "file_name": "info_liguria_domain_terrain_ref.workspace",
           "file_type": "pickle",
           "file_domain": {"flag": false, "value": "liguria"},
           "file_layer": null,
@@ -89,7 +118,7 @@
         },
         "terrain_variable": {
           "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_static/LiguriaDomain/gridded/",
-          "file_name": "info_liguria_domain_dst.workspace",
+          "file_name": "info_liguria_domain_terrain_dst.workspace",
           "file_type": "pickle",
           "file_domain": {"flag": false, "value": "liguria"},
           "file_layer": null,
@@ -105,6 +134,7 @@
           "file_include": true,
           "file_compression": true,
           "file_geo_reference": "terrain_dataset",
+          "file_geo_mask": "watermark_dataset",
           "file_type": "netcdf",
           "file_domain": {"flag": true, "value": null},
           "file_layer": {"flag": false, "value": ["LST", "SM", "SnowMask"]},
@@ -119,6 +149,7 @@
           "file_include": null,
           "file_compression": null,
           "file_geo_reference": "terrain_reference",
+          "file_geo_mask": null,
           "file_type": "pickle",
           "file_domain": {"flag": false, "value": "liguria"},
           "file_layer": {"flag": true, "value": null},
@@ -134,6 +165,7 @@
           "file_include": true,
           "file_compression": true,
           "file_geo_reference": "terrain_variable",
+          "file_geo_mask": null,
           "file_type": "netcdf",
           "file_domain": {"flag": false, "value": "liguria"},
           "file_layer": {"flag": false, "value": ["LST", "SM", "SnowMask"]},

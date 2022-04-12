@@ -4,7 +4,7 @@
       "title": "Algorithm to mosaic datasets",
       "web-site": "",
       "source": "Python library developed by CIMA Research Foundation",
-      "history": "2.0.1 [20211222]",
+      "history": "2.0.3 [20220412]",
       "project-info": "HMC processing tools",
       "algorithm": "Processing tools by CIMA Research Foundation"
     },
@@ -20,7 +20,11 @@
       "layer_name": ["SnowMask", "AlbedoS", "SWE", "MeltingS"],
       "layer_scale_factor": [1, 1, 1, 1],
       "layer_no_data": [0, -9999.0, -9999.0, -9999.0],
-      "layer_nc_format": "continuum"
+      "layer_nc_format": "continuum",
+      "layer_method_interpolate_source": "nearest",
+      "layer_method_interpolate_destination": "nearest",
+      "layer_method_mask_source": null,
+      "layer_method_mask_destination": null
     },
     "template": {
       "time": {
