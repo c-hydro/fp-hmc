@@ -63,7 +63,11 @@ def active_var_mask(var_attrs, mask_attrs,
                 log_stream.warning(
                     ' ===> Mask method will be deactivate due to a different value for attribute "' +
                     field_name_step + '". To apply the mask method all the expected attributes must be the same.')
-                break
+                log_stream.warning(' ===> Attribute "' + field_name_step +
+                                   '" :: Variable value: "' + str(var_field_value) +
+                                   '" -- Mask Value: "' + str(mask_field_value) + '"')
+                if active_mask:
+                    active_mask = False
 
     else:
         active_mask = False

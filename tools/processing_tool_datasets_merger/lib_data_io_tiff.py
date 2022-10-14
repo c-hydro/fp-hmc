@@ -3,8 +3,8 @@ Class Features
 
 Name:          lib_data_io_tiff
 Author(s):     Fabio Delogu (fabio.delogu@cimafoundation.org)
-Date:          '20210408'
-Version:       '1.0.0'
+Date:          '20221013'
+Version:       '1.1.0'
 """
 
 #######################################################################################
@@ -17,6 +17,7 @@ import numpy as np
 import xarray as xr
 import pandas as pd
 
+from copy import deepcopy
 from rasterio.transform import Affine
 from osgeo import gdal, gdalconst
 
@@ -75,10 +76,40 @@ def read_data_tiff(file_name, var_scale_factor=1, var_type='float32', var_name=N
                    dim_name_time='time', dim_name_geo_x='west_east', dim_name_geo_y='south_north',
                    dims_order=None,
                    decimal_round_data=7, flag_round_data=False,
-                   decimal_round_geo=7, flag_round_geo=True):
+                   decimal_round_geo=7, flag_round_geo=True,
+                   flag_obj_type='DataArray'):
 
     if dims_order is None:
         dims_order = [dim_name_geo_y, dim_name_geo_x, dim_name_time]
+
+    if isinstance(var_no_data, str):
+        pass
+    elif isinstance(var_no_data, list) and var_no_data.__len__() == 1:
+        var_no_data = var_no_data[0]
+    else:
+        log_stream.error(' ===> The arguments "var_no_data" must be a string or a list with length equal to 1')
+        raise NotImplemented('Case not implemented yet')
+    if isinstance(var_name, str):
+        pass
+    elif isinstance(var_name, list) and var_name.__len__() == 1:
+        var_name = var_name[0]
+    else:
+        log_stream.error(' ===> The arguments "var_name" must be a string or a list with length equal to 1')
+        raise NotImplemented('Case not implemented yet')
+    if isinstance(var_type, str):
+        pass
+    elif isinstance(var_type, list) and var_type.__len__() == 1:
+        var_type = var_type[0]
+    else:
+        log_stream.error(' ===> The arguments "var_type" must be a string or a list with length equal to 1')
+        raise NotImplemented('Case not implemented yet')
+    if isinstance(var_scale_factor, str):
+        pass
+    elif isinstance(var_scale_factor, list) and var_scale_factor.__len__() == 1:
+        var_scale_factor = var_scale_factor[0]
+    else:
+        log_stream.error(' ===> The arguments "var_scale_factor" must be a string or a list with length equal to 1')
+        raise NotImplemented('Case not implemented yet')
 
     if os.path.exists(file_name):
         # Open file tiff
@@ -89,6 +120,7 @@ def read_data_tiff(file_name, var_scale_factor=1, var_type='float32', var_name=N
         file_transform = file_handle.transform
         file_nodata = file_handle.nodata
         file_data = file_handle.read()
+        file_attrs = file_handle.meta
         file_values = file_data[0, :, :]
 
         if file_nodata is None:
@@ -152,9 +184,7 @@ def read_data_tiff(file_name, var_scale_factor=1, var_type='float32', var_name=N
         assert min_lat_round == center_bottom_round
         assert max_lat_round == center_top_round
 
-        var_geo_x_2d = lons
-        var_geo_y_2d = lats
-
+        var_geo_x_2d, var_geo_y_2d = lons, lats
         if dims_order.__len__() == 3:
             var_data = np.zeros(shape=[var_geo_x_2d.shape[0], var_geo_y_2d.shape[1], 1])
             var_data[:, :, :] = np.nan
@@ -167,7 +197,7 @@ def read_data_tiff(file_name, var_scale_factor=1, var_type='float32', var_name=N
             log_stream.error(' ===> Variable dimensions is not allowed. Only 2D or 3D variables are configured.')
             raise NotImplemented('Case not implemented yet')
 
-        var_attrs = {'nrows': var_geo_y_2d.shape[0], 'ncols': var_geo_x_2d.shape[1],
+        geo_attrs = {'nrows': var_geo_y_2d.shape[0], 'ncols': var_geo_x_2d.shape[1],
                      'nodata_value': file_nodata,
                      'xllcorner': file_transform[2],
                      'yllcorner': file_transform[5], 'cellsize': abs(file_transform[0]),
@@ -175,35 +205,87 @@ def read_data_tiff(file_name, var_scale_factor=1, var_type='float32', var_name=N
 
     else:
         log_stream.warning(' ===> File ' + file_name + ' not available in loaded datasets!')
-        var_data = None
+        var_data, geo_attrs, var_geo_x_2d, var_geo_y_2d = None, None, None, None
 
     if var_data is not None:
 
-        if dims_order.__len__() == 3:
-            if isinstance(var_time, pd.Timestamp):
-                var_time = pd.DatetimeIndex([var_time])
-            elif isinstance(var_time, pd.DatetimeIndex):
-                pass
+        if var_time is not None:
+            if dims_order.__len__() == 3:
+                if isinstance(var_time, pd.Timestamp):
+                    var_data_time = pd.DatetimeIndex([var_time])
+                elif isinstance(var_time, pd.DatetimeIndex):
+                    var_data_time = deepcopy(var_time)
+                else:
+                    log_stream.error(' ===> Time format is not allowed. Expected Timestamp or Datetimeindex')
+                    raise NotImplemented('Case not implemented yet')
+
+                if flag_obj_type == 'DataArray':
+                    var_obj = xr.DataArray(var_data, name=var_name, dims=dims_order,
+                                           coords={coord_name_time: ([dim_name_time], var_data_time),
+                                                   coord_name_geo_x: ([dim_name_geo_x], var_geo_x_2d[0, :]),
+                                                   coord_name_geo_y: ([dim_name_geo_y], var_geo_y_2d[:, 0])})
+
+                elif flag_obj_type == 'Dataset':
+
+                    var_obj = xr.Dataset(coords={coord_name_time: ([dim_name_time], var_data_time)})
+                    var_obj.coords[coord_name_time] = var_obj.coords[coord_name_time].astype('datetime64[ns]')
+
+                    var_tmp = xr.DataArray(var_data, name=var_name, dims=dims_order,
+                                           coords={coord_name_time: ([dim_name_time], var_data_time),
+                                                   coord_name_geo_x: ([dim_name_geo_x], var_geo_x_2d[0, :]),
+                                                   coord_name_geo_y: ([dim_name_geo_y], var_geo_y_2d[:, 0])})
+                    var_obj[var_name] = var_tmp
+
+                else:
+                    log_stream.error(' ===> DataObj type must be "DataArray" or "Dataset"')
+                    raise NotImplemented('Case not implemented yet')
+
+            elif dims_order.__len__() == 2:
+
+                if flag_obj_type == 'DataArray':
+
+                    var_obj = xr.DataArray(var_data, name=var_name, dims=dims_order,
+                                           coords={coord_name_geo_x: ([dim_name_geo_x], var_geo_x_2d[0, :]),
+                                                   coord_name_geo_y: ([dim_name_geo_y], var_geo_y_2d[:, 0])})
+
+                elif flag_obj_type == 'DataSet':
+                    var_obj = xr.Dataset()
+                    var_tmp = xr.DataArray(var_data, name=var_name, dims=dims_order,
+                                           coords={coord_name_geo_x: ([dim_name_geo_x], var_geo_x_2d[0, :]),
+                                                   coord_name_geo_y: ([dim_name_geo_y], var_geo_y_2d[:, 0])})
+                    var_obj[var_name] = var_tmp
+
+                else:
+                    log_stream.error(' ===> DataObj type must be "DataArray" or "Dataset"')
+                    raise NotImplemented('Case not implemented yet')
+
             else:
-                log_stream.error(' ===> Time format is not allowed. Expected Timestamp or Datetimeindex')
+                log_stream.error(' ===> DataObj dims must be 2D or 3D')
                 raise NotImplemented('Case not implemented yet')
 
-            var_da = xr.DataArray(var_data, name=var_name, dims=dims_order,
-                                  coords={coord_name_time: ([dim_name_time], var_time),
-                                          coord_name_geo_x: ([dim_name_geo_x], var_geo_x_2d[0, :]),
-                                          coord_name_geo_y: ([dim_name_geo_y], var_geo_y_2d[:, 0])})
+            if file_attrs and geo_attrs:
+                obj_attrs = {**file_attrs, **geo_attrs}
+            elif (not file_attrs) and geo_attrs:
+                obj_attrs = deepcopy(geo_attrs)
+            elif file_attrs and (not geo_attrs):
+                obj_attrs = deepcopy(file_attrs)
+            else:
+                obj_attrs = None
 
-        elif dims_order.__len__() == 2:
-            var_da = xr.DataArray(var_data, name=var_name, dims=dims_order,
-                                  coords={coord_name_geo_x: ([dim_name_geo_x], var_geo_x_2d[0, :]),
-                                          coord_name_geo_y: ([dim_name_geo_y], var_geo_y_2d[:, 0])})
+            if obj_attrs is not None:
+                var_obj.attrs = obj_attrs
 
-        var_da.attrs = var_attrs
+        elif var_time is None:
+            log_stream.error(' ===> Time must be defined by DateTimeIndex format and not by NoneType')
+            raise RuntimeError('Case not implemented yet')
+        else:
+            log_stream.error(' ===> Error in creating time information for dataset object')
+            raise RuntimeError('Unknown error in creating dataset. Check the procedure.')
 
     else:
         log_stream.warning(' ===> All filenames in the selected period are not available')
-        var_da = None
+        var_obj = None
 
-    return var_da
+    return var_obj
 
 # -------------------------------------------------------------------------------------

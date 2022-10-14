@@ -17,7 +17,6 @@ import xarray as xr
 from copy import deepcopy
 
 from tools.processing_tool_datasets_merger.lib_data_io_nc import read_data_nc
-from tools.processing_tool_datasets_merger.lib_data_io_tiff import read_data_tiff #Aggiunta Fra
 from tools.processing_tool_datasets_merger.lib_data_io_remap import create_dset_continuum
 
 from tools.processing_tool_datasets_merger.lib_utils_method_interpolate import active_var_interpolate, \
@@ -778,14 +777,6 @@ class DriverDynamic:
                                     plt.figure()
                                     plt.imshow(var_dset_remap['SM'].values)
                                     plt.colorbar()
-                                    
-                                    plt.figure()
-                                    plt.imshow(var_dset_remap['TQ'].values[:, :, 0])
-                                    plt.colorbar()
-                                    plt.figure()
-                                    plt.imshow(var_dset_remap['terrain'].values)
-                                    plt.colorbar()
-                                    
                                     plt.show()
                                     '''
 
@@ -1003,33 +994,12 @@ class DriverDynamic:
                                             coord_name_geo_x=self.coord_name_geo_x,
                                             coord_name_geo_y=self.coord_name_geo_y,
                                             coord_name_time=self.coord_name_time,
-                                            dim_name_geo_x=self.dim_name_geo_x,
-                                            dim_name_geo_y=self.dim_name_geo_y,
+                                            dim_name_geo_x=self.dim_name_geo_x, dim_name_geo_y=self.dim_name_geo_y,
                                             dim_name_time=self.dim_name_time,
                                             dims_order=self.dims_order_3d)
 
                                         var_dset_src = filter_dset_vars(var_dset_src, var_list=var_dset_layer_src)
-
-                                    elif file_type_src == 'tif' or file_type_src == 'tiff':
-
-                                        var_dset_src = read_data_tiff(
-                                            var_file_path_tmp,
-                                            var_scale_factor=file_layers_scale_factor, var_type='float32',
-                                            var_name=file_layers_name,
-                                            var_time=var_time, var_no_data=file_layers_no_data,
-                                            coord_name_geo_x=self.coord_name_geo_x,
-                                            coord_name_geo_y=self.coord_name_geo_y,
-                                            coord_name_time=self.coord_name_time,
-                                            dim_name_geo_x=self.dim_name_geo_x,
-                                            dim_name_geo_y=self.dim_name_geo_y,
-                                            dim_name_time=self.dim_name_time,
-                                            dims_order=self.dims_order_3d,
-                                            decimal_round_data=7, flag_round_data=False,
-                                            decimal_round_geo=7, flag_round_geo=True,
-                                            flag_obj_type='Dataset')
-
-                                        var_dset_src = filter_dset_vars(var_dset_src, var_list=None)
-
+										
                                     else:
                                         log_stream.error(' ===> File type "' + file_type_src + '"is not allowed.')
                                         raise NotImplementedError('Case not implemented yet')
@@ -1102,9 +1072,6 @@ class DriverDynamic:
                                                 (var_dset_anc != var_nodata))
                                         else:
                                             var_dset_masked = deepcopy(var_dset_anc)
-
-                                        #variable_data =  var_dset_masked['TQ'].values
-                                        #plt.imshow(variable_data[:, :, 0])
 
                                         if var_time not in list(dset_collection_tmp[var_name_tmp].keys()):
                                             dset_collection_tmp[var_name_tmp][var_time] = var_dset_masked

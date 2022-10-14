@@ -3,8 +3,8 @@
 """
 HYDROLOGICAL MODEL CONTINUUM - Tool mosaic datasets
 
-__date__ = '20220322'
-__version__ = '2.0.2'
+__date__ = '20221013'
+__version__ = '2.1.0'
 __author__ =
         'Francesco Avanzi (francesco.avanzi@cimafoundation.org'
         'Andrea Libertino (andrea.libertino@cimafoundation.org',
@@ -15,7 +15,8 @@ General command line:
 python hmc_tool_processing_datasets_merger.py -settings_file configuration.json -time "YYYY-MM-DD HH:MM"
 
 Version(s):
-20220412 (2.0.3) --> Add codes to manage interpolating (nearest, linear, sampe) and masking (watermark) method(s)
+20221013 (2.1.0) --> Add codes to manage tiff format and fix bug in output variable(s)
+20220412 (2.0.3) --> Add codes to manage interpolating (nearest, linear, sample) and masking (watermark) method(s)
 20220322 (2.0.2) --> Add codes and functions to merge hmc and s3m subdomains datasets
 20211222 (2.0.1) --> Add no data filter
 20211201 (2.0.0) --> Upgrade codes and routines
@@ -47,8 +48,8 @@ log_stream = logging.getLogger(logger_name)
 project_name = 'HMC'
 alg_name = 'TOOL MOSAIC DATASETS'
 alg_type = 'Model'
-alg_version = '2.0.3'
-alg_release = '2022-04-12'
+alg_version = '2.1.0'
+alg_release = '2022-10-13'
 # Algorithm parameter(s)
 time_format = '%Y-%m-%d %H:%M'
 # -------------------------------------------------------------------------------------

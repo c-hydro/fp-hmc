@@ -1,0 +1,187 @@
+{
+  "algorithm": {
+    "general": {
+      "title": "Algorithm to mosaic datasets",
+      "web-site": "",
+      "source": "Python library developed by CIMA Research Foundation",
+      "history": "2.1.0 [20221013]",
+      "project-info": "HMC processing tools",
+      "algorithm": "Processing tools by CIMA Research Foundation"
+    },
+    "flags":{
+      "cleaning_static": true,
+      "cleaning_dynamic_ancillary": true,
+      "cleaning_dynamic_data": true,
+      "cleaning_dynamic_tmp": true
+    },
+    "ancillary": {
+      "__comment__": "layer_nc_format: continuum, null",
+      "domain_name" : ["EntellaDomain", "OrbaSturaDomain"],
+      "layer_name": ["TQ"],
+      "layer_scale_factor": [1],
+      "layer_no_data": [-9999],
+      "layer_nc_format": "continuum",
+      "layer_method_interpolate_source": "sample",
+      "layer_method_interpolate_destination": "nearest",
+      "layer_method_mask_source": "watermark",
+      "layer_method_mask_destination": null
+    },
+    "template": {
+      "time": {
+        "source_sub_path_time": "%Y/%m/%d/",
+        "source_datetime": "%Y%m%d%H%M",
+        "ancillary_sub_path_time": "%Y/%m/%d/",
+        "ancillary_datetime": "%Y%m%d%H%M",
+        "destination_sub_path_time": "%Y/%m/%d/",
+        "destination_datetime": "%Y%m%d%H%M"
+      },
+      "data" : {
+        "layer_name": "string_layer",
+        "domain_name": "string_domain"
+      }
+    }
+  },
+  "data": {
+    "static": {
+      "source": {
+        "terrain_dataset": {
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_static/{domain_name}/gridded/",
+          "file_name": "{domain_name}.area.txt",
+          "file_compression": false,
+          "file_type": "ascii",
+          "file_domain": {"flag": true, "value": null},
+          "file_layer": null,
+          "file_coords": {"x": null, "y": null}
+        },
+        "watermark_dataset": {
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_static/{domain_name}/gridded/",
+          "file_name": "{domain_name}.WaterMark.txt",
+          "file_compression": false,
+          "file_type": "ascii",
+          "file_domain": {"flag": true, "value": null},
+          "file_layer": null,
+          "file_coords": {"x": null, "y": null}
+        },
+        "terrain_reference": {
+          "xll_corner": 7.3402,
+          "yll_corner": 43.7587,
+          "rows": 600,
+          "cols": 1625,
+          "cell_size": 0.001801,
+          "file_type": "grid",
+          "file_domain": {"flag": false, "value": "liguria"},
+          "file_layer": null,
+          "file_coords": {"x": null, "y": null}
+        }
+      },
+      "destination": {
+        "terrain_variable": {
+          "xll_corner": 7.3402,
+          "yll_corner": 43.7587,
+          "rows": 600,
+          "cols": 1625,
+          "cell_size": 0.001801,
+          "file_type": "grid",
+          "file_domain": {"flag": false, "value": "liguria"},
+          "file_layer": null,
+          "file_coords": {"x": null, "y": null}
+        }
+      },
+      "ancillary": {
+        "terrain_dataset": {
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_static/LiguriaDomain/gridded/",
+          "file_name": "{domain_name}.info_terrain_grid.workspace",
+          "file_type": "pickle",
+          "file_domain": {"flag": true, "value": null},
+          "file_layer": null,
+          "file_coords": {"x": null, "y": null}
+        },
+        "watermark_dataset": {
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_static/LiguriaDomain/gridded/",
+          "file_name": "{domain_name}.info_watermark_grid.workspace",
+          "file_type": "pickle",
+          "file_domain": {"flag": true, "value": null},
+          "file_layer": null,
+          "file_coords": {"x": null, "y": null}
+        },
+        "terrain_reference": {
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_static/LiguriaDomain/gridded/",
+          "file_name": "LiguriaDomain.info_merger_grid_ref.workspace",
+          "file_type": "pickle",
+          "file_domain": {"flag": false, "value": "LiguriaDomain"},
+          "file_layer": null,
+          "file_coords": {"x": null, "y": null}
+        },
+        "terrain_variable": {
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_static/LiguriaDomain/gridded/",
+          "file_name": "LiguriaDomain.info_merger_grid_var.workspace",
+          "file_type": "pickle",
+          "file_domain": {"flag": false, "value": "LiguriaDomain"},
+          "file_layer": null,
+          "file_coords": {"x": null, "y": null}
+        }
+      }
+    },
+    "dynamic": {
+      "source": {
+        "dataset_tq": {
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/archive/{domain_name}//weather_stations_realtime/{source_sub_path_time}/TQ/",
+          "file_name": "TQ_{source_datetime}.tif",
+          "file_include": true,
+          "file_compression": false,
+          "file_geo_reference": "terrain_dataset",
+          "file_geo_mask": "watermark_dataset",
+          "file_type": "tif",
+          "file_domain": {"flag": true, "value": null},
+          "file_layer": {"flag": false, "value": ["TQ"]},
+          "file_coords": {"x":  "Longitude", "y":  "Latitude", "time":  "time"},
+          "file_frequency": "H"
+        }
+      },
+      "ancillary": {
+        "dataset": {
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/archive/{domain_name}/weather_station_realtime/{ancillary_sub_path_time}/ancillary/",
+          "file_name": "hmc.output-grid.{ancillary_datetime}.workspace",
+          "file_include": null,
+          "file_compression": null,
+          "file_geo_reference": "terrain_reference",
+          "file_geo_mask": null,
+          "file_type": "pickle",
+          "file_domain": {"flag": false, "value": "LiguriaDomain"},
+          "file_layer": {"flag": true, "value": null},
+          "file_coords": null,
+          "file_frequency": "H"
+        }
+      },
+      "destination": {
+        "dataset": {
+          "__comment__" : "tiff: s3m_{domain_name}_{layer_name}_{destination_datetime}.tiff nc: s3m_{domain_name}_{destination_datetime}.nc",
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/archive/{domain_name}/weather_station_realtime/{destination_sub_path_time}/gridded/",
+          "file_name": "hmc.output-grid.{destination_datetime}.nc",
+          "file_include": true,
+          "file_compression": true,
+          "file_geo_reference": "terrain_variable",
+          "file_geo_mask": null,
+          "file_type": "netcdf",
+          "file_domain": {"flag": false, "value": "LiguriaDomain"},
+          "file_layer": {"flag": false, "value": ["TQ"]},
+          "file_coords": null,
+          "file_frequency": "H"
+        }
+      }
+    }
+  },
+  "time": {
+    "time_run": null,
+    "time_start": null,
+    "time_end": null,
+    "time_period": 2,
+    "time_frequency": "H",
+    "time_rounding": "H",
+    "time_reverse": true
+  },
+  "log": {
+    "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/log/",
+    "file_name": "hmc_tool_processing_merger_tq.txt"
+  }
+}
