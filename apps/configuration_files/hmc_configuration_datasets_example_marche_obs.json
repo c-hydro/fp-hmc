@@ -2,7 +2,7 @@
   "__comment": " ### HMC configuration file - Static and dynamic data settings ###",
   "Flags": {
     "__comment": " --- Flags configuration --- ",
-    "cleaning_ancillary_data_static": false,
+    "cleaning_ancillary_data_static": true,
     "cleaning_ancillary_data_dynamic_source": true,
     "cleaning_ancillary_data_dynamic_execution": true,
     "cleaning_ancillary_data_dynamic_outcome": true,
@@ -86,7 +86,7 @@
     "__comment": " --- DataGeo configuration --- ",
     "Gridded"     : {
       "hmc_file_name"     : "{run_domain}.{dset_var_name_geo}.txt" ,
-      "hmc_file_folder"   : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/data/data_static/gridded/",
+      "hmc_file_folder"   : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/data/data_static/gridded_marche/",
       "hmc_file_format"   : "ascii_grid",
       "hmc_file_frequency": null,
       "hmc_file_filter"   : null,
@@ -126,7 +126,7 @@
     },
     "Point": {
       "hmc_file_name"     : "{run_domain}.info_{dset_var_name_geo}.txt",
-      "hmc_file_folder"   : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/data/data_static/point/",
+      "hmc_file_folder"   : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/data/data_static/point_marche/",
       "hmc_file_format"   : "ascii_point",
       "hmc_file_frequency": null,
       "hmc_file_filter"   : null,
@@ -140,7 +140,7 @@
     },
     "Shapefile": {
       "hmc_file_name"     : "fp_sections_marche.shp",
-      "hmc_file_folder"   : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/data/data_static/shapefile/",
+      "hmc_file_folder"   : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/data/data_static/shapefile_marche/",
       "hmc_file_format"   : "shapefile",
       "hmc_file_frequency": null,
       "hmc_file_filter"   : {"DOMAIN": "marche"},

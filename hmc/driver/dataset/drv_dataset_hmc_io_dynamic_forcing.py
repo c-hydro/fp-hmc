@@ -1622,6 +1622,11 @@ class DSetManager:
                 elif isinstance(folder_name_tmp, str) and isinstance(file_name_tmp, str):
                     file_path_list.append(os.path.join(folder_name_tmp, file_name_tmp))
                     file_time_list.append(datetime_idx_step)
+                elif isinstance(folder_name_tmp, str) and isinstance(file_name_tmp, list):
+                    for file_name_tmp_step in file_name_tmp:
+                        file_path_tmp = os.path.join(folder_name_tmp, file_name_tmp_step)
+                        if file_path_tmp not in file_path_list:
+                            file_path_list.append(file_path_tmp)
                 else:
                     log_stream.error(' ===> Collect dynamic model filename(s) failed!')
                     raise NotImplementedError('Type of folder or file name is not supported')
