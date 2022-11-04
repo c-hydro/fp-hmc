@@ -438,8 +438,8 @@ class ModelRun:
                         folder_run_main = fill_tags2string(folder_run_main, obj_tmpl_ref, tmpl_value)
 
                     else:
-                        folder_run_root = fill_tags2string(folder_run_main, obj_tmpl_ref, tmpl_value)
-                        folder_run_main = fill_tags2string(folder_run_main, obj_tmpl_ref, tmpl_value)
+                        folder_run_root = fill_tags2string(folder_name_raw, obj_tmpl_ref, tmpl_value)
+                        folder_run_main = fill_tags2string(folder_name_raw, obj_tmpl_ref, tmpl_value)
 
                     obj_location_def[tmpl_key][self.tag_run_root_generic] = folder_run_root
                     obj_location_def[tmpl_key][self.tag_run_root_main] = folder_run_main
