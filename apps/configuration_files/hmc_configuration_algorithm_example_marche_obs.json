@@ -95,7 +95,8 @@
       },
       "tmp": {
         "file_folder": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/run/{run_name}/{run_mode}/temp/",
-        "file_name": null
+        "file_name": null,
+        "cleaning_active": false
       },
       "library": {
         "file_folder": "/home/fabio/fp_system_apps/hmc/",

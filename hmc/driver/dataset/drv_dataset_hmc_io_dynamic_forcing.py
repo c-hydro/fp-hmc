@@ -1088,6 +1088,12 @@ class DSetManager:
             var_args['plant_name_list'] = kwargs['plant_name_list']
         if 'release_name_list' in kwargs:                                       #add20210608
             var_args['release_name_list'] = kwargs['release_name_list']         #add20210608
+        if 'path_tmp' in kwargs:
+            path_tmp = kwargs['path_tmp']
+        if 'clean_tmp' in kwargs:
+            clean_tmp = kwargs['clean_tmp']
+        else:
+            clean_tmp = False
 
         da_terrain = self.da_terrain
 
@@ -1135,7 +1141,9 @@ class DSetManager:
                         var_static_info = None
 
                     driver_hmc_parser = DSetReader(dset_filename, dset_source_var_base, dset_datetime_idx,
-                                                   dset_time_info, var_format=dset_format)
+                                                   dset_time_info,
+                                                   file_tmp_path=path_tmp, file_tmp_clean=clean_tmp,
+                                                   dset_var_format=dset_format)
 
                     obj_var, da_time, geo_x, geo_y = driver_hmc_parser.read_filename_dynamic(
                         var_name, var_args, var_time_start=dset_time_start, var_time_end=dset_time_end,
@@ -1304,7 +1312,7 @@ class DSetManager:
         return var_frame
 
     # Method to define filename of datasets
-    def collect_filename(self, time_series, template_run_ref, template_run_filled,
+    def collect_filename(self, time_series, template_run_ref, template_run_filled, template_run_path,
                          extra_dict=None):
 
         dset_obj = self.dset_obj

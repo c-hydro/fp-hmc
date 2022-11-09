@@ -44,6 +44,7 @@ class ModelSource:
                  tag_dset_restart='DataRestart', tag_dset_observed='DataObs',
                  template_time=None,
                  template_run_ref=None,
+                 template_run_path=None,
                  template_run_def=None,
                  template_analysis_def=None,
                  template_static=None, template_dynamic=None, **kwargs):
@@ -68,6 +69,7 @@ class ModelSource:
         self.obj_template_time = template_time
         self.obj_template_run_def = template_run_def
         self.obj_template_run_ref = template_run_ref
+        self.obj_template_run_path = template_run_path
         self.obj_template_analysis_def = template_analysis_def
         self.obj_template_dset_static_ref = template_static
         self.obj_template_dset_dynamic_ref = template_dynamic
@@ -158,7 +160,7 @@ class ModelSource:
     # Method to analyze static datasets and model
     def analyze_data_static(self, obj_static_datasets, tag_datatype='LAND', tag_datadriver='static'):
 
-        # Starting info
+        # Start info
         log_stream.info(' ----> Analyze ' + tag_datadriver + ' datasets for datatype ' + tag_datatype + ' ... ')
 
         reader_dataset = self.reader_geo
@@ -333,8 +335,10 @@ class ModelSource:
 
     # -------------------------------------------------------------------------------------
     # Method to analyze restart datasets and model
-    def analyze_data_dynamic_restart(self, obj_time_series, obj_time_info, obj_static_datasets,
-                                     obj_dynamic_datasets, tag_datatype='OBS', tag_datadriver='restart',
+    def analyze_data_dynamic_restart(self, obj_time_series, obj_time_info,
+                                     obj_static_datasets, obj_dynamic_datasets,
+                                     obj_run_settings, obj_run_path,
+                                     tag_datatype='OBS', tag_datadriver='restart',
                                      idx_ts_subselect=0):
 
         # Starting info
@@ -362,6 +366,9 @@ class ModelSource:
                 dset_collections_dynamic_tmp = deepcopy(dset_collections_dynamic_in[run_key])
             else:
                 dset_collections_dynamic_tmp = None
+
+            dset_path_tmp = obj_run_path[run_key]['tmp']
+            dset_clean_tmp = obj_run_settings[run_key]['run_clean_tmp']
 
             dset_time = obj_ts_step.index[idx_ts_subselect]
 
@@ -400,7 +407,9 @@ class ModelSource:
                     dset_static_info=obj_static_datasets,
                     dset_time_info=obj_ti_step,
                     dset_time_start=start_idx_subselect, dset_time_end=end_idx_subselect,
-                    plant_name_list=obj_static_datasets[self.tag_plant_list], release_name_list=obj_static_datasets[self.tag_release_list])			#add20210608_last_arg
+                    path_tmp=dset_path_tmp, clean_tmp=dset_clean_tmp,
+                    plant_name_list=obj_static_datasets[self.tag_plant_list],
+                    release_name_list=obj_static_datasets[self.tag_release_list])			#add20210608_last_arg
 
                 # Check collected data
                 if dset_source_frame_raw[self.tag_datasets] is not None:
@@ -451,8 +460,10 @@ class ModelSource:
 
     # -------------------------------------------------------------------------------------
     # Method to analyze dynamic forcing datasets and model
-    def analyze_data_dynamic_forcing(self, obj_time_series, obj_time_info, obj_static_datasets,
-                                     obj_dynamic_datasets, tag_datatype='OBS', tag_datadriver='forcing'):
+    def analyze_data_dynamic_forcing(self, obj_time_series, obj_time_info,
+                                     obj_static_datasets, obj_dynamic_datasets,
+                                     obj_run_settings, obj_run_path,
+                                     tag_datatype='OBS', tag_datadriver='forcing'):
 
         # Starting info for routine
         log_stream.info(' ----> Analyze ' + tag_datadriver + ' datasets for datatype ' + tag_datatype + ' ... ')
@@ -479,6 +490,9 @@ class ModelSource:
                 dset_collections_dynamic_tmp = deepcopy(dset_collections_dynamic_in[run_key])
             else:
                 dset_collections_dynamic_tmp = None
+
+            dset_path_tmp = obj_run_path[run_key]['tmp']
+            dset_clean_tmp = obj_run_settings[run_key]['run_clean_tmp']
 
             obj_ts_select = obj_ts_step.loc[obj_ts_step['File_Type'] == tag_datatype]
             id_ts_select = list(set(obj_ts_select['File_Group'].values))
@@ -528,7 +542,9 @@ class ModelSource:
                         dset_static_info=obj_static_datasets,
                         dset_time_info=obj_ti_step,
                         dset_time_start=start_idx_subselect, dset_time_end=end_idx_subselect,
-                        plant_name_list=obj_static_datasets[self.tag_plant_list], release_name_list=obj_static_datasets[self.tag_release_list])			#add20210608_last_arg
+                        path_tmp=dset_path_tmp, clean_tmp=dset_clean_tmp,
+                        plant_name_list=obj_static_datasets[self.tag_plant_list],
+                        release_name_list=obj_static_datasets[self.tag_release_list])			#add20210608_last_arg
 
                     # Check collected data
                     if dset_source_frame_raw_base[self.tag_datasets] is not None:
@@ -584,8 +600,10 @@ class ModelSource:
 
     # -------------------------------------------------------------------------------------
     # Method to analyze dynamic updating datasets and model
-    def analyze_data_dynamic_updating(self, obj_time_series, obj_time_info, obj_static_datasets,
-                                     obj_dynamic_datasets, tag_datatype='OBS', tag_datadriver='updating'):
+    def analyze_data_dynamic_updating(self, obj_time_series, obj_time_info,
+                                      obj_static_datasets, obj_dynamic_datasets,
+                                      obj_run_settings, obj_run_path,
+                                      tag_datatype='OBS', tag_datadriver='updating'):
 
         # Starting info for routine
         log_stream.info(' ----> Analyze ' + tag_datadriver + ' datasets for datatype ' + tag_datatype + ' ... ')
@@ -612,6 +630,9 @@ class ModelSource:
                 dset_collections_dynamic_tmp = deepcopy(dset_collections_dynamic_in[run_key])
             else:
                 dset_collections_dynamic_tmp = None
+
+            dset_path_tmp = obj_run_path[run_key]['tmp']
+            dset_clean_tmp = obj_run_settings[run_key]['run_clean_tmp']
 
             obj_ts_select = obj_ts_step.loc[obj_ts_step['File_Type'] == tag_datatype]
             id_ts_select = list(set(obj_ts_select['File_Group'].values))
@@ -661,7 +682,9 @@ class ModelSource:
                         dset_static_info=obj_static_datasets,
                         dset_time_info=obj_ti_step,
                         dset_time_start=start_idx_subselect, dset_time_end=end_idx_subselect,
-                        plant_name_list=obj_static_datasets[self.tag_plant_list], release_name_list=obj_static_datasets[self.tag_release_list])				#add20210608_last_arg
+                        path_tmp=dset_path_tmp, clean_tmp=dset_clean_tmp,
+                        plant_name_list=obj_static_datasets[self.tag_plant_list],
+                        release_name_list=obj_static_datasets[self.tag_release_list])				#add20210608_last_arg
 
                     # Check collected data
                     if dset_source_frame_raw_base[self.tag_datasets] is not None:
@@ -716,7 +739,7 @@ class ModelSource:
 
     # -------------------------------------------------------------------------------------
     # Method to organize dynamic datasets and model
-    def organize_data_dynamic(self, time_series_collections, template_run_filled,
+    def organize_data_dynamic(self, time_series_collections, template_run_filled, template_run_path,
                               static_datasets_collections=None, tag_datadriver='forcing'):
 
         # Starting information
@@ -743,13 +766,14 @@ class ModelSource:
         template_run_merge = {**template_run_ref, **template_dynamic_ref}
 
         obj_dynamic_datasets = {}
-        for (run_key, time_series_step), (template_run_step) in zip(
-                time_series_collections.items(), template_run_filled.values()):
+        for (run_key, time_series_step), (template_run_settings_step), (template_run_path_step) in zip(
+                time_series_collections.items(), template_run_filled.values(), template_run_path.values()):
 
             log_stream.info(' -----> Run ' + run_key + ' ... ')
 
             obj_datasets, obj_model = reader_dataset.collect_filename(
-                time_series_step, template_run_merge, template_run_step, extra_dict=extra_args)
+                time_series_step, template_run_merge, template_run_settings_step, template_run_path_step,
+                extra_dict=extra_args)
 
             obj_dynamic_datasets[run_key] = {}
             obj_dynamic_datasets[run_key][self.tag_model] = obj_model
@@ -771,6 +795,7 @@ class ModelSource:
         log_stream.info(' ----> Organize restart datasets ... ')
 
         template_run_ref = self.obj_template_run_ref
+        template_run_path = self.obj_template_run_path
         template_dynamic_ref = self.obj_template_dset_dynamic_ref
 
         template_run_merge = {**template_run_ref, **template_dynamic_ref}

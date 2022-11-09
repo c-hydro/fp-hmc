@@ -2,7 +2,7 @@
 Changelog
 =========
 
-Version 3.1.5 (20210628)
+Version 3.1.5 (20221109)
 ========================
 - Codes and package based on HMC Fortran codes version 3.1.5;
 - Add the writers for discharges, dams volume and dams level in json format; 
@@ -10,6 +10,7 @@ Version 3.1.5 (20210628)
 - Add the possibility of providing to the model time series of observed socket/release systems;
 - Add the choice of constant baseflow for each sections (adding a column in the sections shapefile) [experimental];
 - Add the selection of the sections using the "hmc_file_filter" dictionary in the datasets configuration file;
+- Add the condition to create a tmp folder for the analysis tool (keep/delete tmp files);
 - Add the tool for merging datasets of different domains into a unique domain;
 - Extend the hmc tool for converting time-series adding the dam volume datasets;
 - Extend the hmc tool for merging gridded sources (continuum, qt and s3m datasets);
