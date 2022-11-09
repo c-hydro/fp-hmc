@@ -32,6 +32,7 @@ from hmc.algorithm.io.lib_data_zip_gzip import unzip_filename
 
 from hmc.algorithm.utils.lib_utils_variable import convert_fx_interface
 from hmc.algorithm.utils.lib_utils_geo import compute_cell_area
+from hmc.algorithm.utils.lib_utils_system import delete_file
 
 from hmc.algorithm.utils.lib_utils_zip import remove_zip_extension
 from hmc.algorithm.default.lib_default_args import logger_name, zip_extension
@@ -50,7 +51,8 @@ class DSetReader:
 
     # -------------------------------------------------------------------------------------
     # Method to initialize class
-    def __init__(self, file_src_path, file_src_info, file_src_time, time_src_info, **kwargs):
+    def __init__(self, file_src_path, file_src_info, file_src_time, time_src_info,
+                 file_tmp_path=None, file_tmp_clean=False, **kwargs):
 
         if isinstance(file_src_path, str):
             file_src_path = [file_src_path]
@@ -89,13 +91,17 @@ class DSetReader:
         if file_src_tmp_list.__len__() >= 1:
             if file_src_path[0].endswith(self.file_zip_extension):
                 self.file_unzip_op = True
+                self.file_unzip_delete = file_tmp_clean
             else:
                 self.file_unzip_op = False
+                self.file_unzip_delete = False
 
             if self.file_unzip_op:
                 file_src_path_list = []
                 for file_src_path_step in file_src_tmp_list:
-                    file_src_path_tmp = remove_zip_extension(file_src_path_step, self.file_zip_extension)
+
+                    file_src_path_tmp = remove_zip_extension(
+                        file_src_path_step, file_path_tmp=file_tmp_path, zip_extension_template=self.file_zip_extension)
                     file_src_path_list.append(file_src_path_tmp)
                 self.file_src_path = sorted(file_src_tmp_list)
                 self.file_dest_path = sorted(file_src_path_list)
@@ -263,13 +269,17 @@ class DSetReader:
             if tag_datatype == 'forcing':
                 if self.file_unzip_op:
                     file_path = self.file_dest_path
+                    file_unzip_delete = self.file_unzip_delete
                 elif not self.file_unzip_op:
                     file_path = self.file_src_path
+                    file_unzip_delete = self.file_unzip_delete
             elif tag_datatype == 'outcome':
                 if self.file_unzip_op:
                     file_path = self.file_dest_path
+                    file_unzip_delete = False
                 elif not self.file_unzip_op:
                     file_path = self.file_src_path
+                    file_unzip_delete = False
             else:
                 log_stream.error(' ===> File dynamic type is not allowed! Check your datasets!')
                 raise IOError('File type not allowed')
@@ -456,6 +466,13 @@ class DSetReader:
             else:
                 log_stream.error(' ===> File dynamic type is not allowed! Check your datasets!')
                 raise IOError('File type not allowed')
+
+            # Delete temporary file (generally unzipped nc files)
+            if file_unzip_delete:
+                if isinstance(file_path, str):
+                    file_path = [file_path]
+                for file_step in file_path:
+                    delete_file(file_step)
 
             # Info
             log_stream.info(' ---------> TimePeriod ' + str(var_time_start) + ' :: ' + str(var_time_end) + ' ... DONE')

@@ -12,6 +12,9 @@ Version:       '3.0.0'
 import logging
 import os
 
+from copy import deepcopy
+
+from hmc.algorithm.utils.lib_utils_system import create_folder
 from hmc.algorithm.default.lib_default_args import logger_name, zip_extension
 
 # Logging
@@ -62,7 +65,7 @@ def add_zip_extension(file_name_unzip, zip_extension_template=zip_extension):
 
 # --------------------------------------------------------------------------------
 # Method to remove only compressed extension 
-def remove_zip_extension(file_name_zip, zip_extension_template=zip_extension):
+def remove_zip_extension(file_name_zip, file_path_tmp=None, zip_extension_template=zip_extension):
 
     # Check zip extension format
     if zip_extension is not None:
@@ -77,7 +80,17 @@ def remove_zip_extension(file_name_zip, zip_extension_template=zip_extension):
     if not zip_ext_str.startswith('.'):
         zip_ext_str = '.' + zip_ext_str
 
-    file_name_unzip = file_name_zip.split(zip_ext_str)[0]
+    file_path_defined = file_name_zip.split(zip_ext_str)[0]
+
+    if file_path_tmp is not None:
+
+        if not os.path.exists(file_path_tmp):
+            create_folder(file_path_tmp)
+
+        file_folder_defined, file_name_defined = os.path.split(file_path_defined)
+        file_name_unzip = os.path.join(file_path_tmp, file_name_defined)
+    else:
+        file_name_unzip = deepcopy(file_path_defined)
 
     return file_name_unzip
 # --------------------------------------------------------------------------------

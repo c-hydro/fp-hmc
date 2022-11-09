@@ -201,6 +201,27 @@ class ModelRun:
     # -------------------------------------------------------------------------------------
 
     # -------------------------------------------------------------------------------------
+    # Method to set tmp arguments
+    def set_run_tmp(self, tag_location='run_location'):
+
+        obj_location_raw = self.obj_run_info_ref[tag_location]
+
+        if 'tmp' in obj_location_raw:
+            run_tmp = obj_location_raw['tmp']
+        else:
+            log_stream.error(' ===> The tmp key is not available')
+            raise IOError(' ===> Mandatory information is not set. Insert the correct tag in the run_location key')
+
+        if 'cleaning_active' not in run_tmp:
+            log_stream.warning(' ===> The tmp key related to the cleaning_active field is not available;'
+                               'the field is initialized by default value equal to False ')
+            run_tmp['cleaning_active'] = False
+
+        return run_tmp
+
+    # -------------------------------------------------------------------------------------
+
+    # -------------------------------------------------------------------------------------
     # Method to set run arguments
     def set_run_arguments(self, tag_location='run_location'):
 
@@ -290,9 +311,10 @@ class ModelRun:
 
     # -------------------------------------------------------------------------------------
     # Method to set run mode
-    def set_run_mode(self, tag_type='run_type'):
+    def set_run_mode(self, tag_type='run_type', tag_location='run_location'):
 
         obj_type = self.obj_run_info_ref[tag_type]
+        obj_loc = self.obj_run_info_ref[tag_location]
 
         if 'run_mp' in obj_type:
             run_mp = obj_type['run_mp']
@@ -313,6 +335,19 @@ class ModelRun:
             log_stream.warning(' ===> "Run CPU" is not callable! CPUs used by processes will be 1')
             run_cpu = 1
 
+        if 'tmp' in obj_loc:
+            run_tmp = obj_loc['tmp']
+        else:
+            log_stream.error(' ===> The tmp key is not available')
+            raise IOError(' ===> Mandatory information is not set. Insert the correct tag in the run_location key')
+
+        if 'cleaning_active' not in run_tmp:
+            log_stream.warning(' ===> The tmp key related to the cleaning_active field is not available;'
+                               'the field is initialized by default value equal to False ')
+            run_clean_tmp = False
+        else:
+            run_clean_tmp = run_tmp['cleaning_active']
+
         if obj_mode['ens_active']:
             run_mode_raw = self.tag_run_probabilistic
             var_name_raw = self.tag_var_name
@@ -325,9 +360,9 @@ class ModelRun:
 
             run_mp = [run_mp] * run_n.__len__()
             run_cpu = [run_cpu] * run_n.__len__()
+            run_clean_tmp = [run_clean_tmp] * run_n.__len__()
 
-            run_mode = []
-            run_var = []
+            run_mode, run_var = [], []
             for run_name_step, run_id in zip(run_name, run_n):
                 run_name_step = "{:03d}".format(run_name_step)
 
@@ -344,6 +379,7 @@ class ModelRun:
 
                 run_var.append(var_name_step)
                 run_mode.append(run_mode_step)
+                run_clean_tmp.append(run_cleaning_active_tmp)
         else:
             run_mode = [self.tag_run_deterministic]
             run_var = [self.tag_run_deterministic]
@@ -351,6 +387,7 @@ class ModelRun:
             run_n = [1]
             run_mp = [False]
             run_cpu = [1]
+            run_clean_tmp = [run_clean_tmp]
 
         obj_type_upd = {}
         for obj_key, obj_value in obj_type.items():
@@ -360,10 +397,11 @@ class ModelRun:
                 obj_type_upd[obj_key] = [obj_value] * run_mode.__len__()
         obj_type_upd['run_var'] = run_var
         obj_type_upd['run_cpu'] = run_cpu
+        obj_type_upd['run_clean_tmp'] = run_clean_tmp
 
         run_obj = {}
-        for i, (var_step, mode_step, run_step, n_step, mp_step, cpu_step) in enumerate(zip(
-                run_var, run_mode, run_name, run_n, run_mp, run_cpu)):
+        for i, (var_step, mode_step, run_step, n_step, mp_step, cpu_step, run_clean_step) in enumerate(zip(
+                run_var, run_mode, run_name, run_n, run_mp, run_cpu, run_clean_tmp)):
             run_obj[var_step] = {}
             run_obj[var_step]['run_var'] = var_step
             run_obj[var_step]['run_mode'] = mode_step
@@ -371,6 +409,7 @@ class ModelRun:
             run_obj[var_step]['run_id'] = n_step
             run_obj[var_step]['run_mp'] = mp_step
             run_obj[var_step]['run_cpu'] = cpu_step
+            run_obj[var_step]['run_clean_tmp'] = run_clean_step
 
             for tmpl_step, tmpl_value in obj_type_upd.items():
                 run_obj[var_step][tmpl_step] = {}
