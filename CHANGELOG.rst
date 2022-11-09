@@ -5,6 +5,7 @@ Changelog
 Version 3.1.5 (20210628)
 ========================
 - Codes and package based on HMC Fortran codes version 3.1.5;
+- Add check for lakes in the analysis of the restart points;
 - Add the writers for discharges, dams volume and dams level in json format; 
 - Add the condition for the section code in the section points file in character format;
 - Add the possibility of providing to the model time series of observed socket/release systems;

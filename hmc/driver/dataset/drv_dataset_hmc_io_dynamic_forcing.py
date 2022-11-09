@@ -1088,6 +1088,8 @@ class DSetManager:
             var_args['plant_name_list'] = kwargs['plant_name_list']
         if 'release_name_list' in kwargs:                                       #add20210608
             var_args['release_name_list'] = kwargs['release_name_list']         #add20210608
+        if 'lake_name_list' in kwargs:
+            var_args['lake_name_list'] = kwargs['lake_name_list']         
 
         da_terrain = self.da_terrain
 
@@ -1362,7 +1364,7 @@ class DSetManager:
 
                 else:
 
-                    group_condition = time_series['File_Type'].str.contains(dset_step_group)
+                    group_condition = time_series['File_Type'].str.contains(dset_step_group) #, na=False)
 
                     time_df_select = time_series[group_condition]
                     datetime_idx_select = time_df_select.index

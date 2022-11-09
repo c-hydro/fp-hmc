@@ -280,13 +280,15 @@ class ModelTime:
             time_tmp.loc[datetime_obs_idx, column_exec_type] = 'SIM'
             if datetime_for_idx is not None:
                 time_tmp.loc[datetime_for_idx, column_exec_type] = 'SIM'
-            time_tmp.loc[datetime_tc_idx, column_exec_type] = 'SIM'
+            if datetime_tc_idx is not None:
+                time_tmp.loc[datetime_tc_idx, column_exec_type] = 'SIM'
 
             time_tmp.loc[time_data['time_stamp_restart'], column_file_post_processing] = 'NA'
             time_tmp.loc[datetime_obs_idx, column_file_post_processing] = 'POST_PROCESSING'
             if datetime_for_idx is not None:
                 time_tmp.loc[datetime_for_idx, column_file_post_processing] = 'POST_PROCESSING'
-            time_tmp.loc[datetime_tc_idx, column_file_post_processing] = 'POST_PROCESSING'
+            if datetime_tc_idx is not None:
+                time_tmp.loc[datetime_tc_idx, column_file_post_processing] = 'POST_PROCESSING'
 
             run_list = [time_data['time_run'].strftime(format=time_format_algorithm)]
             run_str = column_sep.join(run_list)
@@ -294,7 +296,8 @@ class ModelTime:
             time_tmp.loc[datetime_obs_idx, column_exec_eta] = run_str
             if datetime_for_idx is not None:
                 time_tmp.loc[datetime_for_idx, column_exec_eta] = run_str
-            time_tmp.loc[datetime_tc_idx, column_exec_eta] = run_str
+            if datetime_tc_idx is not None:
+                time_tmp.loc[datetime_tc_idx, column_exec_eta] = run_str
 
             eta_list = [time_data['time_stamp_restart'].strftime(format=time_format_algorithm)]
             eta_str = column_sep.join(eta_list)

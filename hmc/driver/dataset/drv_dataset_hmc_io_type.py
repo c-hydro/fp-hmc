@@ -379,6 +379,11 @@ class DSetReader:
                     var_columns_list = var_args['plant_name_list']
                     if var_args['release_name_list'] is not None:                                                                 #add20210608
                         var_columns_list = [i for i in var_columns_list if i not in var_args['release_name_list']]                #add20210608
+                    if var_args['lake_name_list'] is not None:
+                        if var_columns_list is None:
+                            var_columns_list = var_args['lake_name_list']
+                        else:
+                            var_columns_list += var_args['lake_name_list']
                     obj_name = 'DamV'
                     obj_var = read_state_point(file_path, self.file_src_time, var_name=obj_name,
                                                file_time_start=var_time_start, file_time_end=var_time_end,
