@@ -494,8 +494,9 @@ class DSetWriter(DSetReader):
 
     # -------------------------------------------------------------------------------------
     # Method to initialize class
-    def __init__(self, file_dst_path, file_dst_info, file_dst_time, time_dst_info):
-        super(DSetWriter, self).__init__(file_dst_path, file_dst_info, file_dst_time, time_dst_info)
+    def __init__(self, file_dst_path, file_dst_info, file_dst_time, time_dst_info, file_tmp_path, file_tmp_clean, ):
+        super(DSetWriter, self).__init__(file_dst_path, file_dst_info, file_dst_time, time_dst_info,
+                                         file_tmp_path, file_tmp_clean)
     # -------------------------------------------------------------------------------------
 
     # -------------------------------------------------------------------------------------
@@ -571,8 +572,11 @@ class DSetComposer(DSetWriter):
 
     # -------------------------------------------------------------------------------------
     # Method to initialize class
-    def __init__(self, file_dst_path, file_dst_info, file_dst_time, time_dst_info):
-        super(DSetComposer, self).__init__(file_dst_path, file_dst_info, file_dst_time, time_dst_info)
+    def __init__(self, file_dst_path, file_dst_info, file_dst_time, time_dst_info,
+                 file_tmp_path, file_tmp_clean):
+
+        super(DSetComposer, self).__init__(file_dst_path, file_dst_info, file_dst_time, time_dst_info,
+                                           file_tmp_path, file_tmp_clean)
 
         self.var_info = file_dst_info
 

@@ -1177,10 +1177,12 @@ class DSetManager:
                             log_stream.info(' --------> Organize ' + var_name + ' dataset units ... ')
 
                             driver_hmc_composer = DSetComposer(dset_filename, dset_source_var_base,
-                                                               dset_datetime_idx, time_dst_info=dset_time_info)
+                                                               dset_datetime_idx,
+                                                               file_tmp_path=path_tmp, file_tmp_clean=clean_tmp,
+                                                               time_dst_info=dset_time_info)
                             obj_var = driver_hmc_composer.validate_data_units(var_name, obj_var, dset_default_var_base)
 
-                            log_stream.info(' --------> Organize ' + var_name + ' dataset units ... ')
+                            log_stream.info(' --------> Organize ' + var_name + ' dataset units ... DONE')
 
                             # Organize datasets geographical domain
                             log_stream.info(' --------> Organize ' + var_name + ' dataset geographical domain  ... ')
