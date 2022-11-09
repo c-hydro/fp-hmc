@@ -32,22 +32,25 @@ def read_data_shapefile_section(file_name, columns_name_expected=None, columns_n
 
     if columns_name_expected is None:
         columns_name_expected = ['HMC_X', 'HMC_Y', 'BASIN', 'SEC_NAME', 'SEC_RS', 'AREA',
-                                 'Q_THR1', 'Q_THR2', 'DOMAIN', 'BASEFLOW']
+                                 'Q_THR1', 'Q_THR2', 'Q_THR3', 'DOMAIN', 'BASEFLOW']
     if columns_name_type is None:
         columns_name_type = ['int', 'int', 'str', 'str', 'int', 'float', 'float',
-                             'float', 'str', 'float']
+                             'float', 'float', 'str', 'float']
 
     if columns_name_defined is None:
         columns_name_defined = ['section_idx_j', 'section_idx_i',
                                 'section_domain', 'section_name', 'section_code',
                                 'section_drained_area', 'section_discharge_thr_alert', 'section_discharge_thr_alarm',
-                                'section_reference', 'section_baseflow']
+                                'section_discharge_thr_emergency', 'section_reference', 'section_baseflow']
 
     file_dframe_raw = gpd.read_file(file_name)
     file_rows = file_dframe_raw.shape[0]
 
     if 'BASEFLOW' not in list(file_dframe_raw.columns):
         file_dframe_raw['BASEFLOW'] = 0.0
+
+    if 'Q_THR3' not in list(file_dframe_raw.columns):
+        file_dframe_raw['Q_THR3'] = -9999
 
     if (row_filter_type is not None) and (isinstance(row_filter_type, dict)):
         for row_filter_key, row_filter_value in row_filter_type.items():
