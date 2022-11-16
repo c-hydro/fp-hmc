@@ -338,9 +338,17 @@ class DriverStatic:
 
                         if obj_type_ref == 'ascii':
                             obj_data_tmp = read_data_grid(file_path_tmp, output_format='dictionary')
-                            obj_data_grid = extract_data_grid(obj_data_tmp['values'],
-                                                              obj_data_tmp['longitude'], obj_data_tmp['latitude'],
-                                                              obj_data_tmp['transform'], obj_data_tmp['bbox'])
+
+                            if obj_data_tmp is not None:
+
+                                obj_data_grid = extract_data_grid(obj_data_tmp['values'],
+                                                                  obj_data_tmp['longitude'], obj_data_tmp['latitude'],
+                                                                  obj_data_tmp['transform'], obj_data_tmp['bbox'])
+
+                            else:
+                                log_stream.warning(' ===> The obj "obj_data_grid" will be defined by NoneType')
+                                obj_data_grid = None
+
                         elif obj_type_ref == 'netcdf':
 
                             obj_dims_ref = [obj_coords_ref['y'], obj_coords_ref['x']]
@@ -350,8 +358,12 @@ class DriverStatic:
                                                         dim_name_geo_y=obj_coords_ref['y'],
                                                         var_name=obj_layer_ref)
 
-                            obj_values, obj_geo_x, obj_geo_y, obj_geo_transform = parse_data_grid(obj_data_tmp)
-                            obj_data_grid = extract_data_grid(obj_values, obj_geo_x, obj_geo_y, obj_geo_transform)
+                            if obj_data_tmp is not None:
+                                obj_values, obj_geo_x, obj_geo_y, obj_geo_transform = parse_data_grid(obj_data_tmp)
+                                obj_data_grid = extract_data_grid(obj_values, obj_geo_x, obj_geo_y, obj_geo_transform)
+                            else:
+                                log_stream.warning(' ===> The obj "obj_data_grid" will be defined by NoneType')
+                                obj_data_grid = None
 
                         elif obj_type_ref == 'tiff':
 
@@ -365,8 +377,12 @@ class DriverStatic:
                                                           dim_name_geo_x=obj_coords_ref['x'],
                                                           dim_name_geo_y=obj_coords_ref['y'],
                                                           dims_order=obj_dims_ref)
-                            obj_values, obj_geo_x, obj_geo_y, obj_geo_transform = parse_data_grid(obj_data_tmp)
-                            obj_data_grid = extract_data_grid(obj_values, obj_geo_x, obj_geo_y, obj_geo_transform)
+                            if obj_data_tmp is not None:
+                                obj_values, obj_geo_x, obj_geo_y, obj_geo_transform = parse_data_grid(obj_data_tmp)
+                                obj_data_grid = extract_data_grid(obj_values, obj_geo_x, obj_geo_y, obj_geo_transform)
+                            else:
+                                log_stream.warning(' ===> The obj "obj_data_grid" will be defined by NoneType')
+                                obj_data_grid = None
 
                         else:
                             log_stream.error(' ===> Static type "' + obj_type_ref + '" is not allowed')
@@ -382,10 +398,15 @@ class DriverStatic:
                     if file_path_anc is not None:
 
                         folder_name_anc, file_name_anc = os.path.split(file_path_anc)
-                        make_folder(folder_name_anc)
-                        write_obj(file_path_anc, obj_data_grid)
+                        if obj_data_grid is not None:
 
-                        obj_collections_fields[obj_key][data_key] = file_path_anc
+                            make_folder(folder_name_anc)
+                            write_obj(file_path_anc, obj_data_grid)
+
+                            obj_collections_fields[obj_key][data_key] = file_path_anc
+                        else:
+                            log_stream.warning(' ===> The ancillary file "' + file_name_anc +
+                                               '" is not saved because the related obj is defined by NoneType')
                     else:
                         obj_collections_fields[obj_key][data_key] = obj_data_grid
 
@@ -400,7 +421,7 @@ class DriverStatic:
 
     # -------------------------------------------------------------------------------------
     # Method to define merging info
-    def define_merging_info(self, ws_collection_data):
+    def define_merging_info(self, ws_collection_data, no_data=-9999):
 
         # Info start
         log_stream.info(' ----> Define merging info ... ')
@@ -465,11 +486,25 @@ class DriverStatic:
 
                                 geo_mask_ref[j_rows, i_cols] = id_dom
 
-                    # Debug
-                    # plt.figure()
-                    # plt.imshow(geo_mask_ref)
-                    # plt.colorbar()
-                    # plt.show()
+                    # Check if the indexes are defined somewhere or not
+                    geo_idx_all_undef = False
+                    if np.isnan(geo_idx_i_ref).all():
+                        geo_idx_all_undef = True
+                        log_stream.warning(' ===> All indexes x of local domain in the reference domain are Nans'
+                                           'The routine will exit with an error because all indexes are undefined')
+                    if np.isnan(geo_idx_j_ref).all():
+                        geo_idx_all_undef = True
+                        log_stream.warning(' ===> All indexes y of local domain in the reference domain are Nans'
+                                           'The routine will exit with an error because all indexes are undefined')
+
+                    if geo_idx_all_undef:
+                        log_stream.error(' ===> All indexes of local domain in the reference domain are undefined'
+                                         'Check your grid in the configuration file')
+                        raise RuntimeError('The indexes must be defined by a positive integer')
+
+                    # Replace nan(s) with a no_data value (to convert the data to integer)
+                    geo_idx_i_ref[np.isnan(geo_idx_i_ref)] = no_data
+                    geo_idx_j_ref[np.isnan(geo_idx_j_ref)] = no_data
 
                     obj_terrain_dom['i_cols_ref'] = geo_idx_i_ref.astype(int)
                     obj_terrain_dom['j_rows_ref'] = geo_idx_j_ref.astype(int)

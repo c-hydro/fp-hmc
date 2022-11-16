@@ -17,7 +17,7 @@ import xarray as xr
 from copy import deepcopy
 
 from tools.processing_tool_datasets_merger.lib_data_io_nc import read_data_nc
-from tools.processing_tool_datasets_merger.lib_data_io_tiff import read_data_tiff #Aggiunta Fra
+from tools.processing_tool_datasets_merger.lib_data_io_tiff import read_data_tiff
 from tools.processing_tool_datasets_merger.lib_data_io_remap import create_dset_continuum
 
 from tools.processing_tool_datasets_merger.lib_utils_method_interpolate import active_var_interpolate, \
@@ -610,6 +610,8 @@ class DriverDynamic:
             raise NotImplementedError('Case not implemented yet')
 
         file_layers_name = self.alg_layer_variable
+        file_layers_scale_factor = self.alg_layer_scale_factor
+        file_layers_no_data = self.alg_layer_no_data
 
         anc_dict = self.anc_dict
         dst_dict = self.dst_dict
@@ -725,20 +727,28 @@ class DriverDynamic:
                                 if var_file_path_tmp not in list(var_file_dict_dst.keys()):
                                     var_file_dict_dst[file_layers_step] = var_file_path_tmp
 
+                            var_attr_dict_dest = {}
+                            for file_layers_step, file_no_data_step, file_scale_factor_step in \
+                                    zip(file_layers_name, file_layers_no_data, file_layers_scale_factor):
+                                var_attr_dict_dest[file_layers_step] = {}
+                                var_attr_dict_dest[file_layers_step]['_FillValue'] = file_no_data_step
+                                var_attr_dict_dest[file_layers_step]['scale_factor'] = file_scale_factor_step
+
                             var_file_list_dst = []
                             for var_file_key, var_file_value in var_file_dict_dst.items():
                                 if var_file_key in var_dset_layer_dst:
                                     if var_file_value not in var_file_list_dst:
                                         var_file_list_dst.append(var_file_value)
 
-                            if var_file_list_dst.__len__() == 1:
-                                var_file_obj_dst = var_file_list_dst[0]
-                            else:
-                                var_file_obj_dst = deepcopy(var_file_dict_dst)
-
                             if var_dset_masked:
 
                                 if file_type_dst == 'netcdf':
+
+                                    if var_file_list_dst.__len__() == 1:
+                                        var_file_obj_dst = var_file_list_dst[0]
+                                    else:
+                                        log_stream.error(' ===> File name must be unique')
+                                        raise RuntimeError('Remove {layer_name} tag from the filename')
 
                                     if not isinstance(var_file_obj_dst, str):
                                         log_stream.error(' ===> File name must be a string')
@@ -754,11 +764,16 @@ class DriverDynamic:
                                     var_folder_name_dst, var_file_name_dst = os.path.split(var_file_obj_dst)
                                     make_folder(var_folder_name_dst)
 
+                                    if not var_file_name_dst.endswith('nc'):
+                                        log_stream.warning(' ===> File name extension must be "nc".\n'
+                                                           'The actual file is "' + var_file_name_dst +
+                                                           '" and it will be dumped with an unexpected extension.')
+
                                     if self.alg_layer_nc_format == 'continuum':
                                         var_dset_remap = create_dset_continuum(
                                             var_time, var_dset_masked, geo_da_dst.values,
                                             geo_da_dst['longitude'].values, geo_da_dst['latitude'].values,
-                                            geo_da_dst.attrs)
+                                            geo_da_dst.attrs, var_data_attrs=var_attr_dict_dest)
                                     elif self.alg_layer_nc_format is None:
                                         var_dset_remap = deepcopy(var_dset_masked)
                                     else:
@@ -796,17 +811,42 @@ class DriverDynamic:
                                                   dset_type='float32')
                                     log_stream.info(' ------> Save datasets "' + var_file_name_dst + '" ... DONE ')
 
-                                elif file_type_dst == 'tiff':
+                                elif file_type_dst == 'tiff' or file_type_dst == 'tif':
 
                                     log_stream.info(' ------> Save datasets group  ... ')
+
+                                    var_file_obj_dst = deepcopy(var_file_dict_dst)
 
                                     if not isinstance(var_file_obj_dst, dict):
                                         log_stream.error(' ===> File name must be a dictionary {var_name: file_name}')
                                         raise RuntimeError('Check your settings to pass the correct file template.')
 
+                                    var_file_name_list = []
                                     for var_name, var_file_path_dst in var_file_obj_dst.items():
+
                                         var_folder_name_dst, var_file_name_dst = os.path.split(var_file_path_dst)
                                         make_folder(var_folder_name_dst)
+
+                                        if (not var_file_name_dst.endswith('tiff')) or (
+                                                not var_file_name_dst.endswith('tif')):
+                                            log_stream.warning(' ===> File name extension must be "tiff" or "tif".\n'
+                                                               'The actual file is "' + var_file_name_dst +
+                                                               '" and it will be dumped with an unexpected extension.')
+
+                                        if var_file_name_dst not in var_file_name_list:
+                                            var_file_name_list.append(var_file_name_dst)
+                                        else:
+                                            log_stream.error(
+                                                ' ===> File name must be different for each variable considered')
+                                            raise RuntimeError('Insert {layer_name} tag in the filename')
+
+                                    '''
+                                    # DEBUG
+                                    var_values = var_dset_masked['SM'].values
+                                    plt.figure()
+                                    plt.imshow(var_values[:,:,0])
+                                    plt.colorbar()
+                                    '''
 
                                     write_dset_tiff(var_file_obj_dst, var_dset_masked,
                                                     file_compression_option=self.tiff_compression_option)
@@ -925,6 +965,9 @@ class DriverDynamic:
                             log_stream.info(' -----> Time "' + var_time.strftime(time_format_algorithm) + '" ... ')
 
                             for var_path_fields_step in var_path_list_src:
+
+                                # DEBUG
+                                # var_path_fields_step = var_path_list_src[12]
 
                                 var_domain_name_src = list(var_path_fields_step.keys())[0]
                                 var_file_path_src = list(var_path_fields_step.values())[0]
@@ -1088,6 +1131,17 @@ class DriverDynamic:
                                         else:
                                             var_dset_anc = deepcopy(var_dset_src)
 
+                                        '''
+                                        # DEBUG
+                                        plt.figure()
+                                        plt.imshow(var_dset_anc['SM'].values[:, :, 0])
+                                        plt.colorbar()
+                                        plt.figure()
+                                        plt.imshow(var_dset_anc['LST'].values[:, :, 0])
+                                        plt.colorbar()
+                                        plt.show()
+                                        '''
+
                                         # Mask the variable destination data-array
                                         var_nodata = None
                                         if 'nodata_value' in list(var_dset_anc.attrs.keys()):
@@ -1102,9 +1156,6 @@ class DriverDynamic:
                                                 (var_dset_anc != var_nodata))
                                         else:
                                             var_dset_masked = deepcopy(var_dset_anc)
-
-                                        #variable_data =  var_dset_masked['TQ'].values
-                                        #plt.imshow(variable_data[:, :, 0])
 
                                         if var_time not in list(dset_collection_tmp[var_name_tmp].keys()):
                                             dset_collection_tmp[var_name_tmp][var_time] = var_dset_masked
@@ -1149,6 +1200,7 @@ class DriverDynamic:
                                         plt.imshow(dset_collection_tmp[var_name_tmp][var_time]['SM'].values[:, :, 0])
                                         plt.colorbar()
                                         plt.show()
+                                        print()
                                         '''
 
                                     else:
@@ -1211,7 +1263,8 @@ class DriverDynamic:
                                     log_stream.info(' ------> Domain "' + var_domain_name_anc + '" ... ')
                                     dset_collection_anc = dset_collection_tmp[var_name_anc][var_time]
 
-                                    dset_collection_anc = filter_dset_vars(dset_collection_anc, var_list=var_dset_layer_anc)
+                                    dset_collection_anc = filter_dset_vars(
+                                        dset_collection_anc, var_list=var_dset_layer_anc)
 
                                     write_obj(var_file_path_anc, dset_collection_anc)
                                     log_stream.info(' ------> Domain "' + var_domain_name_anc + '" ... DONE')

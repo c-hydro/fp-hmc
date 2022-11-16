@@ -2,7 +2,7 @@
 Changelog
 =========
 
-Version 3.1.5 (20221109)
+Version 3.1.5 (20221115)
 ========================
 - Codes and package based on HMC Fortran codes version 3.1.5;
 - Add the writers for discharges, dams volume and dams level in json format; 
@@ -13,7 +13,7 @@ Version 3.1.5 (20221109)
 - Add the condition to create a tmp folder for the analysis tool (keep/delete tmp files);
 - Add the tool for merging datasets of different domains into a unique domain;
 - Extend the hmc tool for converting time-series adding the dam volume datasets;
-- Extend the hmc tool for merging gridded sources (continuum, qt and s3m datasets);
+- Extend the hmc tool for merging gridded sources (continuum, qt and s3m datasets) and the expected data format for input (netcdf, tiff) and output (netcdf, tiff);
 - Extend the hmc tool for preprocessing gridded sources adding the restart datasets in binary format;
 - Fix bugs in the hmc manager in managing the point static datasets of dams, joints, lakes, intakes and sections;
 - Fix bugs in the hmc manager in managing the compatibility for sections file in shp or ascii format;

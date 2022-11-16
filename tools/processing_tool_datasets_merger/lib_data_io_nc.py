@@ -86,7 +86,7 @@ def write_data_nc(file_name, file_obj_data, file_obj_dims_def, file_obj_dims_lis
 
 # -------------------------------------------------------------------------------------
 # Method to read data netcdf
-def read_data_nc(file_name, geo_ref_x=None, geo_ref_y=None, geo_ref_attrs=None,
+def read_data_nc(file_name, geo_ref_x=None, geo_ref_y=None, geo_ref_attrs=None, geo_no_data=-9999.0,
                  var_coords=None, var_scale_factor=1, var_name=None, var_time=None, var_no_data=-9999.0,
                  coord_name_time='time', coord_name_geo_x='Longitude', coord_name_geo_y='Latitude',
                  dim_name_time='time', dim_name_geo_x='west_east', dim_name_geo_y='south_north',
@@ -105,9 +105,11 @@ def read_data_nc(file_name, geo_ref_x=None, geo_ref_y=None, geo_ref_attrs=None,
     if not isinstance(var_no_data, list):
         var_no_data = [var_no_data]
     if var_name.__len__() != var_scale_factor.__len__():
-        raise RuntimeError('Variable name(s) and scale factor(s) must have the same dimension.')
+        log_stream.error(' ===> Variable name(s) and scale factor(s) must have the same dimension.')
+        raise RuntimeError('Check your setting file and define the variable using the same length of object.')
     if var_name.__len__() != var_no_data.__len__():
-        raise RuntimeError('Variable name(s) and no data value(s) must have the same dimension.')
+        log_stream.error(' ===> Variable name(s) and no data value(s) must have the same dimension.')
+        raise RuntimeError('Check your setting file and define the variable using the same length of object.')
 
     data_workspace, file_attrs = None, None
     if os.path.exists(file_name):
@@ -158,21 +160,26 @@ def read_data_nc(file_name, geo_ref_x=None, geo_ref_y=None, geo_ref_attrs=None,
                             elif var_data.shape.__len__() == file_coords.__len__():
                                 pass
                             else:
-                                raise NotImplemented('File shape is greater than expected coords')
+                                log_stream.error(' ===> File shape is greater than expected coords')
+                                raise NotImplemented('Case not implemented yet')
                         else:
-                            raise NotImplemented('Time size is greater than 1')
+                            log_stream.error(' ===> Coordinate "time" is defined by size greater than 1')
+                            raise NotImplemented('Case not implemented yet')
                     else:
                         if var_data.ndim > 2:
-                            raise IOError('Coord name "time" is not available')
+                            log_stream.error(' ===> Coordinate "time" is defined by NoneType with data length > 1')
+                            raise IOError('Coordinate "time" is not available')
 
                 geo_data_x = None
+                geo_ref_x_2d, geo_ref_y_2d = np.meshgrid(geo_ref_x, geo_ref_y)
                 for step_coords_x in ['x', 'X']:
                     if step_coords_x in idx_coords:
                         coord_name_x = file_coords[idx_coords[step_coords_x]]
                         geo_data_x = file_handle[coord_name_x].values
                         break
                 if geo_data_x is None:
-                    raise IOError('Coord name "x" is not available or not defined')
+                    log_stream.error(' ===> Coordinate "geo_data_x" is defined by NoneType')
+                    raise IOError('Coordinate "geo_data_x" is not available or not defined')
 
                 geo_data_y = None
                 for step_coords_y in ['y', 'Y']:
@@ -181,13 +188,45 @@ def read_data_nc(file_name, geo_ref_x=None, geo_ref_y=None, geo_ref_attrs=None,
                         geo_data_y = file_handle[coord_name_y].values
                         break
                 if geo_data_y is None:
-                    raise IOError('Coord name "y" is not available or not defined')
+                    log_stream.error(' ===> Coordinate "geo_data_y" is defined by NoneType')
+                    raise IOError('Coordinate "geo_data_y" is not available or not defined')
 
-                geo_y_upper = geo_data_y[0, 0]
-                geo_y_lower = geo_data_y[-1, 0]
-                if geo_y_lower > geo_y_upper:
-                    geo_data_y = np.flipud(geo_data_y)
-                    var_data = np.flipud(var_data)
+                # Check if geo_x 2d array is not defined everywhere
+                if (geo_data_x == geo_no_data).any():
+                    log_stream.warning(
+                        ' ===> Variable(s) "geo_data_x" is not defined everywhere \n'
+                        'but probably is masked using the dem extension. The value of "geo_data_x" must be \n'
+                        'defined everywhere and for skipping this issue the "geo_x_ref" will be used.')
+                    geo_data_x = deepcopy(geo_ref_x_2d)
+
+                # Check if geo_y 2d array is not defined everywhere
+                if (geo_data_y == geo_no_data).any():
+
+                    geo_y_array = geo_data_y.max(axis=1)
+                    geo_y_array[geo_y_array == -9999] = np.nan
+                    geo_y_array = geo_y_array[~np.isnan(geo_y_array)]
+
+                    geo_y_upper_grid_file, geo_y_lower_grid_file = geo_y_array[0], geo_y_array[-1]
+                    geo_y_upper_grid_ref, geo_y_lower_grid_ref = geo_ref_y_2d[0, 0], geo_ref_y_2d[-1, 0]
+
+                    log_stream.warning(
+                        ' ===> Variable(s) "geo_data_y" is not defined everywhere \n'
+                        'but probably is masked using the dem extension. The value of "geo_data_y" must be \n'
+                        'defined everywhere and for skipping this issue the "geo_y_ref" will be used.')
+
+                    geo_data_y = deepcopy(geo_ref_y_2d)
+
+                    if geo_y_lower_grid_file > geo_y_upper_grid_file:
+                        var_data = np.flipud(var_data)
+                    if geo_y_lower_grid_ref > geo_y_upper_grid_ref:
+                        geo_data_y = np.flipud(geo_data_y)
+
+                else:
+
+                    geo_y_upper, geo_y_lower = geo_data_y[0, 0], geo_data_y[-1, 0]
+                    if geo_y_lower > geo_y_upper:
+                        geo_data_y = np.flipud(geo_data_y)
+                        var_data = np.flipud(var_data)
 
                 if (geo_ref_x is not None) and (geo_ref_y is not None):
                     geo_check_x, geo_check_y = np.meshgrid(geo_ref_x, geo_ref_y)

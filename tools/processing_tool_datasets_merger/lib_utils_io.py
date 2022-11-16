@@ -290,7 +290,7 @@ def write_dset_nc(file_name,
             var_name = var_name_upd
 
         var_data = dset_data[var_name]
-        var_attrs = dset_data[var_name].attrs
+        var_attrs = deepcopy(dset_data[var_name].attrs)
         if len(var_data.dims) > 0:
             dset_encoding[var_name] = deepcopy(dset_encoded)
 
@@ -306,8 +306,13 @@ def write_dset_nc(file_name,
 
                     dset_encoding[var_name][attr_key] = attr_value
 
+                dset_data[var_name].attrs.pop(attr_key)
+
             if '_FillValue' not in list(dset_encoding[var_name].keys()):
                 dset_encoding[var_name]['_FillValue'] = fill_data
+
+            if '_FillValue' in list(dset_data[var_name].attrs.keys()):
+                dset_data[var_name].attrs.pop['_FillValue']
 
     if dim_key_time in list(dset_data.coords):
         dset_encoding[dim_key_time] = {'calendar': 'gregorian'}

@@ -73,13 +73,26 @@ def create_dset_continuum(
                 coord_name_y: ([geo_y_dim_out, geo_x_dim_out], np.flipud(var_geo_y_tmp))}
     )
     var_dset_out[var_geo_name] = var_geo_da
-    var_dset_out.attrs = {**var_data_attrs, **var_geo_attrs, **var_file_attrs}
+    var_dset_out.attrs = {**var_geo_attrs, **var_file_attrs}
 
     for var_data_name in list(var_dset_in.variables):
         if var_data_name not in [geo_x_dim_in, geo_y_dim_in, geo_time_dim_in]:
 
             var_data_values = var_dset_in[var_data_name].values
-            var_data_attrs = var_dset_in[var_data_name].attrs
+
+            var_data_obj_attrs = var_dset_in[var_data_name].attrs
+
+            if var_data_name in list(var_data_attrs.keys()):
+                var_data_arg_attrs = var_data_attrs[var_data_name]
+            else:
+                var_data_arg_attrs = {}
+            var_data_join_attrs = {**var_data_obj_attrs, **var_data_arg_attrs}
+
+            if '_FillValue' not in list(var_data_join_attrs.keys()):
+                var_data_join_attrs['_FillValue'] = {}
+
+            no_data = var_data_join_attrs['_FillValue']
+            var_data_values[np.isnan(var_data_values)] = no_data
 
             if var_data_values.ndim == 3 and var_data_values.shape[2] == 1:
                 var_data_values = var_data_values.squeeze(axis=2)
@@ -103,7 +116,7 @@ def create_dset_continuum(
                 log_stream.error(' ===> Obj datasets format must be 1D or 2D')
                 raise NotImplemented('Case not implemented yet')
 
-            var_data_da.attrs = var_data_attrs
+            var_data_da.attrs = var_data_join_attrs
             var_dset_out[var_data_name] = var_data_da
 
     return var_dset_out
