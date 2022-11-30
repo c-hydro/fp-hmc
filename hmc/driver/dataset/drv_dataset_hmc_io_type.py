@@ -57,12 +57,20 @@ class DSetReader:
         if isinstance(file_src_path, str):
             file_src_path = [file_src_path]
 
+        if 'file_src_mandatory' in kwargs:
+            file_src_mandatory = kwargs['file_src_mandatory']
+        else:
+            file_src_mandatory = False
+
         file_src_tmp_raw = list(set(file_src_path))
 
         file_src_tmp_list = []
         for file_src_step in file_src_tmp_raw:
             if isinstance(file_src_step, str):
                 file_src_tmp_list.append(file_src_step)
+
+        # Method to check the filename(s) availability according to the mandatory flag
+        self.search_filename(file_src_tmp_list, file_mandatory_flag=file_src_mandatory)
 
         if (file_src_tmp_list.__len__() > 1) and (file_src_tmp_list.__len__() != file_src_time.__len__()):
 
@@ -99,7 +107,6 @@ class DSetReader:
             if self.file_unzip_op:
                 file_src_path_list = []
                 for file_src_path_step in file_src_tmp_list:
-
                     file_src_path_tmp = remove_zip_extension(
                         file_src_path_step, file_path_tmp=file_tmp_path, zip_extension_template=self.file_zip_extension)
                     file_src_path_list.append(file_src_path_tmp)
@@ -156,6 +163,48 @@ class DSetReader:
         else:
             self.file_src_filter = None
 
+    # -------------------------------------------------------------------------------------
+
+    # -------------------------------------------------------------------------------------
+    # Method to search file name(s)
+    @staticmethod
+    def search_filename(file_name_list, file_mandatory_flag=False):
+
+        if not isinstance(file_name_list, list):
+            file_name_list = [file_name_list]
+
+        file_found_list, file_not_found_list = None, None
+        for file_name_step in file_name_list:
+            if file_name_step:
+                if os.path.exists(file_name_step):
+                    if file_found_list is None:
+                        file_found_list = []
+                    file_found_list.append(file_name_step)
+                else:
+                    if file_not_found_list is None:
+                        file_not_found_list = []
+                    file_not_found_list.append(file_name_step)
+
+        if file_mandatory_flag:
+            if file_not_found_list is not None:
+                log_stream.error(' ===> The following filename(s) with "mandatory_flag=True" '
+                                 'is/are not available in the filesystem: ')
+                for file_not_found_step in file_not_found_list:
+                    log_stream.error(' ===> File: ' + file_not_found_step)
+                raise FileNotFoundError('All files are mandatory to correctly run the algorithm')
+        if not file_mandatory_flag:
+            if file_not_found_list is not None:
+                log_stream.warning(' ===> Some/all filename(s) with "mandatory_flag=False" '
+                                   'is/are not available in the filesystem')
+
+        if file_not_found_list is None and file_found_list is None:
+            log_stream.warning(' ===> Filename(s) for this datasets is/are not selected. '
+                               'Run will not use this datasets')
+
+    # -------------------------------------------------------------------------------------
+
+    # -------------------------------------------------------------------------------------
+    # Method to unzip file name
     def unzip_filename(self):
 
         unzip_message = False
@@ -386,9 +435,28 @@ class DSetReader:
                 elif var_name == 'ALL':
                     file_columns_var = {0: 'dam_index', 1: 'dam_code', 2: 'dam_volume_max', 3: 'dam_volume_sim'}
                     list_columns_excluded = ['dam_index', 'dam_code', 'dam_volume_max']
-                    var_columns_list = var_args['plant_name_list']
-                    if var_args['release_name_list'] is not None:                                                                 #add20210608
-                        var_columns_list = [i for i in var_columns_list if i not in var_args['release_name_list']]                #add20210608
+                    if var_args['plant_name_list'] is not None:
+                        if 'lake_name_list' in list(var_args.keys()):
+                            if var_args['lake_name_list'] is not None:
+                                # if there are both plants and lakes in the restart both should be present
+                                var_columns_list = var_args['plant_name_list'] + var_args['lake_name_list']
+                            else:
+                                # if there are only plants
+                                var_columns_list = var_args['plant_name_list']
+                        else:
+                            # if there are only plants
+                            var_columns_list = var_args['plant_name_list']
+                    elif ('lake_name_list' in list(var_args.keys())) and (var_args['lake_name_list'] is not None):
+                        # if there are only lakes
+                        var_columns_list = var_args['lake_name_list']
+                    else:
+                        # if there are neither lakes nor plants
+                        var_columns_list = []
+
+                    # releases related to intakes are not in the restart point file, remove them from check list
+                    if var_args['release_name_list'] is not None:
+                        var_columns_list = [i for i in var_columns_list if i not in var_args['release_name_list']]
+
                     obj_name = 'DamV'
                     obj_var = read_state_point(file_path, self.file_src_time, var_name=obj_name,
                                                file_time_start=var_time_start, file_time_end=var_time_end,

@@ -216,7 +216,9 @@ class DSetManager:
                 elif var_data is not None:
 
                     if not os.path.exists(file_name):
-                        driver_hmc_writer = DSetWriter(file_name, file_info, None, time_dst_info=None)
+                        driver_hmc_writer = DSetWriter(
+                            file_name, file_info, None, time_dst_info=None,
+                            file_tmp_path=None, file_tmp_clean=None)
                         obj_var = driver_hmc_writer.write_filename_static(var_name, var_data)
                     else:
 

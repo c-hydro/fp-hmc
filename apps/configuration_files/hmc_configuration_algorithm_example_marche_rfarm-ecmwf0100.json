@@ -11,8 +11,8 @@
     "authors": "Fabio Delogu",
     "email": "fabio.delogu@cimafoundation.org",
     "project": "HMC - Hydrological Model Continuum",
-    "version": "3.1.3",
-    "date": "20201102"
+    "version": "3.1.5",
+    "date": "20221130"
   },
   "Template": {
     "time": {
@@ -58,46 +58,53 @@
       "dset_var_name_summary_collections": "string_var_name_summary_collections",
       "dset_var_name_summary_ts": "string_var_name_summary_ts",
       "dset_var_name_summary_section": "string_var_name_summary_section",
-      "dset_var_name_summary_basin": "string_var_name_summary_basin"
+      "dset_var_name_summary_basin": "string_var_name_summary_basin",
+      "dset_var_name_summary_dam": "string_var_name_summary_dam"
     },
     "dset_dynamic_obs" : {
       "dset_var_name_obs_point": "string_var_name_obs_point"
     }
   },
   "Run_Info": {
+    "run_analysis": {
+      "analysis_catchments": true,
+      "analysis_mp": true,
+      "analysis_cpu": 10
+    },
     "run_type": {
       "run_mp": true,
-      "run_cpu": 4,
+      "run_cpu": 2,
       "run_domain": "marche",
-      "run_name": "nwp_ecmwf0100",
+      "run_name": "rfarm_ecmwf0100_history",
       "run_mode": {
-        "ens_active": false,
+        "ens_active": true,
         "ens_variable": {
           "var_name": null,
           "var_min": 1,
-          "var_max": 1,
+          "var_max": 2,
           "var_step": 1
         }
       }
     },
     "run_location": {
       "executable": {
-        "file_folder": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/run/{run_name}/{run_mode}/exec/",
+        "file_folder": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/run/{run_name}/{run_mode}/exec/",
         "file_name": "HMC_Model_V3_{run_name}.x",
         "arguments": "{run_domain}.info.txt",
         "namelist": "{run_domain}.info.txt"
       },
       "tmp": {
-        "file_folder": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/run/{run_name}/{run_mode}/temp/",
-        "file_name": null
+        "file_folder": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/run/{run_name}/{run_mode}/temp/",
+        "file_name": null,
+        "cleaning_active": false
       },
       "library": {
-        "file_folder": "/home/fabio/fp_libs_system/hmc_v313/",
+        "file_folder": "/home/fabio/fp_system_apps/hmc/",
         "file_name": "HMC_Model_V3_$RUN.x",
-        "dependencies": ["/home/fabio/fp_libs_system/nc4/lib/"]
+        "dependencies": ["/home/fabio/fp_system_libs_hmc/nc4/lib/"]
       },
       "log": {
-        "file_folder": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_regmarche/log/",
+        "file_folder": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_marche/log/",
         "file_name": "hmc_logging_{run_name}_{run_domain}.txt"
       }
     }
@@ -105,7 +112,7 @@
   "Time_Info": {
     "time_run": null,
     "time_forecast_period": 48,
-    "time_observed_period": 48,
+    "time_observed_period": 24,
     "time_check_period": 4,
     "time_restart_period": 24,
     "time_forecast_frequency": "H",
@@ -118,7 +125,7 @@
     "time_observed_rounding": "H",
     "time_check_rounding": "D",
     "time_restart_rounding": "D",
-    "time_tc": -9999,
+    "time_tc": 12,
     "time_vegetation_max": 720
   },
   "HMC_Info": {
@@ -130,6 +137,7 @@
       "cpi": 0.3,
       "cn": 56.01,
       "ws": 3.6780000000000003e-09,
+      "wdl": 3.6780000000000003e-09,
       "fracturation": 0.2374,
       "ksat_ratio": 1,
       "wtable_hbr": 500,
@@ -144,12 +152,14 @@
       "flag_phys_assimilation_snow": 0,
       "flag_phys_assimilation_soil_moisture": 0,
       "flag_phys_coeff_resolution": 0,
-      "flag_phys_water_sources": 0,
+      "flag_phys_water_table_sources": 0,
+      "flag_phys_water_table_deep_losses": 0,
       "flag_phys_release_mass": 1,
       "flag_phys_convolution_type": 1,
       "flag_phys_fracturation": 0,
       "flag_phys_dynamic_vegetation": 0,
       "flag_phys_flooding": 0,
+      "flag_phys_energy_balance": 1,
       "flag_datasets_lai": 0,
       "flag_datasets_albedo": 0,
       "flag_debug_set": 0,
@@ -160,6 +170,7 @@
       "dt_phys_convolution": 50
     },
     "hmc_phys_parametrization": {
+      "phys_water_table_maximum_losses": 0.25,
       "phys_lst_maximum_integration_delta": 40,
       "phys_dam_initial_percentage_outflow" : 0.95,
       "phys_dam_initial_delta_spill": 3

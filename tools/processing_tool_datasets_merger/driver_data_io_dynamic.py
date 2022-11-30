@@ -1174,7 +1174,7 @@ class DriverDynamic:
                                                         (file_layer_name in list(var_dset_masked_adj.variables)):
 
                                                     var_da_masked_adj = var_dset_masked_adj[file_layer_name]
-                                                    var_da_tmp_adj = var_dset_tmp_adj[file_layer_name]
+                                                    var_da_tmp_adj = var_dset_tmp_adj[file_layer_name].reindex_like(var_da_masked_adj)    ###MODIFIED
 
                                                     var_da_filled_adj = xr.where(
                                                         (var_da_tmp_adj != file_layer_no_data)

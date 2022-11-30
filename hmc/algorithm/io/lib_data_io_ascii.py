@@ -277,7 +277,8 @@ def read_data_point(file_name, file_time, file_columns=None, file_lut=None, file
                     col_type = file_columns[row_n]
                     if col_type == 'ref':
 
-                        if row_value.isalpha() or row_value == '-':
+                        if row_value.isalpha() or row_value == '-':     # check for alphabet value(s)
+
                             row_value = deepcopy(row_value)
                             row_type = 'alpha'
                             if row_value == '-':
@@ -285,7 +286,8 @@ def read_data_point(file_name, file_time, file_columns=None, file_lut=None, file
                             else:
                                 row_check = True
 
-                        elif row_value.isdigit():
+                        elif row_value.isdigit():   # check for digit value(s)
+
                             row_value = float(row_value)
                             row_type = 'digit'
                             if row_value < 0:
@@ -293,7 +295,15 @@ def read_data_point(file_name, file_time, file_columns=None, file_lut=None, file
                             else:
                                 row_check = True
 
+                        elif row_value.startswith('-99'):   # check for undefined value(s)
+                            row_value = float(row_value)
+                            if row_value < 0:
+                                row_check = False
+                            else:
+                                row_check = True
+
                         else:
+
                             log_stream.error(' ===> Column format must be "alphabet" or "digit"')
                             raise NotImplementedError('Case not implemented yet')
 

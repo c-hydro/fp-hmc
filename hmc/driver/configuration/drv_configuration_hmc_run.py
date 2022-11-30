@@ -363,7 +363,7 @@ class ModelRun:
             run_clean_tmp = [run_clean_tmp] * run_n.__len__()
 
             run_mode, run_var = [], []
-            for run_name_step, run_id in zip(run_name, run_n):
+            for run_name_step, run_id, run_clean_tmp_step in zip(run_name, run_n, run_clean_tmp):
                 run_name_step = "{:03d}".format(run_name_step)
 
                 tag_name_step = obj_mode['ens_variable']['var_name']
@@ -379,7 +379,7 @@ class ModelRun:
 
                 run_var.append(var_name_step)
                 run_mode.append(run_mode_step)
-                run_clean_tmp.append(run_cleaning_active_tmp)
+                run_clean_tmp.append(run_clean_tmp_step)
         else:
             run_mode = [self.tag_run_deterministic]
             run_var = [self.tag_run_deterministic]

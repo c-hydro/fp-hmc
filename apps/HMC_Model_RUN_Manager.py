@@ -2,7 +2,7 @@
 """
 HYDROLOGICAL MODEL CONTINUUM - Run manager to set parameters and datasets of the hydrological model
 
-__date__ = '20210628'
+__date__ = '20221130'
 __version__ = '3.1.5'
 __author__ =
         'Fabio Delogu (fabio.delogu@cimafoundation.org',
@@ -27,7 +27,7 @@ Parameters:
         Time of the simulation in YYYY-MM-DD HH:MM format
 
 Version(s):
-20210628 (3.1.5) --> Development of run manager application for version 3.1.5 of HMC models
+20221130 (3.1.5) --> Development of run manager application for version 3.1.5 of HMC models
 20210308 (3.1.4) --> Development of run manager application for version 3.1.4 of HMC models
 20201102 (3.1.3) --> Development of run manager application for version 3.1.3 of HMC models
 20200723 (3.1.2) --> Development of run manager application for version 3.1.2 of HMC models
@@ -53,7 +53,7 @@ project_name = 'HMC'
 alg_version = '3.1.5'
 alg_type = 'Model'
 alg_name = 'RUN MANAGER TOOL'
-alg_release = '2021-06-28'
+alg_release = '2022-11-30'
 # -------------------------------------------------------------------------------------
 
 

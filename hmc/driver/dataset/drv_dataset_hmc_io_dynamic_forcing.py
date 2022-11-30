@@ -1095,6 +1095,11 @@ class DSetManager:
         else:
             clean_tmp = False
 
+        if 'flag_data_mandatory' in kwargs:
+            flag_data_mandatory = kwargs['flag_data_mandatory']
+        else:
+            flag_data_mandatory = False
+
         da_terrain = self.da_terrain
 
         file_source_vars_tmp = list(dset_source_dyn.columns)
@@ -1140,11 +1145,14 @@ class DSetManager:
                     else:
                         var_static_info = None
 
+                    # create the data reader obj
                     driver_hmc_parser = DSetReader(dset_filename, dset_source_var_base, dset_datetime_idx,
                                                    dset_time_info,
                                                    file_tmp_path=path_tmp, file_tmp_clean=clean_tmp,
-                                                   dset_var_format=dset_format)
+                                                   dset_var_format=dset_format,
+                                                   file_src_mandatory=flag_data_mandatory)
 
+                    # get the data reader datasets
                     obj_var, da_time, geo_x, geo_y = driver_hmc_parser.read_filename_dynamic(
                         var_name, var_args, var_time_start=dset_time_start, var_time_end=dset_time_end,
                         var_static_info=var_static_info)

@@ -401,6 +401,17 @@ class ModelSource:
                 dset_source_subset_base = dset_source_base[file_type][tag_datatype]
                 fx_source_subset_base = fx_source_base[file_type][tag_datatype]
 
+                # Set mandatory flag
+                log_stream.info(' -------> Set datasets filename(s) as ... ')
+                if file_type == 'Gridded':
+                    flag_dynamic_mandatory = False
+                    log_stream.info(' -------> Set datasets filename(s) as ... MANDATORY. '
+                                    'All the filename(s) must be available in the filesystem')
+                else:
+                    flag_dynamic_mandatory = False
+                    log_stream.info(' -------> Set datasets filename(s) as ... NOT MANDATORY. '
+                                    'All/Some filename(s) may be not available in the filesystem')
+
                 # Collect data
                 dset_source_frame_raw = reader_dataset.collect_data(
                     dset_model_type_dyn, dset_source_type_dyn, dset_source_subset_base,
@@ -409,7 +420,8 @@ class ModelSource:
                     dset_time_start=start_idx_subselect, dset_time_end=end_idx_subselect,
                     path_tmp=dset_path_tmp, clean_tmp=dset_clean_tmp,
                     plant_name_list=obj_static_datasets[self.tag_plant_list],
-                    release_name_list=obj_static_datasets[self.tag_release_list])			#add20210608_last_arg
+                    release_name_list=obj_static_datasets[self.tag_release_list],
+                    flag_data_mandatory=flag_dynamic_mandatory)
 
                 # Check collected data
                 if dset_source_frame_raw[self.tag_datasets] is not None:
@@ -536,6 +548,17 @@ class ModelSource:
                     # Validate selected flag
                     reader_dataset.validate_flag(tag_datadriver, fx_source_subset_base)
 
+                    # Set mandatory flag
+                    log_stream.info(' -------> Set datasets filename(s) as ... ')
+                    if file_type == 'Gridded':
+                        flag_dynamic_mandatory = True
+                        log_stream.info(' -------> Set datasets filename(s) as ... MANDATORY. '
+                                        'All the filename(s) must be available in the filesystem')
+                    else:
+                        flag_dynamic_mandatory = False
+                        log_stream.info(' -------> Set datasets filename(s) as ... NOT MANDATORY. '
+                                        'All/Some filename(s) may be not available in the filesystem')
+
                     # Collect data
                     dset_source_frame_raw_base = reader_dataset.collect_data(
                         dset_model_subset_dyn, dset_source_subset_dyn, dset_source_subset_base,
@@ -544,7 +567,8 @@ class ModelSource:
                         dset_time_start=start_idx_subselect, dset_time_end=end_idx_subselect,
                         path_tmp=dset_path_tmp, clean_tmp=dset_clean_tmp,
                         plant_name_list=obj_static_datasets[self.tag_plant_list],
-                        release_name_list=obj_static_datasets[self.tag_release_list])			#add20210608_last_arg
+                        release_name_list=obj_static_datasets[self.tag_release_list],
+                        flag_data_mandatory=flag_dynamic_mandatory)
 
                     # Check collected data
                     if dset_source_frame_raw_base[self.tag_datasets] is not None:
@@ -676,6 +700,17 @@ class ModelSource:
                     # Validate selected flag
                     reader_dataset.validate_flag(tag_datadriver, fx_source_subset_base)
 
+                    # Set mandatory flag
+                    log_stream.info(' -------> Set datasets filename(s) as ... ')
+                    if file_type == 'Gridded':
+                        flag_dynamic_mandatory = False
+                        log_stream.info(' -------> Set datasets filename(s) as ... MANDATORY. '
+                                        'All the filename(s) must be available in the filesystem')
+                    else:
+                        flag_dynamic_mandatory = False
+                        log_stream.info(' -------> Set datasets filename(s) as ... NOT MANDATORY. '
+                                        'All/Some filename(s) may be not available in the filesystem')
+
                     # Collect data
                     dset_source_frame_raw_base = reader_dataset.collect_data(
                         dset_model_subset_dyn, dset_source_subset_dyn, dset_source_subset_base,
@@ -684,7 +719,8 @@ class ModelSource:
                         dset_time_start=start_idx_subselect, dset_time_end=end_idx_subselect,
                         path_tmp=dset_path_tmp, clean_tmp=dset_clean_tmp,
                         plant_name_list=obj_static_datasets[self.tag_plant_list],
-                        release_name_list=obj_static_datasets[self.tag_release_list])				#add20210608_last_arg
+                        release_name_list=obj_static_datasets[self.tag_release_list],
+                        flag_data_mandatory=flag_dynamic_mandatory)
 
                     # Check collected data
                     if dset_source_frame_raw_base[self.tag_datasets] is not None:
