@@ -17,9 +17,10 @@ Version 3.1.5 (20221130)
 - Extend the hmc tool for merging gridded sources (continuum, qt and s3m datasets) and the expected data format for input (netcdf, tiff) and output (netcdf, tiff);
 - Extend the hmc tool for preprocessing gridded sources adding the restart datasets in binary format;
 - Fix bugs in the hmc manager in managing the point static datasets of dams, joints, lakes, intakes and sections;
-- Fix bugs in the hmc manager in managing the compatibility for sections file in shp or ascii format;
+- Fix bugs in the hmc manager in managing the compatibility for sections file in shp or ascii format, also with 3 levels of warning;
 - Fix bugs in the hmc manager in adding observed time-series [discharge, dam volume and dam level] to the json and summary data structure;
 - Fix bugs in the hmc manager in adding dam unavailable datasets in summary data structure;
+- Fix bugs in the hmc manager for supporting concentration time equal to 0;
 - Fix bugs in the hmc tool for making ensemble time-series;
 - Fix bugs in the hmc tool for merging gridded output also in presence of clipped lon-lat matrices;
 - Refactoring of the tools section.

@@ -2,7 +2,7 @@
 """
 HYDROLOGICAL MODEL CONTINUUM - Run manager to set parameters and datasets of the hydrological model
 
-__date__ = '20221130'
+__date__ = '20221201'
 __version__ = '3.1.5'
 __author__ =
         'Fabio Delogu (fabio.delogu@cimafoundation.org',

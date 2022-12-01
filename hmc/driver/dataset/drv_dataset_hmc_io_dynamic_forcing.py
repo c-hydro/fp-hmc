@@ -1088,6 +1088,8 @@ class DSetManager:
             var_args['plant_name_list'] = kwargs['plant_name_list']
         if 'release_name_list' in kwargs:                                       #add20210608
             var_args['release_name_list'] = kwargs['release_name_list']         #add20210608
+        if 'lake_name_list' in kwargs:
+            var_args['lake_name_list'] = kwargs['lake_name_list']
         if 'path_tmp' in kwargs:
             path_tmp = kwargs['path_tmp']
         if 'clean_tmp' in kwargs:
