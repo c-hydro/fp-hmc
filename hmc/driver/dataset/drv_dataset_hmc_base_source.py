@@ -78,6 +78,7 @@ class ModelSource:
         self.tag_datasets = 'datasets'
 
         self.tag_dam_list = 'dam_name_list'
+        self.tag_lake_list = 'lake_name_list'
         self.tag_plant_list = 'plant_name_list'
         self.tag_release_list = 'release_name_list'
         self.tag_basin_list = 'basin_name_list'
@@ -264,7 +265,17 @@ class ModelSource:
             log_stream.error(' ===> "Dam" key in static collections does not exist')
             raise NotImplementedError('Key not available in data collections')
 
-        if 'Intake' in list(dset_collections_static.keys()):                                # add20210604 --start
+        if 'Lake' in list(dset_collections_static.keys()):
+
+            if dset_collections_static['Lake'] is not None:
+                lake_list = list(dset_collections_static['Lake'].keys())
+            else:
+                lake_list = None
+        else:
+            log_stream.error(' ===> "Lake" key in static collections does not exist')
+            raise NotImplementedError('Key not available in data collections')
+
+        if 'Intake' in list(dset_collections_static.keys()):
 
             if dset_collections_static['Intake'] is not None:
                 intake_list = list(dset_collections_static['Intake'].keys())
@@ -280,7 +291,7 @@ class ModelSource:
                 socket_list = None
         else:
             log_stream.error(' ===> "Intake" key in static collections does not exist')
-            raise NotImplementedError('Key not available in data collections')              # add20210604 --end
+            raise NotImplementedError('Key not available in data collections')
 
         if 'Section' in list(dset_collections_static.keys()):
             section_list = list(dset_collections_static['Section'].keys())
@@ -316,6 +327,7 @@ class ModelSource:
 
         dset_collections_static[self.tag_dam_list] = dam_list
         dset_collections_static[self.tag_plant_list] = plant_list
+        dset_collections_static[self.tag_lake_list] = lake_list
         dset_collections_static[self.tag_dam_system_list] = dam_system_list
         dset_collections_static[self.tag_release_list] = release_list
         dset_collections_static[self.tag_basin_list] = section_parts[0]
@@ -421,6 +433,7 @@ class ModelSource:
                     path_tmp=dset_path_tmp, clean_tmp=dset_clean_tmp,
                     plant_name_list=obj_static_datasets[self.tag_plant_list],
                     release_name_list=obj_static_datasets[self.tag_release_list],
+                    lake_name_list=obj_static_datasets[self.tag_lake_list],
                     flag_data_mandatory=flag_dynamic_mandatory)
 
                 # Check collected data
@@ -568,6 +581,7 @@ class ModelSource:
                         path_tmp=dset_path_tmp, clean_tmp=dset_clean_tmp,
                         plant_name_list=obj_static_datasets[self.tag_plant_list],
                         release_name_list=obj_static_datasets[self.tag_release_list],
+                        lake_name_list=obj_static_datasets[self.tag_lake_list],
                         flag_data_mandatory=flag_dynamic_mandatory)
 
                     # Check collected data
@@ -720,6 +734,7 @@ class ModelSource:
                         path_tmp=dset_path_tmp, clean_tmp=dset_clean_tmp,
                         plant_name_list=obj_static_datasets[self.tag_plant_list],
                         release_name_list=obj_static_datasets[self.tag_release_list],
+                        lake_name_list=obj_static_datasets[self.tag_lake_list],
                         flag_data_mandatory=flag_dynamic_mandatory)
 
                     # Check collected data

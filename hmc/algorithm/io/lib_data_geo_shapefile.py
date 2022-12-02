@@ -32,16 +32,16 @@ def read_data_shapefile_section(file_name, columns_name_expected=None, columns_n
 
     if columns_name_expected is None:
         columns_name_expected = ['HMC_X', 'HMC_Y', 'BASIN', 'SEC_NAME', 'SEC_RS', 'AREA',
-                                 'Q_THR1', 'Q_THR2', 'DOMAIN', 'BASEFLOW']
+                                 'Q_THR1', 'Q_THR2', 'Q_THR3', 'DOMAIN', 'BASEFLOW']
     if columns_name_type is None:
         columns_name_type = ['int', 'int', 'str', 'str', 'int', 'float', 'float',
-                             'float', 'str', 'float']
+                             'float', 'float', 'str', 'float']
 
     if columns_name_defined is None:
         columns_name_defined = ['section_idx_j', 'section_idx_i',
                                 'section_domain', 'section_name', 'section_code',
                                 'section_drained_area', 'section_discharge_thr_alert', 'section_discharge_thr_alarm',
-                                'section_reference', 'section_baseflow']
+                                'section_discharge_thr_emergency', 'section_reference', 'section_baseflow']
 
     file_dframe_raw = gpd.read_file(file_name)
     file_rows = file_dframe_raw.shape[0]
@@ -82,7 +82,24 @@ def read_data_shapefile_section(file_name, columns_name_expected=None, columns_n
             elif column_type == 'str':
                 column_res = type(column_data[0]) == str
             elif column_type == 'float':
-                column_res = type(column_data[0]) == float
+                if type(column_data[0]) == float:
+                    column_res = type(column_data[0]) == float
+                elif type(column_data[0]) == int:
+
+                    unique_data = []
+                    for step_data in column_data:
+                        unique_data.append(str(step_data))
+                    str_data = ','.join(unique_data)
+
+                    log_stream.warning(' ===> Column "' + column_name_exp +
+                                       '" is expected in "float" format but is detected in "integer" format')
+                    log_stream.warning(' ===> Data found in the column: ')
+                    log_stream.warning(' ===> "' + str_data + '"')
+
+                    column_res = False
+                else:
+                    log_stream.error(' ===> Datatype for columns defined by float is not supported')
+                    raise NotImplementedError('Datatype not implemented yet')
             else:
                 log_stream.error(' ===> Datatype for defined columns in the section shapefile is not allowed')
                 raise NotImplementedError('Datatype not implemented yet')
@@ -96,7 +113,7 @@ def read_data_shapefile_section(file_name, columns_name_expected=None, columns_n
                     column_res = type(column_data[0]) == str
                     if column_res:
                         log_stream.warning(' ===> Column "' + column_name_exp + '" is parsed using the "string" format')
-                if column_name_exp in ['AREA', 'Q_THR1', 'Q_THR2']:
+                if column_name_exp in ['AREA', 'Q_THR1', 'Q_THR2', 'Q_THR3']:
 
                     if isinstance(column_data[0], int):
                         column_res = type(column_data[0]) == int

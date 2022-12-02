@@ -38,13 +38,13 @@ import matplotlib.pylab as plt
 
 # -------------------------------------------------------------------------------------
 # Method to write file point section(s)
-def write_data_point_section(file_name, file_data, file_cols_expected=10, file_name_expected=None):
+def write_data_point_section(file_name, file_data, file_cols_expected=11, file_name_expected=None):
 
     if file_name_expected is None:
         file_name_expected = ['section_idx_j', 'section_idx_i', 'section_domain', 'section_name',
                               'section_code', 'section_drained_area',
                               'section_discharge_thr_alert', 'section_discharge_thr_alarm',
-                              'section_reference', 'section_baseflow']
+                              'section_discharge_thr_emergency', 'section_reference', 'section_baseflow']
 
     file_data_expected = {}
     for file_key, file_fields in file_data.items():
@@ -150,9 +150,34 @@ def read_data_point_section(file_name, section_cols_expected=8):
                         '". Value types allowed are float, int and string')
                     raise IOError('Case not implemented yet')
 
-                section_drained_area = float(section_cols[5])
-                section_discharge_thr_alert = float(section_cols[6])
-                section_discharge_thr_alarm = float(section_cols[7])
+                try:
+                    section_drained_area = float(section_cols[5])
+                except BaseException as base_error:
+                    log_stream.error(' ===> Read the "file_point_section" returned an format error')
+                    raise BaseException('Read the field "section_drained_area" returns errors "' +
+                                        str(base_error) + '\n". Remove file point section "' + file_name +
+                                        '" and run again the wrapper')
+                try:
+                    section_discharge_thr_alert = float(section_cols[6])
+                except BaseException as base_error:
+                    log_stream.error(' ===> Read the "file_point_section" returned an format error')
+                    raise BaseException('Read the field "section_discharge_thr_alert" returns errors "' +
+                                        str(base_error) + '\n". Remove file point section "' + file_name +
+                                        '" and run again the wrapper')
+                try:
+                    section_discharge_thr_alarm = float(section_cols[7])
+                except BaseException as base_error:
+                    log_stream.error(' ===> Read the "file_point_section" returned an format error')
+                    raise BaseException('Read the field "section_discharge_thr_alarm" returns errors "' +
+                                        str(base_error) + '\n". Remove file point section "' + file_name +
+                                        '" and run again the wrapper')
+                try:
+                    section_discharge_thr_emergency = float(section_cols[8])
+                except BaseException as base_error:
+                    log_stream.error(' ===> Read the "file_point_section" returned an format error')
+                    raise BaseException('Read the field "section_discharge_thr_emergency" returns errors "' +
+                                        str(base_error) + '\n". Remove file point section "' + file_name +
+                                        '" and run again the wrapper')
                 section_id = int(row_id)
 
                 section_key = ':'.join([section_domain, section_name])
@@ -166,6 +191,7 @@ def read_data_point_section(file_name, section_cols_expected=8):
                 point_frame[section_key]['section_drained_area'] = section_drained_area
                 point_frame[section_key]['section_discharge_thr_alert'] = section_discharge_thr_alert
                 point_frame[section_key]['section_discharge_thr_alarm'] = section_discharge_thr_alarm
+                point_frame[section_key]['section_discharge_thr_emergency'] = section_discharge_thr_emergency
 
             else:
                 log_stream.error(' ===> Parse section filename failed for filename ' + os.path.split(file_name)[1])

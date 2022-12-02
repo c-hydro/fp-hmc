@@ -436,17 +436,13 @@ class DSetReader:
                     file_columns_var = {0: 'dam_index', 1: 'dam_code', 2: 'dam_volume_max', 3: 'dam_volume_sim'}
                     list_columns_excluded = ['dam_index', 'dam_code', 'dam_volume_max']
                     if var_args['plant_name_list'] is not None:
-                        if 'lake_name_list' in list(var_args.keys()):
-                            if var_args['lake_name_list'] is not None:
-                                # if there are both plants and lakes in the restart both should be present
-                                var_columns_list = var_args['plant_name_list'] + var_args['lake_name_list']
-                            else:
-                                # if there are only plants
-                                var_columns_list = var_args['plant_name_list']
+                        if var_args['lake_name_list'] is not None:
+                            # if there are both plants and lakes in the restart both should be present
+                            var_columns_list = var_args['plant_name_list'] + var_args['lake_name_list']
                         else:
                             # if there are only plants
                             var_columns_list = var_args['plant_name_list']
-                    elif ('lake_name_list' in list(var_args.keys())) and (var_args['lake_name_list'] is not None):
+                    elif var_args['lake_name_list'] is not None:
                         # if there are only lakes
                         var_columns_list = var_args['lake_name_list']
                     else:

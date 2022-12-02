@@ -827,7 +827,7 @@ class DriverDynamic:
                                         var_folder_name_dst, var_file_name_dst = os.path.split(var_file_path_dst)
                                         make_folder(var_folder_name_dst)
 
-                                        if (not var_file_name_dst.endswith('tiff')) or (
+                                        if (not var_file_name_dst.endswith('tiff')) and (
                                                 not var_file_name_dst.endswith('tif')):
                                             log_stream.warning(' ===> File name extension must be "tiff" or "tif".\n'
                                                                'The actual file is "' + var_file_name_dst +

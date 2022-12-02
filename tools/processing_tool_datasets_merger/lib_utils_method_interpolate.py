@@ -81,7 +81,7 @@ def apply_var_sample(var_dset_in, geo_da_out,
                      dim_name_time='time', dim_name_geo_x='longitude', dim_name_geo_y='latitude',
                      coord_name_time='time', coord_name_geo_x='longitude', coord_name_geo_y='latitude'):
 
-    dims_list_expected = [dim_name_time, dim_name_geo_x, dim_name_geo_y]
+    dims_list_expected = [dim_name_geo_y, dim_name_geo_x, dim_name_time]
     coords_list_expected = [coord_name_time, coord_name_geo_x, coord_name_geo_y]
 
     dims_list_in = list(var_dset_in.dims)
@@ -94,6 +94,26 @@ def apply_var_sample(var_dset_in, geo_da_out,
     if set(coords_list_in) != set(coords_list_expected):
         log_stream.error(' ===> Coordinates expected and found in the datasets are different')
         raise RuntimeError('Coordinates must be the same to avoid errors in output datasets')
+
+    # check dimensions order
+    dims_order, dims_check = {}, False
+    for dims_id, dims_step_in in enumerate(dims_list_in):
+        dims_step_expected = dims_list_expected[dims_id]
+        if dims_step_in == dims_step_expected:
+            dims_order[dims_id] = dims_step_in
+        else:
+            dims_idx_expected = dims_list_expected.index(dims_step_in)
+            dims_order[dims_idx_expected] = dims_step_in
+            dims_check = True
+
+    if dims_check:
+        dims_list_defined = [dim_name_geo_y, dim_name_geo_x, dim_name_time]
+        log_stream.warning(' ===> Dimensions expected (1) are not in the same order of datasets dimensions (2)')
+        log_stream.warning(' ===> (1) Dimensions expected: ' + ','.join(dims_list_expected))
+        log_stream.warning(' ===> (2) Dimensions datasets: ' + ','.join(list(var_dset_in.dims)))
+        log_stream.warning(' ===> Dimensions selected by default: ' + ','.join(dims_list_expected))
+    else:
+        dims_list_defined = list(var_dset_in.dims)
 
     geo_x_out = geo_da_out['longitude'].values
     geo_y_out = geo_da_out['latitude'].values
@@ -152,7 +172,7 @@ def apply_var_sample(var_dset_in, geo_da_out,
                 raise NotImplemented('Case not implemented yet')
 
             var_da_tmp = xr.DataArray(
-                variable_data, name=variable_name, dims=list(var_dset_in.dims),
+                variable_data, name=variable_name, dims=dims_list_defined,
                 coords={coord_name_time: ([dim_name_time], variable_time),
                         coord_name_geo_x: ([dim_name_geo_x], geo_x_out),
                         coord_name_geo_y: ([dim_name_geo_y], geo_y_out)})
@@ -160,7 +180,7 @@ def apply_var_sample(var_dset_in, geo_da_out,
 
         else:
             var_da_tmp = xr.DataArray(
-                variable_data, name=variable_name, dims=list(var_dset_in.dims),
+                variable_data, name=variable_name, dims=dims_list_defined,
                 coords={coord_name_geo_x: ([dim_name_geo_x], geo_x_out),
                         coord_name_geo_y: ([dim_name_geo_y], geo_y_out)})
             var_dset_out[variable_name] = var_da_tmp

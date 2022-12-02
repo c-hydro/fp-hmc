@@ -194,12 +194,14 @@ class DSetManager:
                                                var_name + ' in ' + file_format + ' format is ancillary')
 
                             if file_format == 'shapefile':
-                                log_stream.warning(' ===> Static datasets for shapefile case will be initialized to None.')
+                                log_stream.warning(
+                                    ' ===> Static datasets for shapefile case will be initialized to None.')
                                 obj_var = None
                             elif file_format == 'ascii_point':
                                 if file_name is not None:
-                                    log_stream.warning(' ===> Static datasets for ascii point case will be initialized '
-                                                       'using a default method.')
+                                    log_stream.warning(
+                                        ' ===> Static datasets for ascii point case will be initialized '
+                                        'using a default method.')
                                     driver_hmc_reader = DSetReader(file_name, file_info, None, time_src_info=None)
                                     driver_hmc_reader.write_filename_undefined(file_name, var_name)
                                 else:
@@ -207,7 +209,8 @@ class DSetManager:
                                                        'using a None value!')
                                 obj_var = None
                             elif file_format == 'ascii_grid':
-                                log_stream.warning(' ===> Static datasets for ascii grid case will be initialized to None.')
+                                log_stream.warning(
+                                    ' ===> Static datasets for ascii grid case will be initialized to None.')
                                 obj_var = None
                             else:
                                 log_stream.error(' ===> Static format ' + file_format + ' is not allowed. Exit.')
