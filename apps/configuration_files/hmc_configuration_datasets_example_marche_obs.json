@@ -145,7 +145,7 @@
       "hmc_file_frequency": null,
       "hmc_file_filter"   : {"DOMAIN": "marche"},
       "hmc_file_variable" : {
-        "Section"               : {"var_name": "section",           "check": true,   "mandatory": true  }
+        "Section"               : {"var_name": "section",           "check": true,   "mandatory": false  }
       }
     }
   },

@@ -115,6 +115,7 @@ def read_data_point_section(file_name, section_cols_expected=8):
         string_parts = None
 
         point_frame = OrderedDict()
+        check_drained_area, check_thr_alert, check_thr_alarm, check_thr_emergency = True, True, True, True
         for row_id, row_data in enumerate(file_lines):
 
             # Read line by line
@@ -136,6 +137,13 @@ def read_data_point_section(file_name, section_cols_expected=8):
                 if section_cols.__len__() < section_cols_expected:
                     section_cols = pad_or_truncate_list(section_cols, section_cols_expected)
 
+                if section_cols.__len__() > section_cols_expected:
+                    log_stream.error(
+                        ' ===> The number of the fields for the filename ' + os.path.split(file_name)[1] +
+                        ' is greater ("' + str(section_cols.__len__()) + '") than the expected value ("' +
+                        str(section_cols_expected) + '")')
+                    raise IOError(' ===> Section file in wrong format due to the number of the fields in each row')
+
                 section_idx_ji = [int(section_cols[0]), int(section_cols[1])]
                 section_domain = section_cols[2]
                 section_name = section_cols[3]
@@ -153,31 +161,55 @@ def read_data_point_section(file_name, section_cols_expected=8):
                 try:
                     section_drained_area = float(section_cols[5])
                 except BaseException as base_error:
-                    log_stream.error(' ===> Read the "file_point_section" returned an format error')
-                    raise BaseException('Read the field "section_drained_area" returns errors "' +
-                                        str(base_error) + '\n". Remove file point section "' + file_name +
-                                        '" and run again the wrapper')
+                    if check_drained_area:
+                        log_stream.warning(
+                            ' ===> The field "section_drained_area" is not defined in the '
+                            '"file_point_section" in ascii format. The reader returned the following error "'
+                            + str(base_error) +
+                            '".\n The users can:\n'
+                            '(1) remove the file "' + file_name + '" and run again the wrapper; \n'
+                            '(2) keep the default value of the field that will be set to "-9999.0"\n')
+                        check_drained_area = False
+                    section_drained_area = -9999.0
+
                 try:
                     section_discharge_thr_alert = float(section_cols[6])
                 except BaseException as base_error:
-                    log_stream.error(' ===> Read the "file_point_section" returned an format error')
-                    raise BaseException('Read the field "section_discharge_thr_alert" returns errors "' +
-                                        str(base_error) + '\n". Remove file point section "' + file_name +
-                                        '" and run again the wrapper')
+                    if check_thr_alert:
+                        log_stream.warning(
+                            ' ===> The field "section_discharge_thr_alert" is not defined in the '
+                            '"file_point_section" in ascii format. The reader returned the following error "'
+                            + str(base_error) + '".\n The users can:\n'
+                            '(1) remove the file "' + file_name + '" and run again the wrapper; \n'
+                            '(2) keep the default value of the field that will be set to "-9999.0"\n')
+                        check_thr_alert = False
+                    section_discharge_thr_alert = -9999.0
                 try:
                     section_discharge_thr_alarm = float(section_cols[7])
                 except BaseException as base_error:
-                    log_stream.error(' ===> Read the "file_point_section" returned an format error')
-                    raise BaseException('Read the field "section_discharge_thr_alarm" returns errors "' +
-                                        str(base_error) + '\n". Remove file point section "' + file_name +
-                                        '" and run again the wrapper')
+                    if check_thr_alarm:
+                        log_stream.warning(
+                            ' ===> The field "section_discharge_thr_alarm" is not defined in the '
+                            '"file_point_section" in ascii format. The reader returned the following error "'
+                            + str(base_error) + '".\n The users can:\n'
+                            '(1) remove the file "' + file_name + '" and run again the wrapper; \n'
+                            '(2) keep the default value of the field that will be set to "-9999.0"\n')
+                        check_thr_alarm = False
+                    section_discharge_thr_alarm = -9999.0
+
                 try:
                     section_discharge_thr_emergency = float(section_cols[8])
                 except BaseException as base_error:
-                    log_stream.error(' ===> Read the "file_point_section" returned an format error')
-                    raise BaseException('Read the field "section_discharge_thr_emergency" returns errors "' +
-                                        str(base_error) + '\n". Remove file point section "' + file_name +
-                                        '" and run again the wrapper')
+                    if check_thr_emergency:
+                        log_stream.warning(
+                            ' ===> The field "section_discharge_thr_emergency" is not defined in the '
+                            '"file_point_section" in ascii format. The reader returned the following error "'
+                            + str(base_error) + '".\n The users can:\n'
+                            '(1) remove the file "' + file_name + '" and run again the wrapper; \n'
+                            '(2) keep the default value of the field that will be set to "-9999.0"\n')
+                        check_thr_emergency = False
+                    section_discharge_thr_emergency = -9999.0
+
                 section_id = int(row_id)
 
                 section_key = ':'.join([section_domain, section_name])
