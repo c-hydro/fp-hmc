@@ -10,6 +10,10 @@ script_date='2022/10/14'
 file_entrypoint_app_main_default='hmc_tool_running_entrypoint_app_main.py'
 file_entrypoint_app_configuration_default='hmc_tool_running_entrypoint_app_configuration_hmc_generic.json'
 
+# Virtualenv default definition(s)
+virtualenv_folder='/home/fabio/fp_system_conda/'
+virtualenv_name='fp_system_conda_hmc_libraries'
+
 # Default script folder
 script_folder=$PWD
 
@@ -24,6 +28,15 @@ Usage of docker runner:
   	-h	display this help message;
 	-m	filename of entrypoint app main;		
   	-c	filename of entrypoint app configuration;"
+#-----------------------------------------------------------------------------------------
+
+#-----------------------------------------------------------------------------------------
+# Activate virtualenv
+export PATH=$virtualenv_folder/bin:$PATH
+source activate $virtualenv_name
+
+# Add path to pythonpath
+export PYTHONPATH="${PYTHONPATH}:$script_folder"
 #-----------------------------------------------------------------------------------------
 
 # ----------------------------------------------------------------------------------------
