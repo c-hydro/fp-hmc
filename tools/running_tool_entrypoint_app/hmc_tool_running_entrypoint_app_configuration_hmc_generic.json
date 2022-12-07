@@ -1,0 +1,335 @@
+{
+  "docker_entrypoint_settings": {
+    "__comment__": "docker entrypoint settings: application_name: hmc_runner",
+    "version": "2.0.0",
+    "application_name": ["hmc_runner"],
+    "application_variable_template": {
+      "run_domain": "string_name",
+      "run_name": "string_name",
+      "run_time_now": "%Y-%m-%d %H:%M",
+      "run_time_start": "%Y-%m-%d %H:%M",
+      "run_time_end": "%Y-%m-%d %H:%M",
+      "run_time_step_obs": "integer",
+      "run_time_step_for": "integer",
+      "run_ens_mode": "boolean",
+      "run_ens_min": "integer",
+      "run_ens_max": "integer",
+      "run_path_root": "string_path",
+      "run_path_template": "string_path",
+      "run_mount_folder_static": "string_path",
+      "run_mount_folder_dynamic_source": "string_path",
+      "run_mount_folder_dynamic_destination": "string_path",
+      "run_mount_folder_dynamic_restart": "string_path"
+    },
+    "application_variable_env": {
+      "run_domain": "RUN_DOMAIN",
+      "run_time_now": "RUN_TIME_NOW",
+      "run_time_start": "RUN_TIME_START",
+      "run_time_end": "RUN_TIME_END",
+      "run_time_step_obs": "RUN_TIME_STEPS_OBS",
+      "run_time_step_for": "RUN_TIME_STEPS_FOR",
+      "run_mount_folder_static": "TARGET_DATA_STATIC",
+      "run_mount_folder_dynamic_source": "TARGET_DATA_DYNAMIC_SOURCE",
+      "run_mount_folder_dynamic_destination": "TARGET_DATA_DYNAMIC_DESTINATION",
+      "run_mount_folder_dynamic_restart": "TARGET_DATA_DYNAMIC_RESTART"
+    },
+    "application_variable_local": {
+      "run_domain": "{run_domain}",
+      "run_name": "hmc_execution",
+      "run_ens_mode": false,
+      "run_ens_var": "RFarm_ID",
+      "run_ens_min": 1,
+      "run_ens_max": 1,
+      "run_path_root": "/home/fp/",
+      "run_path_template": "/home/fabio/Desktop/PyCharm_Workspace/fp-docker-dev/docker_template/"
+    },
+    "log": {
+      "file_name": "docker_entrypoint_log.txt",
+      "folder_name": "{run_path_root}/log/"
+    }
+  },
+  "docker_entrypoint_app": {
+    "__comment__": "command line of defined application(s)",
+    "app_script_settings": {
+      "hmc_runner": {
+        "executable": "script_main:executable",
+        "args":
+          {
+            "-settings_algorithm": "script_args:algorithm",
+            "-settings_datasets": "script_args:datasets",
+            "-time": "time"
+          }
+      }
+    },
+    "app_script_main": {
+      "__comment__": "file name and folder name of runner app main for the docker environment",
+      "hmc_runner": {
+        "script_main:executable": {
+          "file_name": "HMC_Model_Run_Manager.py",
+          "folder_name": "{run_path_root}/library/package_hmc/app/"
+        }
+      }
+    },
+    "app_script_args": {
+      "__comment__": "application args: filename(s) runner app configuration(s) in docker environment [template, runtime]",
+      "hmc_runner": {
+        "script_args:algorithm:template": {
+          "file_name": "hmc_configuration_algorithm_template.json",
+          "folder_name": "{run_path_template}"
+        },
+        "script_args:algorithm:runtime": {
+          "file_name": "hmc_configuration_algorithm_{run_domain}_runtime.json",
+          "folder_name": "{run_path_root}/app/exec/"
+        },
+        "script_args:datasets:template": {
+          "file_name": "hmc_configuration_datasets_template.json",
+          "folder_name": "{run_path_template}"
+        },
+        "script_args:datasets:runtime": {
+          "file_name": "hmc_configuration_datasets_{run_domain}_runtime.json",
+          "folder_name": "{run_path_root}/app/exec/"
+        }
+      }
+    },
+    "app_script_variable": {
+      "__comment__": "application options",
+      "hmc_runner": {
+        "script_variable:algorithm" : {
+          "info:domain_name": "{run_domain}",
+          "info:run_name" : "{run_name}",
+          "info:run_ens_active" : false,
+          "time:run_time_step:obs" : "{run_time_step_obs}",
+          "time:run_time_step:for" : "{run_time_step_for}",
+          "library:file_name": "HMC_Model_V3_$RUN.x",
+          "library:folder_name": "{run_path_root}/library/libs_system/hmc/",
+          "library:dependencies": ["{run_path_root}/library/libs_system/nc4/lib/"],
+          "executable:file_name": "HMC_Model_V3_{run_name}.x",
+          "executable:folder_name": "{run_path_root}/app/exec/",
+          "executable:namelist": "{run_domain}.info.txt",
+          "executable:arguments": "{run_domain}.info.txt",
+          "tmp:file_name": null,
+          "tmp:folder_name": "{run_path_root}/tmp/",
+          "log:file_name": "hmc_runner_docker_execution.txt",
+          "log:folder_name": "{run_path_root}/log/"
+        },
+        "script_variable:datasets" : {
+          "info:domain_name": "{run_domain}",
+
+          "data_static:gridded:file_name": "{run_domain}.{dset_var_name_geo}.txt",
+          "data_static:gridded:folder_name": "{run_mount_folder_static}/gridded/",
+          "data_static:point:file_name": "{run_domain}.info_{dset_var_name_geo}.txt",
+          "data_static:point:folder_name": "{run_mount_folder_static}/point/",
+          "data_static:shapefile:file_name": "fp_sections_{run_domain}.shp",
+          "data_static:shapefile:folder_name": "{run_mount_folder_static}/shapefile/",
+
+          "data_summary:collections:file_name" : "hmc.collections.{dset_datetime_summary}.nc",
+          "data_summary:collections:folder_name" : "{run_mount_folder_dynamic_destination}/collections/",
+          "data_summary:time_series:file_name:discharge" : "hydrograph_{string_var_name_summary_section}_{string_var_name_summary_basin}_{dset_datetime_summary}.json",
+          "data_summary:time_series:folder_name:discharge" : "{run_mount_folder_dynamic_destination}/collections/",
+          "data_summary:time_series:file_name:dam_volume" : "damv_{string_var_name_summary_dam}_{dset_datetime_summary}.json",
+          "data_summary:time_series:folder_name:dam_volume" : "{run_mount_folder_dynamic_destination}/collections/",
+          "data_summary:time_series:file_name:dam_level" : "daml_{string_var_name_summary_dam}_{dset_datetime_summary}.json",
+          "data_summary:time_series:folder_name:dam_level": "{run_mount_folder_dynamic_destination}/collections/",
+
+          "data_ancillary:static:file_name" : "hmc.static.workspace",
+          "data_ancillary:static:folder_name" : "{run_path_root}/app/exec/",
+          "data_ancillary:dynamic_source:file_name" : "hmc.dynamic_source.{dset_datetime_ancillary}.workspace",
+          "data_ancillary:dynamic_source:folder_name" : "{run_path_root}/app/exec/",
+          "data_ancillary:dynamic_execution:file_name" : "hmc.execution.{dset_datetime_ancillary}.workspace",
+          "data_ancillary:dynamic_execution:folder_name" : "{run_path_root}/app/exec/",
+          "data_ancillary:dynamic_outcome:file_name" : "hmc.dynamic_outcome.{dset_datetime_ancillary}.workspace",
+          "data_ancillary:dynamic_outcome:folder_name": "{run_path_root}/app/exec/",
+
+          "data_dynamic:gridded:forcing:hmc:file_name": "hmc.forcing-grid.{dset_datetime_hmc}.nc.gz",
+          "data_dynamic:gridded:forcing:hmc:folder_name": "{run_path_root}/app/data_dynamic/gridded/{dset_sub_path_hmc}",
+          "data_dynamic:gridded:forcing:mnt:file_name:rain": "hmc.forcing-grid.{dset_datetime_forcing_obs}.nc.gz",
+          "data_dynamic:gridded:forcing:mnt:folder_name:rain": "{run_mount_folder_dynamic_source}/gridded/{dset_sub_path_forcing_obs}",
+          "data_dynamic:gridded:forcing:mnt:file_name:air_temperature": "hmc.forcing-grid.{dset_datetime_forcing_obs}.nc.gz",
+          "data_dynamic:gridded:forcing:mnt:folder_name:air_temperature": "{run_mount_folder_dynamic_source}/gridded/{dset_sub_path_forcing_obs}",
+          "data_dynamic:gridded:forcing:mnt:file_name:wind": "hmc.forcing-grid.{dset_datetime_forcing_obs}.nc.gz",
+          "data_dynamic:gridded:forcing:mnt:folder_name:wind": "{run_mount_folder_dynamic_source}/gridded/{dset_sub_path_forcing_obs}",
+          "data_dynamic:gridded:forcing:mnt:file_name:rel_humidity": "hmc.forcing-grid.{dset_datetime_forcing_obs}.nc.gz",
+          "data_dynamic:gridded:forcing:mnt:folder_name:rel_humidity": "{run_mount_folder_dynamic_source}/gridded/{dset_sub_path_forcing_obs}",
+          "data_dynamic:gridded:forcing:mnt:file_name:inc_radiation": "hmc.forcing-grid.{dset_datetime_forcing_obs}.nc.gz",
+          "data_dynamic:gridded:forcing:mnt:folder_name:inc_radiation": "{run_mount_folder_dynamic_source}/gridded/{dset_sub_path_forcing_obs}",
+          "data_dynamic:gridded:forcing:mnt:file_name:air_pressure": "hmc.forcing-grid.{dset_datetime_forcing_obs}.nc.gz",
+          "data_dynamic:gridded:forcing:mnt:folder_name:air_pressure": "{run_mount_folder_dynamic_source}/gridded/{dset_sub_path_forcing_obs}",
+
+          "data_dynamic:point:forcing:hmc:file_name": "hmc.{dset_var_name_forcing_point}.{dset_datetime_hmc}.txt",
+          "data_dynamic:point:forcing:hmc:folder_name": "{run_path_root}/app/data_dynamic/point/{dset_sub_path_hmc}",
+          "data_dynamic:point:forcing:mnt:file_name:discharge": "rs.db.{dset_datetime_forcing_obs}.txt",
+          "data_dynamic:point:forcing:mnt:folder_name:discharge": "{run_mount_folder_dynamic_source}/point/{dset_sub_path_forcing_obs}",
+
+          "data_dynamic:gridded:outcome:hmc:file_name": "hmc.output-grid.{dset_datetime_hmc}.nc.gz",
+          "data_dynamic:gridded:outcome:hmc:folder_name": "{run_path_root}/app/model_results/gridded/{dset_sub_path_hmc}",
+          "data_dynamic:gridded:outcome:mnt:file_name": "hmc.output-grid.{dset_datetime_hmc}.nc.gz",
+          "data_dynamic:gridded:outcome:mnt:folder_name": "{run_mount_folder_dynamic_destination}/gridded/",
+
+          "data_dynamic:point:outcome:hmc:file_name": "hmc.{dset_var_name_outcome_point}.{dset_datetime_hmc}.txt",
+          "data_dynamic:point:outcome:hmc:folder_name": "{run_path_root}/app/model_results/point/{dset_sub_path_hmc}",
+          "data_dynamic:point:outcome:mnt:file_name:discharge": "hmc.{dset_var_name_outcome_point}.{dset_datetime_outcome}.txt",
+          "data_dynamic:point:outcome:mnt:folder_name:discharge": "{run_mount_folder_dynamic_destination}/point/discharge/",
+          "data_dynamic:point:outcome:mnt:file_name:dam_volume": "hmc.{dset_var_name_outcome_point}.{dset_datetime_outcome}.txt",
+          "data_dynamic:point:outcome:mnt:folder_name:dam_volume": "{run_mount_folder_dynamic_destination}/point/dam_volume/",
+          "data_dynamic:point:outcome:mnt:file_name:dam_level": "hmc.{dset_var_name_outcome_point}.{dset_datetime_outcome}.txt",
+          "data_dynamic:point:outcome:mnt:folder_name:dam_level": "{run_mount_folder_dynamic_destination}/point/dam_level/",
+          "data_dynamic:point:outcome:mnt:file_name:analysis": "hmc.{dset_var_name_outcome_point}.{dset_datetime_outcome}.txt",
+          "data_dynamic:point:outcome:mnt:folder_name:analysis": "{run_mount_folder_dynamic_destination}/point/analysis/",
+
+          "data_dynamic:time_series:outcome:hmc:file_name": "hmc.{dset_var_name_outcome_ts}.txt",
+          "data_dynamic:time_series:outcome:hmc:folder_name": "{run_path_root}/app/model_results/time_series/",
+          "data_dynamic:time_series:outcome:mnt:file_name:discharge": "hmc.hydrograph.txt",
+          "data_dynamic:time_series:outcome:mnt:folder_name:discharge": "{run_mount_folder_dynamic_destination}/time_series/",
+          "data_dynamic:time_series:outcome:mnt:file_name:dam_volume": "hmc.vdam.txt",
+          "data_dynamic:time_series:outcome:mnt:folder_name:dam_volume": "{run_mount_folder_dynamic_destination}/time_series/",
+          "data_dynamic:time_series:outcome:mnt:file_name:dam_level": "hmc.ldam.txt",
+          "data_dynamic:time_series:outcome:mnt:folder_name:dam_level": "{run_mount_folder_dynamic_destination}/time_series/",
+          "data_dynamic:time_series:outcome:mnt:file_name:analysis": "hmc.var-analysis.txt",
+          "data_dynamic:time_series:outcome:mnt:folder_name:analysis": "{run_mount_folder_dynamic_destination}/time_series/",
+
+          "data_dynamic:gridded:state:hmc:file_name": "hmc.state-grid.{dset_datetime_hmc}.nc.gz",
+          "data_dynamic:gridded:state:hmc:folder_name": "{run_path_root}/app/model_state/gridded/{dset_sub_path_hmc}",
+          "data_dynamic:gridded:state:mnt:file_name": "hmc.state-grid.{dset_datetime_hmc}.nc.gz",
+          "data_dynamic:gridded:state:mnt:folder_name": "{run_mount_folder_dynamic_destination}/gridded/{dset_sub_path_state}/",
+
+          "data_dynamic:point:state:hmc:file_name": "hmc.state-point.{dset_datetime_hmc}.txt",
+          "data_dynamic:point:state:hmc:folder_name": "{run_path_root}/app/model_state/point/{dset_sub_path_hmc}",
+          "data_dynamic:point:state:mnt:file_name": "hmc.state-point.{dset_datetime_hmc}.txt",
+          "data_dynamic:point:state:mnt:folder_name": "{run_mount_folder_dynamic_destination}/point/{dset_sub_path_state}/",
+
+          "data_dynamic:gridded:restart:hmc:file_name": "hmc.state-grid.{dset_datetime_hmc}.nc.gz",
+          "data_dynamic:gridded:restart:hmc:folder_name": "{run_path_root}/app/model_restart/",
+          "data_dynamic:gridded:restart:mnt:file_name": "hmc.state-grid.{dset_datetime_hmc}.nc.gz",
+          "data_dynamic:gridded:restart:mnt:folder_name": "{run_mount_folder_dynamic_restart}",
+
+          "data_dynamic:point:restart:hmc:file_name": "hmc.state-point.{dset_datetime_hmc}.txt",
+          "data_dynamic:point:restart:hmc:folder_name": "{run_path_root}/app/model_restart/",
+          "data_dynamic:point:restart:mnt:file_name": "hmc.state-point.{dset_datetime_hmc}.txt",
+          "data_dynamic:point:restart:mnt:folder_name": "{run_mount_folder_dynamic_restart}"
+
+        }
+      }
+    }
+  },
+  "docker_entrypoint_lookup_table": {
+    "__comment__": "lookup table to update values in configurations file(s) [VAR_ENV 2 JSON]",
+    "lookup_table_fields": {
+      "hmc_runner": {
+        "fields:algorithm" : {
+          "info:domain_name": ["Run_Info", "run_type", "run_domain"],
+          "info:run_name": ["Run_Info", "run_type", "run_name"],
+          "info:run_ens_active": ["Run_Info", "run_type", "run_mode", "ens_active"],
+          "time:run_time_step:for" : ["Time_Info", "time_forecast_period"],
+          "time:run_time_step:obs" : ["Time_Info", "time_observed_period"],
+          "library:file_name": ["Run_Info", "run_location", "library", "file_name"],
+          "library:folder_name": ["Run_Info", "run_location", "library", "file_folder"],
+          "library:dependencies": ["Run_Info", "run_location", "library", "dependencies"],
+          "executable:file_name":  ["Run_Info", "run_location", "executable", "file_name"],
+          "executable:folder_name":  ["Run_Info", "run_location", "executable", "file_folder"],
+          "executable:namelist":  ["Run_Info", "run_location", "executable", "namelist"],
+          "executable:arguments":  ["Run_Info", "run_location", "executable", "arguments"],
+          "tmp:file_name" : ["Run_Info", "run_location", "tmp", "file_name"],
+          "tmp:folder_name" : ["Run_Info", "run_location", "tmp", "file_folder"],
+          "log:file_name" : ["Run_Info", "run_location", "log", "file_name"],
+          "log:folder_name" : ["Run_Info", "run_location", "log", "file_folder"]
+        },
+        "fields:datasets": {
+          "info:domain_name": ["DataGeo", "shapefile", "hmc_file_filter", "DOMAIN"],
+
+          "data_static:gridded:file_name": ["DataGeo", "Gridded", "hmc_file_name"],
+          "data_static:gridded:folder_name": ["DataGeo", "Gridded", "hmc_folder_name"],
+          "data_static:point:file_name": ["DataGeo", "Point", "hmc_file_name"],
+          "data_static:point:folder_name": ["DataGeo", "Point", "hmc_folder_name"],
+          "data_static:shapefile:file_name": ["DataGeo", "shapefile", "hmc_file_name"],
+          "data_static:shapefile:folder_name": ["DataGeo", "shapefile", "hmc_folder_name"],
+
+          "data_summary:collections:file_name" : ["DataSummary", "Collections", "hmc_file_list", "ALL", "var_file_name"],
+          "data_summary:collections:folder_name" : ["DataSummary", "Collections", "hmc_file_list", "ALL", "var_file_folder"],
+          "data_summary:time_series:file_name:discharge" : ["DataSummary", "TimeSeries", "hmc_file_list", "Discharge", "var_file_name"],
+          "data_summary:time_series:folder_name:discharge" : ["DataSummary", "TimeSeries", "hmc_file_list", "Discharge", "var_file_folder"],
+          "data_summary:time_series:file_name:dam_volume" : ["DataSummary", "TimeSeries", "hmc_file_list", "DamV", "var_file_name"],
+          "data_summary:time_series:folder_name:dam_volume" : ["DataSummary", "TimeSeries", "hmc_file_list", "DamV", "var_file_folder"],
+          "data_summary:time_series:file_name:dam_level" : ["DataSummary", "TimeSeries", "hmc_file_list", "DamL", "var_file_name"],
+          "data_summary:time_series:folder_name:dam_level" : ["DataSummary", "TimeSeries", "hmc_file_list", "DamL", "var_file_folder"],
+
+          "data_ancillary:static:file_name" : ["DataAncillary", "static", "hmc_file_name"],
+          "data_ancillary:static:folder_name" : ["DataAncillary", "static", "hmc_file_folder"],
+          "data_ancillary:dynamic_source:file_name" : ["DataAncillary", "dynamic_source", "hmc_file_name"],
+          "data_ancillary:dynamic_source:folder_name" : ["DataAncillary", "dynamic_source", "hmc_file_folder"],
+          "data_ancillary:dynamic_execution:file_name" : ["DataAncillary", "dynamic_execution", "hmc_file_name"],
+          "data_ancillary:dynamic_execution:folder_name" : ["DataAncillary", "dynamic_execution", "hmc_file_folder"],
+          "data_ancillary:dynamic_outcome:file_name" : ["DataAncillary", "dynamic_outcome", "hmc_file_name"],
+          "data_ancillary:dynamic_outcome:folder_name": ["DataAncillary", "dynamic_outcome", "hmc_file_folder"],
+
+          "data_dynamic:gridded:forcing:hmc:file_name": ["DataForcing", "Gridded", "hmc_file_name"],
+          "data_dynamic:gridded:forcing:hmc:folder_name": ["DataForcing", "Gridded", "hmc_folder_name"],
+          "data_dynamic:gridded:forcing:mnt:file_name:rain": ["DataForcing", "Gridded", "hmc_file_variable", "OBS", "var_list", "Rain", "var_file_name"],
+          "data_dynamic:gridded:forcing:mnt:folder_name:rain": ["DataForcing", "Gridded", "hmc_file_variable", "OBS", "var_list", "Rain", "var_folder_name"],
+          "data_dynamic:gridded:forcing:mnt:file_name:air_temperature": ["DataForcing", "Gridded", "hmc_file_variable", "OBS", "var_list", "AirTemperature", "var_file_name"],
+          "data_dynamic:gridded:forcing:mnt:folder_name:air_temperature": ["DataForcing", "Gridded", "hmc_file_variable", "OBS", "var_list", "AirTemperature", "var_folder_name"],
+          "data_dynamic:gridded:forcing:mnt:file_name:wind": ["DataForcing", "Gridded", "hmc_file_variable", "OBS", "var_list", "Wind", "var_file_name"],
+          "data_dynamic:gridded:forcing:mnt:folder_name:wind": ["DataForcing", "Gridded", "hmc_file_variable", "OBS", "var_list", "Wind", "var_folder_name"],
+          "data_dynamic:gridded:forcing:mnt:file_name:rel_humidity": ["DataForcing", "Gridded", "hmc_file_variable", "OBS", "var_list", "RelHumidity", "var_file_name"],
+          "data_dynamic:gridded:forcing:mnt:folder_name:rel_humidity": ["DataForcing", "Gridded", "hmc_file_variable", "OBS", "var_list", "RelHumidity", "var_folder_name"],
+          "data_dynamic:gridded:forcing:mnt:file_name:inc_radiation": ["DataForcing", "Gridded", "hmc_file_variable", "OBS", "var_list", "IncRadiation", "var_file_name"],
+          "data_dynamic:gridded:forcing:mnt:folder_name:inc_radiation": ["DataForcing", "Gridded", "hmc_file_variable", "OBS", "var_list", "IncRadiation", "var_folder_name"],
+          "data_dynamic:gridded:forcing:mnt:file_name:air_pressure": ["DataForcing", "Gridded", "hmc_file_variable", "OBS", "var_list", "AirPressure", "var_file_name"],
+          "data_dynamic:gridded:forcing:mnt:folder_name:air_pressure": ["DataForcing", "Gridded", "hmc_file_variable", "OBS", "var_list", "AirPressure", "var_folder_name"],
+
+          "data_dynamic:point:forcing:hmc:file_name": ["DataForcing", "Point", "hmc_file_name"],
+          "data_dynamic:point:forcing:hmc:folder_name": ["DataForcing", "Point", "hmc_folder_name"],
+          "data_dynamic:point:forcing:mnt:file_name:discharge": ["DataForcing", "Point", "hmc_file_variable", "OBS", "var_list", "Discharge", "var_file_name"],
+          "data_dynamic:point:forcing:mnt:folder_name:discharge": ["DataForcing", "Point", "hmc_file_variable", "OBS", "var_list", "Discharge", "var_folder_name"],
+
+          "data_dynamic:gridded:outcome:hmc:file_name": ["DataOutcome", "Gridded", "hmc_file_name"],
+          "data_dynamic:gridded:outcome:hmc:folder_name":  ["DataOutcome", "Gridded", "hmc_folder_name"],
+          "data_dynamic:gridded:outcome:mnt:file_name": ["DataOutcome", "Gridded", "hmc_file_variable", "ARCHIVE", "var_list", "ALL", "var_file_name"],
+          "data_dynamic:gridded:outcome:mnt:folder_name": ["DataOutcome", "Gridded", "hmc_file_variable", "ARCHIVE", "var_list", "ALL", "var_folder_name"],
+
+          "data_dynamic:point:outcome:hmc:file_name": ["DataOutcome", "Point", "hmc_file_name"],
+          "data_dynamic:point:outcome:hmc:folder_name": ["DataOutcome", "Point", "hmc_folder_name"],
+          "data_dynamic:point:outcome:mnt:file_name:discharge": ["DataOutcome", "Point", "hmc_file_variable", "ARCHIVE", "var_list", "Discharge", "var_file_name"],
+          "data_dynamic:point:outcome:mnt:folder_name:discharge": ["DataOutcome", "Point", "hmc_file_variable", "ARCHIVE", "var_list", "Discharge", "var_folder_name"],
+          "data_dynamic:point:outcome:mnt:file_name:dam_volume": ["DataOutcome", "Point", "hmc_file_variable", "ARCHIVE", "var_list", "DamV", "var_file_name"],
+          "data_dynamic:point:outcome:mnt:folder_name:dam_volume": ["DataOutcome", "Point", "hmc_file_variable", "ARCHIVE", "var_list", "DamV", "var_folder_name"],
+          "data_dynamic:point:outcome:mnt:file_name:dam_level": ["DataOutcome", "Point", "hmc_file_variable", "ARCHIVE", "var_list", "DamL", "var_file_name"],
+          "data_dynamic:point:outcome:mnt:folder_name:dam_level": ["DataOutcome", "Point", "hmc_file_variable", "ARCHIVE", "var_list", "DamL", "var_folder_name"],
+          "data_dynamic:point:outcome:mnt:file_name:analysis": ["DataOutcome", "Point", "hmc_file_variable", "ARCHIVE", "var_list", "VarAnalysis", "var_file_name"],
+          "data_dynamic:point:outcome:mnt:folder_name:analysis": ["DataOutcome", "Point", "hmc_file_variable", "ARCHIVE", "var_list", "VarAnalysis", "var_folder_name"],
+
+          "data_dynamic:time_series:outcome:hmc:file_name": ["DataOutcome", "TimeSeries", "hmc_file_name"],
+          "data_dynamic:time_series:outcome:hmc:folder_name": ["DataOutcome", "TimeSeries", "hmc_folder_name"],
+          "data_dynamic:time_series:outcome:mnt:file_name:discharge": ["DataOutcome", "TimeSeries", "hmc_file_variable", "ARCHIVE", "var_list", "Discharge", "var_file_name"],
+          "data_dynamic:time_series:outcome:mnt:folder_name:discharge": ["DataOutcome", "TimeSeries", "hmc_file_variable", "ARCHIVE", "var_list", "Discharge", "var_folder_name"],
+          "data_dynamic:time_series:outcome:mnt:file_name:dam_volume": ["DataOutcome", "TimeSeries", "hmc_file_variable", "ARCHIVE", "var_list", "DamV", "var_file_name"],
+          "data_dynamic:time_series:outcome:mnt:folder_name:dam_volume": ["DataOutcome", "TimeSeries", "hmc_file_variable", "ARCHIVE", "var_list", "DamV", "var_folder_name"],
+          "data_dynamic:time_series:outcome:mnt:file_name:dam_level": ["DataOutcome", "TimeSeries", "hmc_file_variable", "ARCHIVE", "var_list", "DamL", "var_file_name"],
+          "data_dynamic:time_series:outcome:mnt:folder_name:dam_level": ["DataOutcome", "TimeSeries", "hmc_file_variable", "ARCHIVE", "var_list", "DamL", "var_folder_name"],
+          "data_dynamic:time_series:outcome:mnt:file_name:analysis": ["DataOutcome", "TimeSeries", "hmc_file_variable", "ARCHIVE", "var_list", "VarAnalysis", "var_file_name"],
+          "data_dynamic:time_series:outcome:mnt:folder_name:analysis": ["DataOutcome", "TimeSeries", "hmc_file_variable", "ARCHIVE", "var_list", "VarAnalysis", "var_folder_name"],
+
+          "data_dynamic:gridded:state:hmc:file_name": ["DataState", "Gridded", "hmc_file_name"],
+          "data_dynamic:gridded:state:hmc:folder_name": ["DataState", "Gridded", "hmc_folder_name"],
+          "data_dynamic:gridded:state:mnt:file_name": ["DataState", "Gridded", "hmc_file_variable", "ARCHIVE", "var_list", "ALL", "var_file_name"],
+          "data_dynamic:gridded:state:mnt:folder_name": ["DataState", "Gridded", "hmc_file_variable", "ARCHIVE", "var_list", "ALL", "var_folder_name"],
+
+          "data_dynamic:point:state:hmc:file_name": ["DataState", "Point", "hmc_file_name"],
+          "data_dynamic:point:state:hmc:folder_name": ["DataState", "Point", "hmc_folder_name"],
+          "data_dynamic:point:state:mnt:file_name": ["DataState", "Point", "hmc_file_variable", "ARCHIVE", "var_list", "ALL", "var_file_name"],
+          "data_dynamic:point:state:mnt:folder_name": ["DataState", "Point", "hmc_file_variable", "ARCHIVE", "var_list", "ALL", "var_folder_name"],
+
+          "data_dynamic:gridded:restart:hmc:file_name": ["DataRestart", "Gridded", "hmc_file_name"],
+          "data_dynamic:gridded:restart:hmc:folder_name": ["DataRestart", "Gridded", "hmc_folder_name"],
+          "data_dynamic:gridded:restart:mnt:file_name": ["DataRestart", "Gridded", "hmc_file_variable", "ARCHIVE", "var_list", "ALL", "var_file_name"],
+          "data_dynamic:gridded:restart:mnt:folder_name": ["DataRestart", "Gridded", "hmc_file_variable", "ARCHIVE", "var_list", "ALL", "var_folder_name"],
+
+          "data_dynamic:point:restart:hmc:file_name": ["DataRestart", "Point", "hmc_file_name"],
+          "data_dynamic:point:restart:hmc:folder_name": ["DataRestart", "Point", "hmc_folder_name"],
+          "data_dynamic:point:restart:mnt:file_name": ["DataRestart", "Point", "hmc_file_variable", "ARCHIVE", "var_list", "ALL", "var_file_name"],
+          "data_dynamic:point:restart:mnt:folder_name": ["DataRestart", "Point", "hmc_file_variable", "ARCHIVE", "var_list", "ALL", "var_folder_name"]
+
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,642 @@
+{
+  "__comment": " ### HMC configuration file - Static and dynamic data settings ###",
+  "Flags": {
+    "__comment": " --- Flags configuration --- ",
+    "cleaning_ancillary_data_static": true,
+    "cleaning_ancillary_data_dynamic_source": true,
+    "cleaning_ancillary_data_dynamic_execution": true,
+    "cleaning_ancillary_data_dynamic_outcome": true,
+    "cleaning_run_execution": false,
+    "cleaning_run_logging": false,
+    "cleaning_run_tmp": false
+  },
+  "DataSummary" : {
+    "__comment": " --- DataSummary configuration --- ",
+    "Collections":    {
+      "hmc_file_frequency"   : "H",
+      "hmc_file_rounding"    : "H",
+      "hmc_file_operation"   : {"merge": null, "split": null, "dump": true, "copy": null, "analyze": null},
+      "hmc_file_period"      : 1,
+      "hmc_file_dims"        : {"T": "time"},
+      "hmc_file_list"        : {
+        "ALL"		      : {
+          "var_file_name"   : "hmc.collections.{dset_datetime_summary}.nc",
+          "var_file_folder" : "/home/fp/mount/model_results/collections/",
+          "var_file_dset"	: "ALL",
+          "var_file_format"	: "netcdf",
+          "var_file_limits"	: null,
+          "var_file_units"  : null
+        }
+      }
+    },
+    "TimeSeries": {
+      "hmc_file_frequency"   : "H",
+      "hmc_file_rounding"    : "H",
+      "hmc_file_operation"   : {"merge": null, "split": null, "dump": true, "copy": null, "analyze": null},
+      "hmc_file_period"      : 1,
+      "hmc_file_dims"        : {"T": "time"},
+      "hmc_file_list"        : {
+        "Discharge"		  : {
+          "var_file_name"   : "hydrograph_{string_var_name_summary_section}_{string_var_name_summary_basin}_{dset_datetime_summary}.json",
+          "var_file_folder" : "/home/fp/mnt/model_results/collections/",
+          "var_file_dset"	: "Discharge",
+          "var_file_format"	: "json_time_series_discharge",
+          "var_file_limits"	: [0, null],
+          "var_file_units"  : "m^3/s"
+        },
+        "DamV"		  : {
+          "var_file_name"   : "damv_{string_var_name_summary_dam}_{dset_datetime_summary}.json",
+          "var_file_folder" : "/home/fp/mnt/model_results/collections/",
+          "var_file_dset"	: "DamV",
+          "var_file_format"	: "json_time_series_dam_volume",
+          "var_file_limits"	: [0, null],
+          "var_file_units"  : "m^3"
+        },
+        "DamL"		  : {
+          "var_file_name"   : "daml_{string_var_name_summary_dam}_{dset_datetime_summary}.json",
+          "var_file_folder" : "/home/fp/mnt/model_results/collections/",
+          "var_file_dset"	: "DamL",
+          "var_file_format"	: "json_time_series_dam_level",
+          "var_file_limits"	: [0, null],
+          "var_file_units"  : "m"
+        }
+      }
+    }
+  },
+  "DataAncillary": {
+    "__comment": " --- DataAncillary configuration --- ",
+    "static": {
+      "hmc_file_name": "hmc.static.workspace",
+      "hmc_file_folder": "/home/fp/app/exec/"
+    },
+    "dynamic_source": {
+      "hmc_file_name": "hmc.dynamic_source.{dset_datetime_ancillary}.workspace",
+      "hmc_file_folder": "/home/fp/app/exec/"
+    },
+    "dynamic_execution": {
+      "hmc_file_name": "hmc.execution.{dset_datetime_ancillary}.workspace",
+      "hmc_file_folder": "/home/fp/app/exec/"
+    },
+    "dynamic_outcome": {
+      "hmc_file_name": "hmc.dynamic_outcome.{dset_datetime_ancillary}.workspace",
+      "hmc_file_folder": "/home/fp/app/exec/"
+    }
+  },
+  "DataGeo"    : {
+    "__comment": " --- DataGeo configuration --- ",
+    "Gridded"     : {
+      "hmc_file_name"     : "{run_domain}.{dset_var_name_geo}.txt" ,
+      "hmc_file_folder"   : "/home/fp/mnt/data_static/gridded/",
+      "hmc_file_format"   : "ascii_grid",
+      "hmc_file_frequency": null,
+      "hmc_file_filter"   : null,
+      "hmc_file_variable" : {
+        "Alpha"                   : {"var_name": "alpha",             "check": true,   "mandatory": false },
+        "Beta"                    : {"var_name": "beta",              "check": true,   "mandatory": false },
+        "Cf"                      : {"var_name": "cf",                "check": true,   "mandatory": false },
+        "Ct"                      : {"var_name": "ct",                "check": true,   "mandatory": false },
+        "Ct_WP"                   : {"var_name": "ct_wp",             "check": true,   "mandatory": false },
+        "Uh"                      : {"var_name": "uh",                "check": true,   "mandatory": false },
+        "Uc"                      : {"var_name": "uc",                "check": true,   "mandatory": false },
+        "Drainage_Area"           : {"var_name": "area",              "check": true,   "mandatory": false },
+        "Channels_Distinction"    : {"var_name": "choice",            "check": true,   "mandatory": false },
+        "Cell_Area"               : {"var_name": "areacell",          "check": true,   "mandatory": false },
+        "Coeff_Resolution"        : {"var_name": "coeffres",          "check": true,   "mandatory": false },
+        "Flow_Directions"         : {"var_name": "pnt",               "check": true,   "mandatory": false },
+        "Partial_Distance"        : {"var_name": "partial_distance",  "check": true,   "mandatory": false },
+        "Vegetation_IA"           : {"var_name": "ia",                "check": true,   "mandatory": false },
+        "Vegetation_Type"         : {"var_name": "cn",                "check": true,   "mandatory": true  },
+        "Terrain"                 : {"var_name": "dem",               "check": true,   "mandatory": true  },
+        "Mask"                    : {"var_name": "mask",              "check": true,   "mandatory": false },
+        "WaterTable_Source"       : {"var_name": "ws",                "check": true,   "mandatory": false },
+        "WaterTable_Deep_Losses"  : {"var_name": "wdl",               "check": true,   "mandatory": false },
+        "Nature"                  : {"var_name": "nature",            "check": true,   "mandatory": false },
+        "Width"                   : {"var_name": "width",             "check": true,   "mandatory": false },
+        "Fracturation"            : {"var_name": "fr",                "check": true,   "mandatory": false },
+        "Flooding_Left_Bank"      : {"var_name": "lfl",               "check": true,   "mandatory": false },
+        "Flooding_Right_Bank"     : {"var_name": "rfl",               "check": true,   "mandatory": false },
+        "Min_Stomata_Resistance"  : {"var_name": "RSmin",             "check": true,   "mandatory": false },
+        "Vegetation_Height"       : {"var_name": "Hveg",              "check": true,   "mandatory": false },
+        "Coeff_Resistance_Canopy" : {"var_name": "Gd",                "check": true,   "mandatory": false },
+        "Bare_Soil"               : {"var_name": "BareSoil",          "check": true,   "mandatory": false },
+        "Watertable_Volume_Max"   : {"var_name": "wt_max",            "check": true,   "mandatory": false },
+        "Longitude"               : {"var_name": "lon",               "check": true,   "mandatory": true  },
+        "Latitude"                : {"var_name": "lat",               "check": true,   "mandatory": true  }
+      }
+    },
+    "Point": {
+      "hmc_file_name"     : "{run_domain}.info_{dset_var_name_geo}.txt",
+      "hmc_file_folder"   : "/home/fp/mnt/data_static/point/",
+      "hmc_file_format"   : "ascii_point",
+      "hmc_file_frequency": null,
+      "hmc_file_filter"   : null,
+      "hmc_file_variable" : {
+        "Dam"                   : {"var_name": "dam",               "check": true,   "mandatory": false  },
+        "Intake"                : {"var_name": "intake",            "check": true,   "mandatory": true  },
+        "Joint"                 : {"var_name": "joint",             "check": true,   "mandatory": false },
+        "Lake"                  : {"var_name": "lake",              "check": true,   "mandatory": false },
+        "Section"               : {"var_name": "section",           "check": true,   "mandatory": true  }
+      }
+    },
+    "Shapefile": {
+      "hmc_file_name"     : null,
+      "hmc_file_folder"   : null,
+      "hmc_file_format"   : "shapefile",
+      "hmc_file_frequency": null,
+      "hmc_file_filter"   : {"DOMAIN": null},
+      "hmc_file_variable" : {
+        "Section"               : {"var_name": "section",           "check": true,   "mandatory": true }
+      }
+    }
+  },
+  "DataForcing" : {
+    "__comment": " --- DataForcing configuration --- ",
+    "Gridded"     : {
+      "hmc_file_name"     : "hmc.forcing-grid.{dset_datetime_hmc}.nc.gz",
+      "hmc_file_folder"   : "/home/fp/app/data_dynamic/gridded/{dset_sub_path_hmc}",
+      "hmc_file_format"   : "netcdf",
+      "hmc_file_frequency": "H",
+      "hmc_file_variable" : {
+        "OBS"             : {
+          "var_frequency"   : "H",
+          "var_rounding"    : "H",
+          "var_operation"   : {"merge": false, "split": false, "dump": false, "copy": true, "analyze": true},
+          "var_period"      : 1,
+          "var_dims"        : {"X": "west_east", "Y": "south_north"},
+          "var_list"         : {
+            "Rain"            : {
+              "var_file_name"   : "hmc.forcing-grid.{dset_datetime_forcing_obs}.nc.gz",
+              "var_file_folder" : "/home/fp/mnt/data_dynamic/gridded/{dset_sub_path_forcing_obs}",
+              "var_file_dset"	: "Rain",
+              "var_file_format"	: "netcdf",
+              "var_file_limits"	: [0, null],
+              "var_file_units"  : "mm"
+            },
+            "AirTemperature"  : {
+              "var_file_name"   : "hmc.forcing-grid.{dset_datetime_forcing_obs}.nc.gz",
+              "var_file_folder" : "/home/fp/mnt/data_dynamic/gridded/{dset_sub_path_forcing_obs}",
+              "var_file_dset"	: "Air_Temperature",
+              "var_file_format"	: "netcdf",
+              "var_file_limits"	: [-20, 40],
+              "var_file_units"  : "C"
+            },
+            "Wind"            : {
+              "var_file_name"   : "hmc.forcing-grid.{dset_datetime_forcing_obs}.nc.gz",
+              "var_file_folder" : "/home/fp/mnt/data_dynamic/gridded/{dset_sub_path_forcing_obs}",
+              "var_file_dset"	: "Wind",
+              "var_file_format"	: "netcdf",
+              "var_file_limits"	: [0, 10],
+              "var_file_units"  : "m/s"
+            },
+            "RelHumidity"     : {
+              "var_file_name"   : "hmc.forcing-grid.{dset_datetime_forcing_obs}.nc.gz",
+              "var_file_folder" : "/home/fp/mnt/data_dynamic/gridded/{dset_sub_path_forcing_obs}",
+              "var_file_dset"   : "Relative_Humidity",
+              "var_file_format"	: "netcdf",
+              "var_file_limits"	: [0, 100],
+              "var_file_units"  : "%"
+            },
+            "IncRadiation"	  : {
+              "var_file_name"   : "hmc.forcing-grid.{dset_datetime_forcing_obs}.nc.gz",
+              "var_file_folder" : "/home/fp/mnt/data_dynamic/gridded/{dset_sub_path_forcing_obs}",
+              "var_file_dset"	: "Incoming_Radiation",
+              "var_file_format"	: "netcdf",
+              "var_file_limits"	: [-100, 1200],
+              "var_file_units"  : "W^2/m"
+            },
+            "AirPressure"	  : {
+              "var_file_name"   : "hmc.forcing-grid.{dset_datetime_forcing_obs}.nc.gz",
+              "var_file_folder" : "/home/fp/mnt/data_dynamic/gridded/{dset_sub_path_forcing_obs}",
+              "var_file_dset"	: "AirPressure",
+              "var_file_format"	: "netcdf",
+              "var_file_limits"	: [1010.0, 1020.0],
+              "var_file_units"  : "hPa"
+            }
+          }
+        },
+        "FOR"	          : {
+          "var_frequency"   : "H",
+          "var_rounding"    : "D",
+          "var_operation"   : {"merge": true, "split": true, "dump": true, "copy": false, "analyze": true},
+          "var_period"      : 86,
+          "var_dims"        : {"X": "west_east", "Y": "south_north", "time" :"time"},
+          "var_list"        : {
+            "Rain"            : {
+              "var_file_name"   : null,
+              "var_file_folder" : null,
+              "var_file_dset"	: "Rain",
+              "var_file_format"	: "netcdf",
+              "var_file_limits"	: [0, null],
+              "var_file_units"  : "mm"
+            },
+            "AirTemperature"  : {
+              "var_file_name"   : null,
+              "var_file_folder" : null,
+              "var_file_dset"	: "Air_Temperature",
+              "var_file_format"	: "netcdf",
+              "var_file_limits"	: [-20, 40],
+              "var_file_units"  : "C"
+            },
+            "Wind"			  : {
+              "var_file_name"   : null,
+              "var_file_folder" : null,
+              "var_file_dset"	: "Wind",
+              "var_file_format"	: "netcdf",
+              "var_file_limits"	: [0, 10],
+              "var_file_units"  : "m/s"
+            },
+            "RelHumidity"	  : {
+              "var_file_name"   : null,
+              "var_file_folder" : null,
+              "var_file_dset"	: "Relative_Humidity",
+              "var_file_format"	: "netcdf",
+              "var_file_limits"	: [0, 100],
+              "var_file_units"  : "%"
+            },
+            "IncRadiation"	  : {
+              "var_file_name"   : null,
+              "var_file_folder" : null,
+              "var_file_dset"	: "Incoming_Radiation",
+              "var_file_format"	: "netcdf",
+              "var_file_limits"	: [-100, 1200],
+              "var_file_units"  : "W^2/m"
+            },
+            "AirPressure"	  : {
+              "var_file_name"   : null,
+              "var_file_folder" : null,
+              "var_file_dset"	: "Air_Pressure",
+              "var_file_format"	: "netcdf",
+              "var_file_limits"	: [1010.0, 1020.0],
+              "var_file_units"  : "hPa"
+            }
+          }
+        }
+      }
+    },
+    "Point"       : {
+      "hmc_file_name"     : "hmc.{dset_var_name_forcing_point}.{dset_datetime_hmc}.txt",
+      "hmc_file_folder"   : "/home/fp/app/data_dynamic/point/{dset_sub_path_hmc}",
+      "hmc_file_format"   : "ascii",
+      "hmc_file_frequency": "H",
+      "hmc_file_variable" : {
+        "OBS"       	  : {
+          "var_frequency"   : "H",
+          "var_rounding"    : "H",
+          "var_operation"   : {"merge": null, "split": null, "dump": false, "copy": true, "analyze": true},
+          "var_period"      : 1,
+          "var_dims"        : {"T": "time"},
+          "var_list"        : {
+            "Discharge"		  : {
+              "var_file_name"   : "rs.db.{dset_datetime_forcing_obs}.txt",
+              "var_file_folder" : "/home/fp/mnt/data_dynamic/point/{dset_sub_path_forcing_obs}",
+              "var_file_dset"	: "discharge",
+              "var_file_format"	: "ascii_point",
+              "var_file_limits"	: [0, null],
+              "var_file_units"  : "m/s"
+            },
+            "DamV"            : {
+              "var_file_name"   : null,
+              "var_file_folder" : null,
+              "var_file_dset"	: "damv",
+              "var_file_format"	: "ascii_point",
+              "var_file_limits"	: [0, null],
+              "var_file_units"  : "m^3"
+            },
+            "DamL"			  : {
+              "var_file_name"   : null,
+              "var_file_folder" : null,
+              "var_file_dset"	: "daml",
+              "var_file_format"	: "ascii_point",
+              "var_file_limits"	: [0, null],
+              "var_file_units"  : "m"
+            }
+          }
+        },
+        "FOR" 	  	  : {}
+      }
+    },
+    "TimeSeries"  : {
+      "hmc_file_name"     : "hmc.forcing-ts.plant_{dset_var_name_forcing_ts_plant}.txt",
+      "hmc_file_folder"	  : "/home/fp/app/data_dynamic/time_series/",
+      "hmc_file_format"	  : "ascii",
+      "hmc_file_frequency": "H",
+      "hmc_file_variable" : {
+        "OBS" 	          : {
+          "var_frequency"   : "H",
+          "var_rounding"    : "H",
+          "var_operation"   : {"merge": null, "split": null, "dump": false, "copy": true, "analyze": true},
+          "var_period"      : null,
+          "var_dims"        : {"T": "time"},
+          "var_list"        : {
+            "DamQ"			  : {
+              "var_file_name"   : null,
+              "var_file_folder" : null,
+              "var_file_dset"	: "",
+              "var_file_format"	: "ascii_time_series",
+              "var_file_limits"	: [0, null],
+              "var_file_units"  : "m^3/s"
+            },
+            "IntakeQ"		  : {
+              "var_file_name"   : null,
+              "var_file_folder" : null,
+              "var_file_dset"	: "",
+              "var_file_format"	: "ascii_time_series",
+              "var_file_limits"	: [0, null],
+              "var_file_units"  : "m^3/s"
+            }
+          }
+        },
+        "FOR" 	  	      : {}
+      }
+    }
+  },
+  "DataUpdating": {
+    "__comment": " --- DataUpdating configuration --- ",
+    "Gridded"	  : {
+      "hmc_file_name"     : "hmc.forcing-grid.{dset_datetime_hmc}.nc.gz",
+      "hmc_file_folder"	  : "/home/fp/app/data_dynamic/gridded/{dset_sub_path_hmc}",
+      "hmc_file_format"	  : "netcdf",
+      "hmc_file_frequency": "H",
+      "hmc_file_variable" : {
+        "OBS"		      : {
+          "var_frequency"   : "H",
+          "var_rounding"    : "H",
+          "var_operation"   : {"merge": true, "split": false, "dump": true, "copy": false, "analyze": true},
+          "var_period"      : 1,
+          "var_dims"        : {"X": "west_east", "Y": "south_north"},
+          "var_list"        : {
+            "SnowHeight"	  : {
+              "__comment": "snow height datasets by observed measurements [example: ws.db.{dset_datetime_forcing_obs}.nc.gz]",
+              "var_file_name"   : null,
+              "var_file_folder" : null,
+              "var_file_dset"	: "SnowLevel",
+              "var_file_format"	: "netcdf",
+              "var_file_limits"	: [0, null],
+              "var_file_units"  : "cm"
+            },
+            "SnowKernel"      : {
+              "__comment": "snow kernel datasets by observed measurements [example: ws.db.{dset_datetime_forcing_obs}.nc.gz]",
+              "var_file_name"   : null,
+              "var_file_folder" : null,
+              "var_file_dset"	: "SnowKernel",
+              "var_file_format"	: "netcdf",
+              "var_file_limits"	: [0, 1],
+              "var_file_units"  : "-"
+            },
+            "SnowCoverArea"	  : {
+              "__comment": "snow cover datasets [example: MOD10A1.005_marche_{dset_datetime_forcing_obs}.nc.gz]",
+              "var_file_name"   : null,
+              "var_file_folder" : null,
+              "var_file_dset"	: "snow_cover_daily",
+              "var_file_format"	: "netcdf",
+              "var_file_limits"	: [0, 4],
+              "var_file_units"  : "-"
+            },
+            "SnowQualityArea" : {
+              "__comment": "snow quality datasets [example: MOD10A1.005_marche_{dset_datetime_forcing_obs}.nc.gz]",
+              "var_file_name"   : null,
+              "var_file_folder" : null,
+              "var_file_dset"	: "snow_spatial_qa_filter",
+              "var_file_format"	: "netcdf",
+              "var_file_limits"	: [null, null],
+              "var_file_units"  : "-"
+            }
+          }
+        },
+        "FOR" 	  	      : {}
+      }
+    }
+  },
+  "DataOutcome" : {
+    "__comment": " --- DataOutcome configuration --- ",
+    "Gridded"	  : {
+      "hmc_file_name"     : "hmc.output-grid.{dset_datetime_hmc}.nc.gz",
+      "hmc_file_folder"	  : "/home/fp/app/model_results/gridded/{dset_sub_path_hmc}",
+      "hmc_file_format"	  : "netcdf",
+      "hmc_file_frequency": "H",
+      "hmc_file_variable" : {
+        "ARCHIVE"	      : {
+          "var_frequency"   : "H",
+          "var_rounding"    : "H",
+          "var_operation"   : {"merge": null, "split": null, "dump": false, "copy": true, "analyze": true},
+          "var_period"      : 1,
+          "var_dims"        : {"X": "west_east", "Y": "south_north"},
+          "var_list"        : {
+            "ALL"			  : {
+              "var_file_name"   : "hmc.output-grid.{dset_datetime_hmc}.nc.gz",
+              "var_file_folder" : "/home/fp/mnt/model_results/gridded/",
+              "var_file_dset"	: "ALL",
+              "var_file_format"	: "netcdf",
+              "var_file_limits"	: [null, null],
+              "var_file_units"  : null
+            }
+          }
+        }
+      }
+    },
+    "Point"		  : {
+      "hmc_file_name"     : "hmc.{dset_var_name_outcome_point}.{dset_datetime_hmc}.txt",
+      "hmc_file_folder"	  : "/home/fp/app/model_results/point/{dset_sub_path_hmc}",
+      "hmc_file_format"	  : "ascii_point",
+      "hmc_file_frequency": "H",
+      "hmc_file_variable" : {
+        "ARCHIVE"	      : {
+          "var_frequency"   : "H",
+          "var_rounding"    : "H",
+          "var_operation"   : {"merge": null, "split": null, "dump": false, "copy": true, "analyze": true},
+          "var_period"      : 1,
+          "var_dims"        : {"T": "time"},
+          "var_list"        : {
+            "Discharge"	      : {
+              "var_file_name"   : "hmc.{dset_var_name_outcome_point}.{dset_datetime_outcome}.txt",
+              "var_file_folder" : "/home/fp/mnt/model_results/point/discharge/",
+              "var_file_dset"	: "discharge",
+              "var_file_format"	: "ascii_point",
+              "var_file_limits"	: [0, null],
+              "var_file_units"  : "m^3/s"
+            },
+            "DamV"			  : {
+              "var_file_name"   : "hmc.{dset_var_name_outcome_point}.{dset_datetime_outcome}.txt",
+              "var_file_folder" : "/home/fp/mnt/model_results/point/dam_volume/",
+              "var_file_dset"	: "vdam",
+              "var_file_format"	: "ascii_point",
+              "var_file_limits"	: [0, null],
+              "var_file_units"  : "m^3"
+            },
+            "DamL"	          : {
+              "var_file_name"   : "hmc.{dset_var_name_outcome_point}.{dset_datetime_outcome}.txt",
+              "var_file_folder" : "/home/fp/mnt/model_results/point/dam_level/",
+              "var_file_dset"	: "ldam",
+              "var_file_format"	: "ascii_point",
+              "var_file_limits"	: [0, null],
+              "var_file_units"  : "m"
+            },
+            "VarAnalysis"	  : {
+              "var_file_name"   : "hmc.{dset_var_name_outcome_point}.{dset_datetime_outcome}.txt",
+              "var_file_folder" : "/home/fp/mnt/model_results/point/analysis/",
+              "var_file_dset"	: "var-analysis",
+              "var_file_format"	: "ascii_point",
+              "var_file_limits"	: [null, null],
+              "var_file_units"  : null
+            }
+          }
+        }
+      }
+    },
+    "TimeSeries"  : {
+      "hmc_file_name"     : "hmc.{dset_var_name_outcome_ts}.txt",
+      "hmc_file_folder"   : "/home/fp/app/model_results/time_series/",
+      "hmc_file_format"	  : "ascii_time_series",
+      "hmc_file_frequency": "H",
+      "hmc_file_variable" : {
+        "ARCHIVE"	      : {
+          "var_frequency"   : "H",
+          "var_rounding"    : "H",
+          "var_operation"   : {"merge": null, "split": null, "dump": false, "copy": true, "analyze": false},
+          "var_period"      : 1,
+          "var_dims"        : {"T": "time"},
+          "var_list"        : {
+            "Discharge"		  : {
+              "var_file_name"   : "hmc.hydrograph.txt",
+              "var_file_folder" : "/home/fp/mnt/model_results/time_series/",
+              "var_file_dset"	: "hydrograph",
+              "var_file_format"	: "ascii_time_series",
+              "var_file_limits"	: [0, null],
+              "var_file_units"  : "m^3/s"
+            },
+            "DamV"		      : {
+              "var_file_name"   : "hmc.vdam.txt",
+              "var_file_folder" : "/home/fp/mnt/model_results/time_series/",
+              "var_file_dset"	: "vdam",
+              "var_file_format"	: "ascii_time_series",
+              "var_file_limits"	: [0, null],
+              "var_file_units"  : "m^3"
+            },
+            "DamL"			  : {
+              "var_file_name"   : "hmc.ldam.txt",
+              "var_file_folder" : "/home/fp/mnt/model_results/time_series/",
+              "var_file_dset"	: "ldam",
+              "var_file_format"	: "ascii_time_series",
+              "var_file_limits"	: [0, null],
+              "var_file_units"  : "m"
+            },
+            "VarAnalysis"	  : {
+              "var_file_name"   : "hmc.var-analysis.txt",
+              "var_file_folder" : "/home/fp/mnt/model_results/time_series/",
+              "var_file_dset"	: "var-analysis",
+              "var_file_format"	: "ascii_time_series",
+              "var_file_limits"	: [null, null],
+              "var_file_units"  : null
+            }
+          }
+        }
+      }
+    } 
+  },
+  "DataState"   : {
+    "__comment": " --- DataState configuration [TAGS: $yyyy, $mm, $dd, $HH, %RUN, $VAR, $MODE] --- ",
+    "Gridded"	  : {
+      "hmc_file_name"     : "hmc.state-grid.{dset_datetime_hmc}.nc.gz",
+      "hmc_file_folder"   : "/home/fp/app/model_state/gridded/{dset_sub_path_hmc}",
+      "hmc_file_format"	  : "netcdf",
+      "hmc_file_frequency": "D",
+      "hmc_file_variable" : {
+        "ARCHIVE"	      : {
+          "var_frequency"   : "D",
+          "var_rounding"    : "D",
+          "var_operation"   : {"merge": null, "split": null, "dump": false, "copy": true, "analyze": false},
+          "var_period"      : 1,
+          "var_dims"        : {"X": "west_east", "Y": "south_north"},
+          "var_list"        : {
+            "ALL"			  : {
+              "var_file_name"   : "hmc.state-grid.{dset_datetime_state}.nc.gz",
+              "var_file_folder" : "/home/fp/mnt/model_state/gridded/{dset_sub_path_state}/",
+              "var_file_dset"	: "ALL",
+              "var_file_format"	: "netcdf",
+              "var_file_limits"	: [null, null],
+              "var_file_units"  : null
+            }
+          }
+        }
+      }
+    },
+	"Point"		  : {
+      "hmc_file_name"     : "hmc.state-point.{dset_datetime_hmc}.txt",
+      "hmc_file_folder"	  : "/home/fp/app/model_state/point/{dset_sub_path_hmc}",
+      "hmc_file_format"	  : "ascii_point",
+      "hmc_file_frequency": "D",
+      "hmc_file_variable" : {
+        "ARCHIVE"         : {
+          "var_frequency"   : "D",
+          "var_rounding"    : "D",
+          "var_operation"   : {"merge": null, "split": null, "dump": false, "copy": true, "analyze": false},
+          "var_period"      : 1,
+          "var_dims"        : {"T": "time"},
+          "var_list"        : {
+            "ALL"			  : {
+              "var_file_name"   : "hmc.state-point.{dset_datetime_state}.txt",
+              "var_file_folder" : "/home/fp/mnt/model_state/point/{dset_sub_path_state}/",
+              "var_file_dset"	: "ALL",
+              "var_file_format"	: "ascii_point",
+              "var_file_limits"	: [null, null],
+              "var_file_units"  : null
+            }
+          }
+        }
+      }
+    }
+  },
+  "DataRestart" : {
+    "__comment": " --- DataRestart configuration --- ",
+    "Gridded"	  : {
+      "hmc_file_name" 	  : "hmc.state-grid.{dset_datetime_hmc}.nc.gz",
+      "hmc_file_folder"	  : "/home/fp/app/model_restart/",
+      "hmc_file_format"	  : "netcdf",
+      "hmc_file_frequency": "D",
+      "hmc_file_variable" : {
+        "ARCHIVE"         : {
+          "var_frequency"   : "D",
+          "var_rounding"    : "D",
+          "var_operation"   : {"merge": null, "split": null, "dump": false, "copy": true, "analyze": true},
+          "var_period"      : 1,
+          "var_dims"        : {"X": "west_east", "Y": "south_north"},
+          "var_list"        : {
+            "ALL"			  : {
+              "var_file_name"   : "hmc.state-grid.{dset_datetime_restart}.nc.gz",
+              "var_file_folder" : "/home/fp/mnt/model_restart/gridded/",
+              "var_file_dset"	: "ALL",
+              "var_file_format"	: "netcdf",
+              "var_file_limits"	: [null, null],
+              "var_file_units"  : null
+            }
+          }
+        }
+      }
+    },
+    "Point"	      : {
+      "hmc_file_name"     : "hmc.state-point.{dset_datetime_hmc}.txt",
+      "hmc_file_folder"	  : "/home/fp/app/model_restart/",
+      "hmc_file_format"	  : "ascii_point",
+      "hmc_file_frequency": "D",
+      "hmc_file_variable" : {
+        "ARCHIVE"	      : {
+          "var_frequency"   : "D",
+          "var_rounding"    : "D",
+          "var_operation"   : {"merge": null, "split": null, "dump": false, "copy": true, "analyze": true},
+          "var_period"      : 1,
+          "var_dims"        : {"T": "time"},
+          "var_list"        : {
+            "ALL"			  : {
+              "var_file_name"   : "hmc.state-point.{dset_datetime_restart}.txt",
+              "var_file_folder" : "/home/fp/mnt/model_restart/point/",
+              "var_file_dset"	: "ALL",
+              "var_file_format"	: "ascii_point",
+              "var_file_limits"	: [null, null],
+              "var_file_units"  : null
+            }
+          }
+        }
+      }
+    }
+  }
+}
