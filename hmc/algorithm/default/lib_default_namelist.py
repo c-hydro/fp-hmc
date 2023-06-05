@@ -24,6 +24,10 @@ link_namelist_default = dict(
         'dWTableHbr': {'algorithm': ['HMC_Info', 'hmc_parameters', 'wtable_hbr']},
         'dKSatRatio': {'algorithm': ['HMC_Info', 'hmc_parameters', 'ksat_ratio']},
         'dSlopeMax': {'algorithm': ['HMC_Info', 'hmc_parameters', 'slope_max']},
+        'dSoil_ksat_infilt': {['HMC_Info', 'hmc_parameters', 'soil_ksat_infilt']},
+        'dSoil_ksat_drain': {['HMC_Info', 'hmc_parameters', 'soil_ksat_drain']},
+        'dSoil_vmax': {['HMC_Info', 'hmc_parameters', 'soil_vmax']},
+        'dWtable_ksath': {['HMC_Info', 'hmc_parameters', 'wtable_ksath']},
         'sDomainName': {'algorithm': ['Run_Info', 'run_type', 'run_domain']},
     },
 
@@ -63,6 +67,10 @@ link_namelist_default = dict(
         'iFlagDynVeg': {'algorithm': ['HMC_Info', 'hmc_flags', 'flag_phys_dynamic_vegetation']},
         'iFlagFlood': {'algorithm': ['HMC_Info', 'hmc_flags', 'flag_phys_flooding']},
         'iFlagEnergyBalance': {'algorithm': ['HMC_Info', 'hmc_flags', 'flag_phys_energy_balance']},
+
+        'iFlagSoilParamsType': {'algorithm': ['HMC_Info', 'hmc_flags', 'flag_phys_soil_parameters_type']},
+        'iFlagInfiltRateVariable': {'algorithm': ['HMC_Info', 'hmc_flags', 'flag_phys_infiltration_rate_type']},
+        'iFlagETReductionType': {'algorithm': ['HMC_Info', 'hmc_flags', 'flag_phys_et_reduction_model']},
 
         'a1dGeoForcing': [-9999.0, -9999.0],
         'a1dResForcing': [-9999.0, -9999.0],
@@ -126,7 +134,7 @@ link_namelist_default = dict(
     },
 
     HMC_Constants={
-        'a1dAlbedoMonthly': [0.18,  0.17, 0.16,  0.15,  0.15,  0.15,  0.15,  0.16,  0.16,  0.17,  0.17,  0.18],
+        'a1dAlbedoMonthly': {'algorithm': ['HMC_Info', 'hmc_phys_parametrization', 'monthly_albedo']},
         'a1dLAIMonthly': [4.00,  4.00, 4.00,  4.00,  4.00,  4.00,  4.00,  4.00,  4.00,  4.00,  4.00,  4.00],
 
         'dWTableHMin': 10.0,
@@ -135,7 +143,7 @@ link_namelist_default = dict(
         'dWTableSlopeBM': 0.08,
         'dWTableHOBedRock': 25.0,
 
-        'dRateMin': 0.01,
+        'dRateMin': {'algorithm': ['HMC_Info', 'hmc_phys_parametrization', 'min_hypodermic_flow_ratio']},
         'dBc': 0.5,
 
         'dTRef': 273.15,
@@ -168,6 +176,8 @@ link_namelist_default = dict(
         'dWTLossMax': {'algorithm': ['HMC_Info', 'hmc_phys_parametrization', 'phys_water_table_maximum_losses']},
 
         'dSMGain': 0.45,
+
+        'dPowVarInfiltRate': {'algorithm': ['HMC_Info', 'hmc_phys_parametrization', 'phys_decay_parameter_for_infiltration_rate']},
     },
 
     HMC_Command={
@@ -200,6 +210,10 @@ structure_namelist_default = dict(
         'dKSatRatio': 1,
         'dSlopeMax': 70,
         'sDomainName': "default",
+        'dSoil_ksat_infilt': 3.5,
+        'dSoil_ksat_drain': 3.5,
+        'dSoil_vmax': 500,
+        'dWtable_ksath': 1
 
     },
 
@@ -239,6 +253,10 @@ structure_namelist_default = dict(
         'iFlagDynVeg': 0,
         'iFlagFlood': 0,
         'iFlagEnergyBalance': 1,
+
+        'iFlagSoilParamsType': 0,
+        'iFlagInfiltRateVariable': 1,
+        'iFlagETReductionType': 1,
 
         'a1dGeoForcing': [-9999.0, -9999.0],
         'a1dResForcing': [-9999.0, -9999.0],
@@ -344,6 +362,8 @@ structure_namelist_default = dict(
         'dWTLossMax': 0.25,
 
         'dSMGain': 0.45,
+
+        'dPowVarInfiltRate' : 7
     },
 
     HMC_Command={
