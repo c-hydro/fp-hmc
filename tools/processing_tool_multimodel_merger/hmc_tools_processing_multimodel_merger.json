@@ -1,0 +1,38 @@
+{
+  "algorithm": {
+    "domain": "belize",
+    "general": {
+      "title": "Multimodel merger",
+      "web-site": "",
+      "source": "Python library developed by CIMA Research Foundation",
+      "history": "1.0.0 [20230919]",
+      "project-info": "HMC",
+      "algorithm": "Postprocessing tool developed by CIMA Research Foundation"
+    },
+    "template": {
+      "input_subpath_time": "%Y/%m/%d/",
+      "output_subpath_time": "%Y/%m/%d/%H",
+      "output_file_time": "%Y%m%d%H%M"
+    }
+  },
+  "data": {
+    "static": {
+      "section_file": "/home/andrea/Projects/CIMH_Belize/caso_studio/belize.info_section.txt"
+    },
+    "dynamic": {
+      "model_output": {
+        "wrf_test3": "/mnt/storage/idrologia/fp_belize/archive/nwp_wrf-det/belize/{output_subpath_time}/outcome/collections/deterministic/",
+        "wrf_test1": "/mnt/storage/idrologia/fp_belize/archive/nwp_wrf-test1-det/belize/{output_subpath_time}/outcome/collections/deterministic/",
+        "hrrr": "/mnt/storage/idrologia/fp_belize/archive/nwp_hrrr-det/belize/{output_subpath_time}/outcome/collections/deterministic/",
+        "gfs": "/mnt/storage/idrologia/fp_belize/archive/nwp_gfs-det/belize/{output_subpath_time}/outcome/collections/deterministic/"
+      },
+      "outcome": {
+        "folder": "/mnt/storage/idrologia/fp_belize/archive/nwp_wrf-det/belize/{output_subpath_time}/outcome/collections/deterministic/"
+    }
+    },
+    "log": {
+      "filename": "merge_multimodel.txt",
+      "folder": "/home/andrea/Desktop/hrrrr/"
+    }
+  }
+}
