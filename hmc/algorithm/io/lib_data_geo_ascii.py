@@ -104,7 +104,7 @@ def write_data_point_section(file_name, file_data, file_cols_expected=11, file_n
 
 # -------------------------------------------------------------------------------------
 # Method to read file point section(s)
-def read_data_point_section(file_name, section_cols_expected=9):
+def read_data_point_section(file_name, section_cols_expected=11):
 
     file_handle = open(file_name, 'r')
     file_lines = file_handle.readlines()
