@@ -14,6 +14,7 @@ Version 3.1.5 (20221130)
 - Add the check to control the datasets (mandatory or not mandatory) before running the model;
 - Add the tool for merging datasets of different domains into a unique domain;
 - Add the tool for merging collections from different deterministic modelling chains;
+- Add the tool for merging multiple deterministic runs
 - Extend the hmc tool for converting time-series adding the dam volume datasets;
 - Extend the hmc tool for merging gridded sources (continuum, qt and s3m datasets) and the expected data format for input (netcdf, tiff) and output (netcdf, tiff);
 - Extend the hmc tool for preprocessing gridded sources adding the restart datasets in binary format;

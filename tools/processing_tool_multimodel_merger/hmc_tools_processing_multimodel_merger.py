@@ -34,8 +34,6 @@ alg_version = '1.0.0'
 alg_release = '2023-09-19'
 # Algorithm parameter(s)
 time_format = '%Y%m%d%H%M'
-
-
 # -------------------------------------------------------------------------------------
 # Script main
 
@@ -137,7 +135,7 @@ def main():
             with open(file_path, 'w') as f:
                 f.write('{')
                 for key in collections[section].keys():
-                    if key != "time_series_discharge_simulated" and key != "time_period":
+                    if "time_series" not in key and key != "time_period":
                         f.write('\n"' + key + '": "' + str(collections[section][key]) + '",')
                 for model in data_settings["data"]["dynamic"]["model_output"].keys():
                     f.write('\n"time_series_discharge_simulated-' + model + '": "')
