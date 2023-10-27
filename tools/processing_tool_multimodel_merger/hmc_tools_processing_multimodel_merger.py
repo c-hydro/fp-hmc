@@ -3,14 +3,15 @@
 """
 HMC tools - Merge multimodel results
 
-__date__ = '20230919'
-__version__ = '1.0.0'
+__date__ = '20231027'
+__version__ = '1.0.1'
 __author__ = 'Andrea Libertino (andrea.libertino@cimafoundation.org')
 __library__ = 'HMC'
 
 General command line:
 python3 HMC_calibration -settings_file "hmc_tools_multimodel_merger.py" -time "HHHH-MM-DD HH:MM"
 
+20230919 (1.0.1) -->    Add support possibility of providing domain as input argument
 20230919 (1.0.0) -->    Beta release
 """
 # -------------------------------------------------------------------------------------
@@ -30,8 +31,8 @@ import numpy as np
 
 # Algorithm information
 alg_name = 'HMC tools - Merge multimodel results'
-alg_version = '1.0.0'
-alg_release = '2023-09-19'
+alg_version = '1.0.1'
+alg_release = '2023-10-27'
 # Algorithm parameter(s)
 time_format = '%Y%m%d%H%M'
 # -------------------------------------------------------------------------------------
@@ -40,16 +41,18 @@ time_format = '%Y%m%d%H%M'
 def main():
     # -------------------------------------------------------------------------------------
     # Get algorithm settings
-    alg_settings, alg_time = get_args()
+    alg_settings, alg_time, alg_domain = get_args()
 
     # Set algorithm settings
     data_settings = read_file_json(alg_settings)
-    domain = data_settings["algorithm"]["domain"]
+    if alg_domain is None:
+        domain = data_settings["algorithm"]["domain"]
+    else:
+        domain = alg_domain
 
     # Set algorithm logging
     os.makedirs(data_settings['data']['log']['folder'], exist_ok=True)
-    set_logging(
-        logger_file=os.path.join(data_settings['data']['log']['folder'], data_settings['data']['log']['filename']))
+    set_logging(logger_file=os.path.join(data_settings['data']['log']['folder'], data_settings['data']['log']['filename']).format(domain=domain))
 
     # -------------------------------------------------------------------------------------
 
@@ -67,7 +70,7 @@ def main():
 
     logging.info(" --> Make folders...")
     template_filled = fill_template(data_settings["algorithm"]["template"], time_run)
-    template_filled["domain"] = data_settings["algorithm"]["domain"]
+    template_filled["domain"] = domain
     outcome_fld = data_settings["data"]["dynamic"]["outcome"]["folder"].format(**template_filled)
     os.makedirs(outcome_fld, exist_ok=True)
     # -------------------------------------------------------------------------------------
@@ -75,12 +78,14 @@ def main():
     # -------------------------------------------------------------------------------------
     # Read static data
     logging.info(" --> Read static data...")
-    sections = read_section(section_file=data_settings["data"]["static"]["section_file"])
+    section_file = data_settings["data"]["static"]["section_file"].format(**template_filled)
+    sections = read_section(section_file=section_file)
     # -------------------------------------------------------------------------------------
 
     # -------------------------------------------------------------------------------------
     # Read model outputs
     logging.info(" --> Read model outputs...")
+    missing_series = False
     results = {}
     collections = {}
 
@@ -97,6 +102,7 @@ def main():
             except FileNotFoundError:
                 logging.warning(" ----> File not found for section " + section + " and basin " + basin)
                 series = None
+                missing_series = True
 
             if series is not None:
                 # If this is the first model, create the dataframe for the section
@@ -153,12 +159,21 @@ def main():
     # Info algorithm
     time_elapsed = round(time.time() - start_time, 1)
 
+    if missing_series:
+        if data_settings["algorithm"]["flags"]["exit_with_error_if_missing_series"]:
+            logging.warning("--> WARNING! Some series are missing! Exit with error!")
+        else:
+            logging.warning("--> WARNING! Some series are missing but the script run succesful!")
+
     logging.info(' ')
     logging.info(' ==> ' + alg_name + ' (Version: ' + alg_version + ' Release_Date: ' + alg_release + ')')
     logging.info(' ==> TIME ELAPSED: ' + str(time_elapsed) + ' seconds')
     logging.info(' ==> ... END')
     logging.info(' ==> Bye, Bye')
     logging.info(' ============================================================================ ')
+
+    if missing_series is True and data_settings["algorithm"]["flags"]["exit_with_error_if_missing_series"] is True:
+        sys.exit(1)
     # -------------------------------------------------------------------------------------
 
 # -------------------------------------------------------------------------------------
@@ -198,6 +213,7 @@ def get_args():
     parser_handle = ArgumentParser()
     parser_handle.add_argument('-settings_file', action="store", dest="alg_settings")
     parser_handle.add_argument('-time', action="store", dest="alg_time")
+    parser_handle.add_argument('-domain', action="store", dest="alg_domain")
     parser_values = parser_handle.parse_args()
 
     if parser_values.alg_settings:
@@ -210,7 +226,12 @@ def get_args():
     else:
         alg_time = None
 
-    return alg_settings, alg_time
+    if parser_values.alg_domain:
+        alg_domain = parser_values.alg_domain
+    else:
+        alg_domain = None
+
+    return alg_settings, alg_time, alg_domain
 # -------------------------------------------------------------------------------------
 
 # -------------------------------------------------------------------------------------

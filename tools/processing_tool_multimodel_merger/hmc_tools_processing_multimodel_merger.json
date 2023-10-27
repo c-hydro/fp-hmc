@@ -1,5 +1,8 @@
 {
   "algorithm": {
+    "flags": {
+      "exit_with_error_if_missing_series": true
+    },
     "domain": "belize",
     "general": {
       "title": "Multimodel merger",
