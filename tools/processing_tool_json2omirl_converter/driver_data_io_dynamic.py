@@ -362,8 +362,17 @@ class DriverDynamic:
                         folder_name_ts_dst, file_name_ts_dst = os.path.split(file_path_ts_dst_step)
                         os.makedirs(folder_name_ts_dst, exist_ok=True)
 
-                        # copy source to destination file
-                        shutil.copy2(file_path_ts_src_step, file_path_ts_dst_step)
+                        # check destination file availability
+                        if not os.path.exists(file_path_ts_dst_step):
+                            # copy source to destination file
+                            shutil.copy2(file_path_ts_src_step, file_path_ts_dst_step)
+                            # info file end
+                            logging.info(' ------> Transfer file "' + file_path_ts_src_step + '" to "' +
+                                         file_path_ts_dst_step + '" ... DONE')
+                        else:
+                            # info file end
+                            logging.info(' ------> Transfer file "' + file_path_ts_src_step + '" to "' +
+                                         file_path_ts_dst_step + '" ... SKIPPED. FIle destination already exists')
 
                         # remove dynamic source
                         if self.cleaning_dynamic_source:
@@ -371,9 +380,6 @@ class DriverDynamic:
                                 logging.warning(' ===> File source "' + file_path_ts_src_step + '" removed')
                                 os.remove(file_path_ts_src_step)
 
-                        # info file end
-                        logging.info(' ------> Transfer file "' + file_path_ts_src_step + '" to "' +
-                                     file_path_ts_dst_step + '" ... DONE')
                     else:
                         # file check failed
                         logging.warning(' ===> File "' + file_path_ts_src_step + '" not found')

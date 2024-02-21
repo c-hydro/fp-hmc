@@ -2,6 +2,12 @@
 Changelog
 =========
 
+Version 3.1.6 (20240221)
+========================
+- Codes and package based on HMC Fortran codes version 3.1.6;
+- Add in the template time the "dset_datetime_run" and ""dset_sub_path_run" configuration;
+- Add the setup of the conda configuration environment.
+
 Version 3.1.5 (20221130)
 ========================
 - Codes and package based on HMC Fortran codes version 3.1.5;

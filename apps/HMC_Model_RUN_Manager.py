@@ -2,8 +2,8 @@
 """
 HYDROLOGICAL MODEL CONTINUUM - Run manager to set parameters and datasets of the hydrological model
 
-__date__ = '20221201'
-__version__ = '3.1.5'
+__date__ = '20240220'
+__version__ = '3.1.6'
 __author__ =
         'Fabio Delogu (fabio.delogu@cimafoundation.org',
         'Simone Gabellani (simone.gabellani@cimafoundation.org',
@@ -27,6 +27,7 @@ Parameters:
         Time of the simulation in YYYY-MM-DD HH:MM format
 
 Version(s):
+20240220 (3.1.6) --> Development of run manager application for version 3.1.6 of HMC models
 20221130 (3.1.5) --> Development of run manager application for version 3.1.5 of HMC models
 20210308 (3.1.4) --> Development of run manager application for version 3.1.4 of HMC models
 20201102 (3.1.3) --> Development of run manager application for version 3.1.3 of HMC models
@@ -50,10 +51,10 @@ from hmc.coupler.cpl_hmc_finalizer import ModelFinalizer
 # -------------------------------------------------------------------------------------
 # Version and algorithm information
 project_name = 'HMC'
-alg_version = '3.1.5'
+alg_version = '3.1.6'
 alg_type = 'Model'
 alg_name = 'RUN MANAGER TOOL'
-alg_release = '2022-11-30'
+alg_release = '2024-02-20'
 # -------------------------------------------------------------------------------------
 
 
