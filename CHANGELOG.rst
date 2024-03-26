@@ -2,11 +2,13 @@
 Changelog
 =========
 
-Version 3.1.6 (20240221)
+Version 3.1.6 (20240326)
 ========================
 - Codes and package based on HMC Fortran codes version 3.1.6;
 - Add in the template time the "dset_datetime_run" and ""dset_sub_path_run" configuration;
-- Add the setup of the conda configuration environment.
+- Add the setup of the conda configuration environment;
+- Extend the hmc tool to create time-series from gridded information;
+- Extend the hmc tool to create time-series according to the different format of regional meteorological services.
 
 Version 3.1.5 (20221130)
 ========================

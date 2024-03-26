@@ -1,0 +1,141 @@
+{
+  "algorithm": {
+    "general": {
+      "title": "TOOL SOURCE2TS CONVERTER",
+      "web-site": "",
+      "source": "Python library developed by CIMA Research Foundation",
+      "history": "1.0.0 [20240222]",
+      "project-info": "HMC - Hydrological Model Continuum",
+      "algorithm": "Source2ts converter postprocessing tool"
+    },
+    "info": {
+      "domain_name": ["RoiaDomain", "TanaroDomain"],
+      "analysis": {
+        "time_period": 3,
+        "time_frequency": "D"
+      }
+    },
+    "flag": {
+      "reset_static_data": true,
+      "reset_dynamic_data": true,
+      "reset_dynamic_tmp": true
+    },
+    "template": {
+      "info": {
+        "var_name": "string_var_name",
+        "point_name": "string_point_name",
+        "domain_name": "string_domain_name"
+      },
+      "time": {
+        "run_datetime": "%Y%m%d%H%M",
+        "run_sub_path_datetime": "%Y/%m/%d/%H/",
+        "source_datetime": "%Y%m%d%H%M",
+        "source_sub_path_datetime": "%Y/%m/%d/%H/",
+        "ancillary_datetime": "%Y%m%d%H%M",
+        "ancillary_sub_path_datetime": "%Y/%m/%d/",
+        "destination_datetime": "%Y%m%d%H%M",
+        "destination_sub_path_datetime": "%Y/%m/%d/"
+      }
+    }
+  },
+  "data": {
+    "static" : {
+      "source": {
+        "__comment__": "grid: (1) type: folder_name, file_name, (2) type: {xll:6.4492, yll: 43.9548, res: 0.015, nrows: 185, ncols: 413}",
+        "grid": {
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_static/{domain_name}/gridded",
+          "file_name": "{domain_name}.choice.txt",
+          "file_type": "ascii"
+        },
+        "point": {
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_static/LiguriaDomain/shapefile/",
+          "file_name": "quality_sections_liguria.shp",
+          "file_type": "shp",
+          "file_fields": {
+            "lut": {
+              "id": "ID", "name": "SIGLA_STAZ", "code": "COD_CI", "latitude": "LATITUDINE", "longitude": "LONGITUDIN",
+              "area": "Areakm", "idx_x": "iX", "idx_y": "iY", "domain": "DomainCont"
+            },
+            "type": {
+              "id": "int", "name": "string", "code": "string", "latitude": "float", "longitude": "float",
+              "area": "float", "idx_x": "int", "idx_y": "int", "domain": "string"
+            }
+          }
+        }
+      },
+      "destination": {
+        "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/dte_hydrology/data/data_static/gridded/",
+        "file_name": "{domain_name}.workspace",
+        "file_type": "pickle"
+      }
+    },
+    "dynamic": {
+      "source": {
+        "__comment__" : "file_type: binary, netcdf, tiff",
+        "discharge": {
+          "var_compute": true,
+          "var_name": "Discharge",
+          "var_scale_factor": 1,
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/archive/{domain_name}/weather_station_realtime/{run_sub_path_datetime}/outcome/gridded/deterministic/",
+          "file_name": "hmc.output-grid.{source_datetime}.nc.gz",
+          "file_compression": true,
+          "file_type": "netcdf",
+          "file_coords": {"x":  "Longitude", "y":  "Latitude", "time":  "time"},
+          "file_frequency": "H"
+        },
+        "soil_moisture": {
+          "var_compute": true,
+          "var_name": "SM",
+          "var_scale_factor": 1,
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/archive/{domain_name}/weather_station_realtime/{run_sub_path_datetime}/outcome/gridded/deterministic/",
+          "file_name": "hmc.output-grid.{source_datetime}.nc.gz",
+          "file_compression": true,
+          "file_type": "netcdf",
+          "file_coords": {"x":  "Longitude", "y":  "Latitude", "time":  "time"},
+          "file_frequency": "H"
+        }
+      },
+      "ancillary": {
+        "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/water_quality/ancillary/{ancillary_sub_path_datetime}",
+        "file_name": "hmc.{domain_name}_{var_name}.{ancillary_datetime}.workspace"
+      },
+      "destination": {
+        "__comment__" : "file_type: csv_2d, [csv_1d, json]",
+        "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/water_quality/destination/{destination_sub_path_datetime}",
+        "file_name": "hmc.{var_name}.{destination_datetime}.csv",
+        "file_type": "csv_2d",
+        "file_fields": {
+            "lut": {
+              "id": "id", "name": "name", "code": "code",
+              "latitude": "latitude", "longitude": "longitude",
+              "area": "area", "domain": "domain"
+            },
+            "type": {
+              "id": "int", "name": "string", "code": "string",
+              "latitude": "float", "longitude": "float",
+              "area": "float", "domain": "string"
+            }
+          },
+        "file_no_data": -9999,
+        "file_delimiter": ";",
+        "file_date_format": "%Y-%m-%d %H:00",
+        "file_date_order": "ascending",
+        "file_decimal_precision": 1
+      }
+    }
+  },
+  "log": {
+    "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/log/",
+    "file_name": "hmc_processing_source2ts_converter_log.txt",
+    "file_history": true
+  },
+  "time": {
+    "time_run": "2023-03-22 12:22",
+    "time_start": null,
+    "time_end": null,
+    "time_period": 3,
+    "time_frequency": "D",
+    "time_rounding": "D"
+  }
+}
+

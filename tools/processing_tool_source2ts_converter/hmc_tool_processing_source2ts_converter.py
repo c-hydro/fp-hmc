@@ -1,25 +1,20 @@
 #!/usr/bin/python3
 
 """
-HYDROLOGICAL MODEL CONTINUUM - Tool source2nc converter
-__date__ = '20211126'
-__version__ = '1.2.0'
+HYDROLOGICAL MODEL CONTINUUM - Tool source2ts converter
+__date__ = '20240222'
+__version__ = '1.0.0'
 __author__ =
-        'Lorenzo Alfieri' (lorenzo.alfieri@cimafoundation.org',
-        'Andrea Libertino (andrea.libertino@cimafoundation.org',
-        'Fabio Delogu' (fabio.delogu@cimafoundation.org',
+    'Fabio Delogu' (fabio.delogu@cimafoundation.org',
+    'Francesco Silvestro (francesco.silvestro@cimafoundation.org'
 
 __library__ = 'hmc'
 
 General command line:
-python hmc_tool_processing_source2ts_converter.py -settings_file "configuration.json"
+python hmc_tool_processing_source2ts_converter.py -settings_file "configuration.json" -time "YYYY-MM-DD HH:MM"
 
-Version(s):
-20211126 (1.2.0) --> Add the operational mode and the s3m datasets format to the sources
-20211012 (1.1.0) --> Add the restart datasets in binary format to the sources
-20210408 (1.0.0) --> Refactor to manage different format for source datasets
-20201214 (0.0.2) --> Various bug fixes
-20201203 (0.0.1) --> Beta release
+Version(s):s
+20240222 (1.0.0) --> Beta Release
 """
 # -------------------------------------------------------------------------------------
 
@@ -30,13 +25,13 @@ import os
 import argparse
 import time
 
-from tools.processing_tool_source2nc_converter.lib_utils_logging import set_logging_file
-from tools.processing_tool_source2nc_converter.lib_utils_time import set_time
-from tools.processing_tool_source2nc_converter.lib_data_io_json import read_file_settings
-from tools.processing_tool_source2nc_converter.lib_info_args import logger_name, time_format_algorithm
+from lib_utils_logging import set_logging_file
+from lib_utils_time import set_time
+from lib_data_io_json import read_file_settings
+from lib_info_args import logger_name, time_format_range, time_format_run
 
-from tools.processing_tool_source2nc_converter.driver_data_io_static import DriverStatic
-from tools.processing_tool_source2nc_converter.driver_data_io_dynamic import DriverDynamic
+from driver_data_io_static import DriverStatic
+from driver_data_io_dynamic import DriverDynamic
 
 # Logging
 log_stream = logging.getLogger(logger_name)
@@ -45,10 +40,10 @@ log_stream = logging.getLogger(logger_name)
 # -------------------------------------------------------------------------------------
 # Algorithm information
 project_name = 'HMC'
-alg_name = 'TOOL SOURCE2NC CONVERTER'
+alg_name = 'TOOL SOURCE2TS CONVERTER'
 alg_type = 'Model'
-alg_version = '1.2.0'
-alg_release = '2021-11-26'
+alg_version = '1.0.0'
+alg_release = '2024-02-22'
 # -------------------------------------------------------------------------------------
 
 
@@ -83,15 +78,16 @@ def main():
 
     # -------------------------------------------------------------------------------------
     # Organize time run
-    time_run, time_range, time_chunks = set_time(
+    time_run, time_range, _ = set_time(
         time_run_args=alg_time,
         time_run_file=data_settings['time']['time_run'],
         time_run_file_start=data_settings['time']['time_start'],
         time_run_file_end=data_settings['time']['time_end'],
-        time_format=time_format_algorithm,
-        time_period=data_settings['time']['time_period'],
-        time_frequency=data_settings['time']['time_frequency'],
-        time_rounding=data_settings['time']['time_rounding']
+        time_run_format=time_format_run,
+        time_range_format=time_format_range,
+        time_range_period=data_settings['time']['time_period'],
+        time_range_frequency=data_settings['time']['time_frequency'],
+        time_range_rounding=data_settings['time']['time_rounding']
     )
     # -------------------------------------------------------------------------------------
 
@@ -100,32 +96,34 @@ def main():
     driver_data_static = DriverStatic(
         src_dict=data_settings['data']['static']['source'],
         dst_dict=data_settings['data']['static']['destination'],
-        alg_template_tags=data_settings['algorithm']['template']
+        info_dict=data_settings['algorithm']['info'],
+        template_dict=data_settings['algorithm']['template'],
+        reset_data=data_settings['algorithm']['flag']['reset_static_data']
     )
-    static_data_collection = driver_data_static.organize_static()
+    static_data_obj = driver_data_static.organize_datasets()
     # -------------------------------------------------------------------------------------
 
     # -------------------------------------------------------------------------------------
     # Iterate over time chunk(s)
-    for time_reference, time_idx_group in time_chunks.items():
+    for time_step in time_range:
 
         # -------------------------------------------------------------------------------------
         # Driver and method of dynamic datasets
         driver_data_dynamic = DriverDynamic(
-            time_reference, time_period=time_idx_group,
-            static_data_collection=static_data_collection,
+            time_run, time_step,
+            geo_dict=static_data_obj,
             src_dict=data_settings['data']['dynamic']['source'],
             anc_dict=data_settings['data']['dynamic']['ancillary'],
             dst_dict=data_settings['data']['dynamic']['destination'],
-            alg_ancillary=data_settings['algorithm']['ancillary'],
-            alg_template_tags=data_settings['algorithm']['template'],
-            flag_cleaning_dynamic_data=data_settings['algorithm']['flags']['cleaning_dynamic_data'],
-            flag_cleaning_dynamic_ancillary=data_settings['algorithm']['flags']['cleaning_dynamic_ancillary'],
-            flag_cleaning_dynamic_tmp=data_settings['algorithm']['flags']['cleaning_dynamic_tmp'])
+            info_dict=data_settings['algorithm']['info'],
+            template_dict=data_settings['algorithm']['template'],
+            reset_dynamic_data=data_settings['algorithm']['flag']['reset_dynamic_data'],
+            reset_dynamic_tmp=data_settings['algorithm']['flag']['reset_dynamic_tmp'])
 
-        driver_data_dynamic.organize_dynamic_data()
-        driver_data_dynamic.dump_dynamic_data()
-        driver_data_dynamic.clean_dynamic_tmp()
+        dynamic_file_collections = driver_data_dynamic.get_dynamic_data()
+        dynamic_data_collections = driver_data_dynamic.compose_dynamic_data(dynamic_file_collections)
+        driver_data_dynamic.dump_dynamic_data(dynamic_data_collections)
+        driver_data_dynamic.clean_dynamic_tmp(dynamic_file_collections)
         # -------------------------------------------------------------------------------------
 
     # -------------------------------------------------------------------------------------
