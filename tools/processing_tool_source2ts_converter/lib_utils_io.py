@@ -10,19 +10,13 @@ Version:       '1.0.0'
 # ----------------------------------------------------------------------------------------------------------------------
 # libraries
 import logging
-
 import os
 import pickle
-import json
-import tempfile
-
 import pandas as pd
 import xarray as xr
 import numpy as np
 
-from copy import deepcopy
-
-from tools.processing_tool_source2nc_converter.lib_info_args import logger_name
+from lib_info_args import logger_name
 
 # Logging
 log_stream = logging.getLogger(logger_name)

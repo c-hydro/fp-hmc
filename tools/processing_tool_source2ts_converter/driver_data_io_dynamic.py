@@ -66,10 +66,12 @@ class DriverDynamic:
         self.time_step = time_step
 
         self.src_obj = src_dict
-        self.src_obj.pop('__comment__')
+        if '__comment__' in list(self.src_obj.keys()):
+            self.src_obj.pop('__comment__')
         self.anc_obj = anc_dict
         self.dst_obj = dst_dict
-        self.dst_obj.pop('__comment__')
+        if '__comment__' in list(self.dst_obj.keys()):
+            self.dst_obj.pop('__comment__')
 
         self.info_obj_domain = info_dict['domain_name']
         self.info_obj_analysis = info_dict['analysis']
@@ -191,9 +193,10 @@ class DriverDynamic:
         if reset_dynamic_tmp:
             # iterate over tmp file path(s)
             for var_key, var_collections in dynamic_file_collections.items():
-                for var_file_path in var_collections:
-                    if os.path.exists(var_file_path):
-                        os.remove(var_file_path)
+                for var_time_step, var_file_list in var_collections.items():
+                    for var_file_path in var_file_list:
+                        if os.path.exists(var_file_path):
+                            os.remove(var_file_path)
     # ------------------------------------------------------------------------------------------------------------------
 
     # ------------------------------------------------------------------------------------------------------------------
