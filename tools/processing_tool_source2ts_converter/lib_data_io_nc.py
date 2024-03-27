@@ -36,7 +36,7 @@ def read_data_nc(file_name, geo_ref_x=None, geo_ref_y=None, geo_ref_attrs=None,
                  var_coords=None, var_scale_factor=1, var_name=None, var_time=None, var_no_data=-9999.0,
                  coord_name_time='time', coord_name_geo_x='Longitude', coord_name_geo_y='Latitude',
                  dim_name_time='time', dim_name_geo_x='west_east', dim_name_geo_y='south_north',
-                 dims_order=None, decimal_round=4):
+                 dims_order=None, decimal_round=1, error_coords='ignore'):
 
     if var_coords is None:
         var_coords = {'x': 'Longitude', 'y': 'Latitude', 'time': 'time'}
@@ -119,12 +119,52 @@ def read_data_nc(file_name, geo_ref_x=None, geo_ref_y=None, geo_ref_attrs=None,
                 geo_data_start_y = np.float32(round(geo_data_y[0, 0], decimal_round))
                 geo_data_end_x = np.float32(round(geo_data_x[-1, -1], decimal_round))
                 geo_data_end_y = np.float32(round(geo_data_y[-1, -1], decimal_round))
+
+                # check coords
                 if geo_check_start_x != geo_data_start_x:
-                    print('ciao')
-                assert geo_check_start_x == geo_data_start_x, ' ===> Variable geo x start != Reference geo x start'
-                assert geo_check_start_y == geo_data_start_y, ' ===> Variable geo y start != Reference geo y start'
-                assert geo_check_end_x == geo_data_end_x, ' ===> Variable geo x end != Reference geo x end'
-                assert geo_check_end_y == geo_data_end_y, ' ===> Variable geo y end != Reference geo y end'
+                    if error_coords == 'ignore':
+                        log_stream.warning(
+                            ' ===> Variable :: geo x start [' + str(geo_check_start_x) +
+                            '] != data x start [' + str(geo_data_start_x) + ']')
+                    elif error_coords == 'raise':
+                        log_stream.error(
+                            ' ===> Variable :: geo x start [' + str(geo_check_start_x) +
+                            '] != data x start [' + str(geo_data_start_x) + ']')
+                        raise IOError('Check geo grid and data grid to control the coordinates')
+
+                if geo_check_start_y != geo_data_start_y:
+                    if error_coords == 'ignore':
+                        log_stream.warning(
+                            ' ===> Variable :: geo y start [' + str(geo_check_start_y) +
+                            '] != data y start [' + str(geo_data_start_y) + ']')
+                    elif error_coords == 'raise':
+                        log_stream.error(
+                            ' ===> Variable :: geo y start [' + str(geo_check_start_y) +
+                            '] != data y start [' + str(geo_data_start_y) + ']')
+                        raise IOError('Check geo grid and data grid to control the coordinates')
+
+                if geo_check_end_x != geo_data_end_x:
+                    if error_coords == 'ignore':
+                        log_stream.warning(
+                            ' ===> Variable :: geo x end [' + str(geo_check_end_x) +
+                            '] != data x end [' + str(geo_data_end_x) + ']')
+                    elif error_coords == 'raise':
+                        log_stream.error(
+                            ' ===> Variable :: geo x end [' + str(geo_check_end_x) +
+                            '] != data x end [' + str(geo_data_end_x) + ']')
+                        raise IOError('Check geo grid and data grid to control the coordinates')
+
+                if geo_check_end_y != geo_data_end_y:
+                    if error_coords == 'ignore':
+                        log_stream.warning(
+                            ' ===> Variable :: geo y end [' + str(geo_check_end_y) +
+                            '] != data y end [' + str(geo_data_end_y) + ']')
+                    elif error_coords == 'raise':
+                        log_stream.error(
+                            ' ===> Variable :: geo y end [' + str(geo_check_end_y) +
+                            '] != data y end [' + str(geo_data_end_y) + ']')
+                        raise IOError('Check geo grid and data grid to control the coordinates')
+
             else:
                 log_stream.warning(' ===> GeoX and GeoY variables have not compared with a reference GeoX and GeoY')
 

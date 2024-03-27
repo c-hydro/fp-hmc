@@ -127,7 +127,7 @@ class DriverDynamic:
     def set_reference_time(time_run=None, time_step=None,
                            time_data_period=0, time_data_frequency='H', time_data_rounding='H',
                            time_range_period=0, time_range_frequency='D', time_range_rounding='D',
-                           time_reverse=True, time_key='max'):
+                           time_reverse=False, time_key='max'):
 
         if time_data_period == 0:
             time_data_period = 1
@@ -227,6 +227,9 @@ class DriverDynamic:
             # iterate over dynamic datasets (according to the variable)
             for var_key, var_collections in dynamic_data_collections.items():
 
+                # info variable start
+                log_stream.info(' ----> Save variable "' + var_key + '"  ... ')
+
                 # compose destination file name(s)
                 var_file_path_dst_filled = define_file_name(
                     var_file_path_dst_raw,
@@ -239,17 +242,27 @@ class DriverDynamic:
                         'var_name': var_key}
                 )
 
-                # write file data in csv 2d format
-                folder_name_dst, file_name_dst = os.path.split(var_file_path_dst_filled)
-                os.makedirs(folder_name_dst, exist_ok=True)
+                # check var collections availability
+                if var_collections is not None:
 
-                write_file_csv(var_file_path_dst_filled, var_collections,
-                               dframe_sep=var_file_delimiter, dframe_decimal='.',
-                               dframe_float_format='%.{:}f'.format(var_file_decimal_precision),
-                               dframe_index=True, dframe_header=True,
-                               dframe_index_label=time_var_name, dframe_index_format=var_file_index_format,
-                               dframe_index_order=var_file_index_order,
-                               dframe_no_data=var_file_no_data)
+                    # write file data in csv 2d format
+                    folder_name_dst, file_name_dst = os.path.split(var_file_path_dst_filled)
+                    os.makedirs(folder_name_dst, exist_ok=True)
+
+                    write_file_csv(var_file_path_dst_filled, var_collections,
+                                   dframe_sep=var_file_delimiter, dframe_decimal='.',
+                                   dframe_float_format='%.{:}f'.format(var_file_decimal_precision),
+                                   dframe_index=True, dframe_header=True,
+                                   dframe_index_label=time_var_name, dframe_index_format=var_file_index_format,
+                                   dframe_index_order=var_file_index_order,
+                                   dframe_no_data=var_file_no_data)
+
+                    # info variable end
+                    log_stream.info(' ----> Save variable "' + var_key + '"  ... DONE')
+                else:
+                    # info variable end
+                    log_stream.warning(' ===> Variable "' + var_key + '" has no data available')
+                    log_stream.info(' ----> Save variable "' + var_key + '" ... SKIPPED')
 
         else:
             # exit for not allowed destination format
@@ -282,6 +295,9 @@ class DriverDynamic:
             dynamic_data_collections = {}
             for var_key, var_collections in dynamic_file_collections.items():
 
+                # info variable start
+                log_stream.info(' ----> Extract variable "' + var_key + '"  ... ')
+
                 # iterate over time keys and file list
                 ws_data_var = None
                 for time_key, file_list in var_collections.items():
@@ -308,8 +324,19 @@ class DriverDynamic:
                 ws_data_var = ws_data_var.reindex(sorted(ws_data_var.columns), axis=1)
                 ws_data_var.index.name = time_var_name
 
-                # store datasets in a collections
-                dynamic_data_collections[var_key] = ws_data_var
+                # check data availability
+                ws_data_check = ws_data_var.dropna(how="all")
+                if ws_data_check.empty:
+                    # store datasets in a collections
+                    dynamic_data_collections[var_key] = None
+                    # info variable end
+                    log_stream.warning(' ===> Variable "' + var_key + '" has no data available')
+                    log_stream.info(' ----> Extract variable "' + var_key + '" ... SKIPPED')
+                else:
+                    # store datasets in a collections
+                    dynamic_data_collections[var_key] = ws_data_var
+                    # info variable end
+                    log_stream.info(' ----> Extract variable "' + var_key + '" ... DONE')
 
         else:
             # exit for not allowed destination format

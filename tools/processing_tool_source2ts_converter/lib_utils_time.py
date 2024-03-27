@@ -28,7 +28,7 @@ def set_time(time_run_args=None, time_run_file=None,
              time_run_format='%Y-%m-%d %H:%M', time_run_frequency='H', time_run_rounding='H',
              time_range_period=1,
              time_range_format='%Y-%m-%d', time_range_frequency='D', time_range_rounding='D',
-             time_range_reverse=True):
+             time_range_reverse=False):
 
     log_stream.info(' ---> Set time period ... ')
     if (time_run_file_start is None) and (time_run_file_end is None):

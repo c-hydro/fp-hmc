@@ -44,7 +44,7 @@
         "__comment__": "grid: (1) type: folder_name, file_name, (2) type: {xll:6.4492, yll: 43.9548, res: 0.015, nrows: 185, ncols: 413}",
         "grid": {
           "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_static/{domain_name}/gridded",
-          "file_name": "{domain_name}.choice.txt",
+          "file_name": "{domain_name}.area.txt",
           "file_type": "ascii"
         },
         "point": {
@@ -133,7 +133,7 @@
     "time_run": "2023-03-22 12:22",
     "time_start": null,
     "time_end": null,
-    "time_period": 3,
+    "time_period": 1,
     "time_frequency": "D",
     "time_rounding": "D"
   }
