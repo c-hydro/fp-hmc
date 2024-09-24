@@ -140,7 +140,7 @@
     },
     "Shapefile": {
       "hmc_file_name"     : "fp_sections_liguria.shp",
-      "hmc_file_folder"   : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_static/LiguriaDomain/shapefile/",
+      "hmc_file_folder"   : "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_static/LiguriaDomain/shapefile_test/",
       "hmc_file_format"   : "shapefile",
       "hmc_file_frequency": null,
       "hmc_file_filter"   : {"DOMAIN": "EntellaDomain"},

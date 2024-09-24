@@ -37,7 +37,7 @@ import matplotlib.pylab as plt
 # ----------------------------------------------------------------------------------------------------------------------
 
 # ----------------------------------------------------------------------------------------------------------------------
-# algorithm default definition(s)
+# algorithm constants definition(s)
 tag_var_compute, tag_var_name, tag_var_sf, tag_format_var = 'var_compute', 'var_name', 'var_scale_factor', 'var_format'
 tag_file_name, tag_folder_name = 'file_name', 'folder_name'
 tag_file_compression, tag_file_geo_reference = 'file_compression', 'file_geo_reference'

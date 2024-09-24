@@ -8,7 +8,7 @@ Version:       '3.0.0'
 """
 
 # -------------------------------------------------------------------------------------
-# Namelist default
+# Namelist constants
 link_namelist_default = dict(
 
     HMC_Parameters={
@@ -183,7 +183,7 @@ link_namelist_default = dict(
         'sReleaseDate': "2021/06/28",
     },
 )
-# Namelist default
+# Namelist constants
 structure_namelist_default = dict(
 
     HMC_Parameters={
@@ -199,7 +199,7 @@ structure_namelist_default = dict(
         'dWTableHbr': 500,
         'dKSatRatio': 1,
         'dSlopeMax': 70,
-        'sDomainName': "default",
+        'sDomainName': "constants",
 
     },
 

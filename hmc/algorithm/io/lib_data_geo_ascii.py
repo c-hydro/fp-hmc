@@ -168,7 +168,7 @@ def read_data_point_section(file_name, section_cols_expected=11):
                             + str(base_error) +
                             '".\n The users can:\n'
                             '(1) remove the file "' + file_name + '" and run again the wrapper; \n'
-                            '(2) keep the default value of the field that will be set to "-9999.0"\n')
+                            '(2) keep the constants value of the field that will be set to "-9999.0"\n')
                         check_drained_area = False
                     section_drained_area = -9999.0
 
@@ -181,7 +181,7 @@ def read_data_point_section(file_name, section_cols_expected=11):
                             '"file_point_section" in ascii format. The reader returned the following error "'
                             + str(base_error) + '".\n The users can:\n'
                             '(1) remove the file "' + file_name + '" and run again the wrapper; \n'
-                            '(2) keep the default value of the field that will be set to "-9999.0"\n')
+                            '(2) keep the constants value of the field that will be set to "-9999.0"\n')
                         check_thr_alert = False
                     section_discharge_thr_alert = -9999.0
                 try:
@@ -193,7 +193,7 @@ def read_data_point_section(file_name, section_cols_expected=11):
                             '"file_point_section" in ascii format. The reader returned the following error "'
                             + str(base_error) + '".\n The users can:\n'
                             '(1) remove the file "' + file_name + '" and run again the wrapper; \n'
-                            '(2) keep the default value of the field that will be set to "-9999.0"\n')
+                            '(2) keep the constants value of the field that will be set to "-9999.0"\n')
                         check_thr_alarm = False
                     section_discharge_thr_alarm = -9999.0
 
@@ -206,7 +206,7 @@ def read_data_point_section(file_name, section_cols_expected=11):
                             '"file_point_section" in ascii format. The reader returned the following error "'
                             + str(base_error) + '".\n The users can:\n'
                             '(1) remove the file "' + file_name + '" and run again the wrapper; \n'
-                            '(2) keep the default value of the field that will be set to "-9999.0"\n')
+                            '(2) keep the constants value of the field that will be set to "-9999.0"\n')
                         check_thr_emergency = False
                     section_discharge_thr_emergency = -9999.0
 

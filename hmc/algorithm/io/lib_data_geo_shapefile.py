@@ -3,8 +3,8 @@ Class Features
 
 Name:          lib_data_geo_shapefile
 Author(s):     Fabio Delogu (fabio.delogu@cimafoundation.org)
-Date:          '20201122'
-Version:       '1.0.0'
+Date:          '20240924'
+Version:       '1.1.0'
 """
 
 #######################################################################################
@@ -76,6 +76,15 @@ def read_data_shapefile_section(file_name, columns_name_expected=None, columns_n
 
         if column_name_exp in file_dframe_raw.columns:
             column_data = file_dframe_raw[column_name_exp].values.tolist()
+
+            # check string format
+            string_numeric = is_numeric(column_data[0])
+            # change format from string to numeric if format is expected to be numeric
+            if string_numeric:
+                if column_type == 'int':
+                    column_data = [int(el) for el in column_data]
+                elif column_type == 'float':
+                    column_data = [float(el) for el in column_data]
 
             if column_type == 'int':
                 column_res = type(column_data[0]) == int
@@ -253,4 +262,18 @@ def convert_obj_list2point(file_obj, file_pivot_order=None, file_pivot_sep=':'):
 
     return file_pivot_points
 
+# -------------------------------------------------------------------------------------
+
+
+# -------------------------------------------------------------------------------------
+# method to check if string is numeric or not
+def is_numeric(string):
+    if isinstance(string, str):
+        try:
+            float(string)
+            return True
+        except ValueError:
+            return False
+    else:
+        return None
 # -------------------------------------------------------------------------------------

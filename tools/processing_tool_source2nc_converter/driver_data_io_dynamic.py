@@ -634,6 +634,14 @@ class DriverDynamic:
                                     dims_order=self.dims_order_3d,
                                     decimal_round_data=2, decimal_round_geo=7)
 
+                                '''
+                                var_values = var_da_src[:, :, 0].values
+                                plt.figure()
+                                plt.imshow(var_values)
+                                plt.colorbar()
+                                plt.show()
+                                '''
+
                             else:
                                 log_stream.info(' -----> Time "' + var_time.strftime(time_format_algorithm) + '" ... FAILED')
                                 log_stream.error(' ===> File type "' + file_type + '"is not allowed.')
@@ -654,7 +662,6 @@ class DriverDynamic:
                                 if active_interp:
                                     var_da_dst = apply_var_interp(
                                         var_da_src, geo_da_dst,
-                                        var_name=var_name,
                                         dim_name_geo_x=self.dim_name_geo_x, dim_name_geo_y=self.dim_name_geo_y,
                                         coord_name_geo_x=self.coord_name_geo_x, coord_name_geo_y=self.coord_name_geo_y,
                                         interp_method=self.interp_method)
@@ -680,22 +687,21 @@ class DriverDynamic:
                                 else:
                                     var_da_masked = deepcopy(var_da_dst)
 
-                                #'''
+                                '''
                                 plt.figure(1)
-                                plt.imshow(var_da_dst.values[:, :, 0])
+                                plt.imshow(var_da_dst[:, :, 0].values)
                                 plt.colorbar()
                                 plt.figure(2)
-                                plt.imshow(var_da_src.values[:, :, 0])
+                                plt.imshow(var_da_src[:, :, 0].values)
                                 plt.colorbar()
                                 plt.figure(3)
-                                plt.imshow(var_da_masked.values[:, :, 0])
+                                plt.imshow(var_da_masked[:, :, 0].values)
                                 plt.colorbar()
-                                plt.show()
                                 plt.figure(4)
                                 plt.imshow(geo_da_dst.values)
                                 plt.colorbar()
                                 plt.show()
-                                #'''
+                                '''
 
                                 # Organize data in a common datasets
                                 if self.dim_name_time in list(var_da_masked.dims):

@@ -10,7 +10,7 @@ script_date='2024/02/15'
 fp_env_file_miniconda='https://repo.continuum.io/miniconda/Miniconda3-py37_4.8.2-Linux-x86_64.sh'
 #fp_env_file_miniconda='https://repo.continuum.io/miniconda/Miniconda3-py39_23.1.0-1-Linux-x86_64.sh'
 
-# Argument(s) default definition(s)
+# Argument(s) constants definition(s)
 fp_env_tag_default='hmc_runner_tools'
 
 fp_env_folder_root_default='./conda/'

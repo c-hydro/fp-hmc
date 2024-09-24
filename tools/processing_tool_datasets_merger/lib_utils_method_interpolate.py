@@ -111,7 +111,7 @@ def apply_var_sample(var_dset_in, geo_da_out,
         log_stream.warning(' ===> Dimensions expected (1) are not in the same order of datasets dimensions (2)')
         log_stream.warning(' ===> (1) Dimensions expected: ' + ','.join(dims_list_expected))
         log_stream.warning(' ===> (2) Dimensions datasets: ' + ','.join(list(var_dset_in.dims)))
-        log_stream.warning(' ===> Dimensions selected by default: ' + ','.join(dims_list_expected))
+        log_stream.warning(' ===> Dimensions selected by constants: ' + ','.join(dims_list_expected))
     else:
         dims_list_defined = list(var_dset_in.dims)
 

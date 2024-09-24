@@ -1457,7 +1457,7 @@ class DSetManager:
                                     template_time_filled['dset_sub_path_run'] = self.time_run
                                     template_time_filled['dset_datetime_run'] = self.time_run
                                 else:
-                                    log_stream.warning(' ===> Time run is not defined. Use the dynamic time as default')
+                                    log_stream.warning(' ===> Time run is not defined. Use the dynamic time as constants')
                                     template_time_filled['dset_sub_path_run'] = datetime_eta_step
                                     template_time_filled['dset_datetime_run'] = datetime_eta_step
 

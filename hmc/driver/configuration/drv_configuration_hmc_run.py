@@ -214,7 +214,7 @@ class ModelRun:
 
         if 'cleaning_active' not in run_tmp:
             log_stream.warning(' ===> The tmp key related to the cleaning_active field is not available;'
-                               'the field is initialized by default value equal to False ')
+                               'the field is initialized by constants value equal to False ')
             run_tmp['cleaning_active'] = False
 
         return run_tmp
@@ -288,7 +288,7 @@ class ModelRun:
                 analysis_catchment = False
 
         else:
-            log_stream.warning(' ===> "Analysis settings" are not defined in the algorithm file. Use default settings.')
+            log_stream.warning(' ===> "Analysis settings" are not defined in the algorithm file. Use constants settings.')
             log_stream.warning(' ===> Users are strongly invited to define "Analysis settings" dictionary \n'
                                'in the "Run_Info" section with key "run_analysis" and fields: \n'
                                '[1] "analysis_catchments" with values "false" or "true \n'
@@ -343,7 +343,7 @@ class ModelRun:
 
         if 'cleaning_active' not in run_tmp:
             log_stream.warning(' ===> The tmp key related to the cleaning_active field is not available;'
-                               'the field is initialized by default value equal to False ')
+                               'the field is initialized by constants value equal to False ')
             run_clean_tmp = False
         else:
             run_clean_tmp = run_tmp['cleaning_active']

@@ -139,7 +139,7 @@ def read_data_tiff(file_name, var_scale_factor=1, var_type='float32', var_name=N
 
         if file_handle.crs is None:
             file_proj = proj_default_wkt
-            log_stream.warning(' ===> Projection of tiff ' + file_name + ' not defined. Use default settings.')
+            log_stream.warning(' ===> Projection of tiff ' + file_name + ' not defined. Use constants settings.')
         else:
             file_proj = file_handle.crs.wkt
         file_geotrans = file_handle.transform
