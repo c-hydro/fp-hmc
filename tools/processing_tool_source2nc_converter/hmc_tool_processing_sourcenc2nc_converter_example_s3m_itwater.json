@@ -1,0 +1,102 @@
+{
+  "algorithm": {
+    "general": {
+      "title": "TOOL SOURCE2NC CONVERTER",
+      "web-site": "",
+      "source": "Python library developed by CIMA Research Foundation",
+      "history": "1.1.0 [20211012]",
+      "project-info": "HMC - Hydrological Model Continuum",
+      "algorithm": "Source2NC converter postprocessing tool"
+    },
+    "ancillary": {},
+    "flags": {
+      "cleaning_dynamic_ancillary": true,
+      "cleaning_dynamic_data": true,
+      "cleaning_dynamic_tmp": true
+    },
+    "template": {
+      "source_file_datetime_generic": "%Y%m%d%H%M",
+      "source_folder_datetime_generic": "%Y/%m/%d/",
+      "source_file_datetime_evt": "%Y%m%d",
+      "source_folder_datetime_evt": "%Y/%m/",
+      "ancillary_file_datetime_generic": "%Y%m%d%H%M",
+      "ancillary_folder_datetime_generic": "%Y/%m/%d/",
+      "destination_file_datetime_generic": "%Y%m%d%H%M",
+      "destination_folder_datetime_generic": "%Y/%m/%d/"
+    }
+  },
+  "data": {
+    "static" : {
+      "source": {
+        "Not_Available": null,
+        "Terrain": {
+          "var_name": "Terrain",
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/itwater/STATIC/",
+          "file_name": "Terrain_Data.nc.gz",
+          "file_compression": true,
+          "file_type": "netcdf",
+          "file_coords": {"X":  "Longitude", "Y":  "Latitude"}
+        }
+      },
+      "destination": {
+        "Terrain": {
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/itwater/STATIC/",
+          "file_name": "Lombardia.dem.txt"
+        }
+      }
+    },
+    "dynamic": {
+      "source": {
+        "__comment__" : "file_type: binary, netcdf, tiff",
+        "Relative_Humidity": {
+          "var_compute": true,
+          "var_name": "Relative_Humidity",
+          "var_scale_factor": 1,
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/itwater/INPUT/",
+          "file_name": "s3m.italy-grid.rad_rh.{source_file_datetime_generic}.nc.gz",
+          "file_compression": true,
+          "file_geo_reference": "Not_Available",
+          "file_type": "netcdf",
+          "file_coords": {"x":  "longitude", "y":  "latitude", "time":  "time"},
+          "file_frequency": "H"
+        },
+        "Incoming_Radiation": {
+          "var_compute": true,
+          "var_name": "Incoming_Radiation",
+          "var_scale_factor": 1,
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/itwater/INPUT/",
+          "file_name": "s3m.italy-grid.rad_rh.{source_file_datetime_generic}.nc.gz",
+          "file_compression": true,
+          "file_geo_reference": "Not_Available",
+          "file_type": "netcdf",
+          "file_coords": {"x":  "longitude", "y":  "latitude", "time":  "time"},
+          "file_frequency": "H"
+        }
+      },
+      "ancillary": {
+        "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/itwater/ANCILLARY/",
+        "file_name": "s3m.outcome-grid.{ancillary_file_datetime_generic}.workspace"
+      },
+      "destination": {
+        "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/itwater/OUTPUT/",
+        "file_name": "s3m.outcome-grid.{destination_file_datetime_generic}.nc",
+        "file_geo_reference": "Terrain",
+        "file_compression": true
+      }
+    }
+  },
+  "log": {
+    "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/itwater/LOGS/",
+    "file_name": "hmc_preprocessing_source2nc_converter_s3m_log.txt",
+    "file_history": true
+  },
+  "time": {
+    "time_run": "2024-01-02 00:00",
+    "time_period": 24,
+    "time_start": null,
+    "time_end": null,
+    "time_frequency": "H",
+    "time_rounding": "H"
+  }
+}
+

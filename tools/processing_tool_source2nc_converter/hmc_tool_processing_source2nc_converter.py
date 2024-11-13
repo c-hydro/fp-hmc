@@ -2,8 +2,8 @@
 
 """
 HYDROLOGICAL MODEL CONTINUUM - Tool source2nc converter
-__date__ = '20211126'
-__version__ = '1.2.0'
+__date__ = '20241113'
+__version__ = '1.3.0'
 __author__ =
         'Lorenzo Alfieri' (lorenzo.alfieri@cimafoundation.org',
         'Andrea Libertino (andrea.libertino@cimafoundation.org',
@@ -12,9 +12,10 @@ __author__ =
 __library__ = 'hmc'
 
 General command line:
-python hmc_tool_processing_source2ts_converter.py -settings_file "configuration.json"
+python hmc_tool_processing_src2nc_converter.py -settings_file "configuration.json" -time "YYYY-MM-DD HH:MM"
 
 Version(s):
+20241113 (1.3.0) --> Add/manage the options to not declare the source grid/file information in the configuration file
 20211126 (1.2.0) --> Add the operational mode and the s3m datasets format to the sources
 20211012 (1.1.0) --> Add the restart datasets in binary format to the sources
 20210408 (1.0.0) --> Refactor to manage different format for source datasets
@@ -47,8 +48,8 @@ log_stream = logging.getLogger(logger_name)
 project_name = 'HMC'
 alg_name = 'TOOL SOURCE2NC CONVERTER'
 alg_type = 'Model'
-alg_version = '1.2.0'
-alg_release = '2021-11-26'
+alg_version = '1.3.0'
+alg_release = '2024-11-13'
 # -------------------------------------------------------------------------------------
 
 
@@ -134,7 +135,7 @@ def main():
 
     log_stream.info(' ')
     log_stream.info('[' + project_name + ' ' + alg_type + ' - ' + alg_name + ' (Version ' + alg_version +
-                 ' - Release ' + alg_release + ')]')
+                    ' - Release ' + alg_release + ')]')
     log_stream.info(' ==> TIME ELAPSED: ' + str(alg_time_elapsed) + ' seconds')
     log_stream.info(' ==> ... END')
     log_stream.info(' ==> Bye, Bye')
