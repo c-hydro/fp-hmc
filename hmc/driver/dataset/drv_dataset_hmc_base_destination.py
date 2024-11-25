@@ -69,7 +69,12 @@ class ModelDestination:
         self.tag_model = 'hmc'
         self.tag_datasets = 'datasets'
 
+        self.time_run = None
+        if 'time_run' in list(kwargs.keys()):
+            self.time_run = kwargs['time_run']
+
         self.writer_outcome = DSetManager_Outcome(
+            time_run=self.time_run,
             dset=self.dset_outcome,
             terrain_values=self.geo_obj['values'],
             terrain_geo_x=self.geo_obj['longitude'],
@@ -85,6 +90,7 @@ class ModelDestination:
                                       'TimeSeries': None}
 
         self.writer_state = DSetManager_State(
+            time_run=self.time_run,
             dset=self.dset_state,
             terrain_values=self.geo_obj['values'],
             terrain_geo_x=self.geo_obj['longitude'],
@@ -97,6 +103,7 @@ class ModelDestination:
         self.vars_state_analysis = {'Gridded': None, 'Point': None}
 
         self.writer_summary = DSetManager_Summary(
+            time_run=self.time_run,
             dset=self.dset_summary,
             terrain_values=self.geo_obj['values'],
             terrain_geo_x=self.geo_obj['longitude'],

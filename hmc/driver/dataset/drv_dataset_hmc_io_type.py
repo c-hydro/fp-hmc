@@ -227,7 +227,7 @@ class DSetReader:
         # Write an empty point static file
         if var_name in ['Dam', 'Intake', 'Lake', 'Joint']:
             write_data_point_undefined(file_path)
-            log_stream.warning(' ===> File static for variable ' + var_name + ' is initialized by default value')
+            log_stream.warning(' ===> File static for variable ' + var_name + ' is initialized by constants value')
 
     # -------------------------------------------------------------------------------------
 
@@ -650,7 +650,7 @@ class DSetComposer(DSetWriter):
     # -------------------------------------------------------------------------------------
 
     # -------------------------------------------------------------------------------------
-    # Method to check data units (with default reference)
+    # Method to check data units (with constants reference)
     def validate_data_units(self, var_name, var_data, var_info_default):
 
         # Info
@@ -699,32 +699,32 @@ class DSetComposer(DSetWriter):
 
                 else:
                     log_stream.info(' ---------> Validate ' + var_name + ' units ... FAILED')
-                    log_stream.error(' ===> Variable units and default units are found in wrong format')
+                    log_stream.error(' ===> Variable units and constants units are found in wrong format')
                     raise NotImplementedError('Case not implemented yet')
 
             elif (var_units is None) and (var_units_default is None):
                 log_stream.info(' ---------> Validate ' +
                                 var_name + ' units ... SKIPPED. Default and dataset units are defined by [None]')
-                log_stream.warning(' ===> Set units in "lib_default_variables.py" default file or in the settings file')
+                log_stream.warning(' ===> Set units in "lib_default_variables.py" constants file or in the settings file')
             elif (var_units is not None) and (var_units_default is None):
                 log_stream.info(' ---------> Validate ' +
                                 var_name + ' units ... SKIPPED. Default units are [None]'
                                 ' and datasets units are [' + var_units + ']. Use datasets units in the variable obj')
-                log_stream.warning(' ===> Set units in "lib_default_variables.py" default file')
+                log_stream.warning(' ===> Set units in "lib_default_variables.py" constants file')
             elif (var_units is None) and (var_units_default is not None):
                 log_stream.info(' ---------> Validate ' +
                                 var_name + ' units ... SKIPPED. Default units are [' + var_units_default +
-                                '] and datasets units are [None]. Use default units in the variable obj')
+                                '] and datasets units are [None]. Use constants units in the variable obj')
                 log_stream.warning(' ===> Set units in the settings file')
             else:
                 log_stream.info(' ---------> Validate ' + var_name + ' units ... FAILED')
-                log_stream.error(' ===> Variable units and default units are found in wrong type')
+                log_stream.error(' ===> Variable units and constants units are found in wrong type')
                 raise NotImplementedError('Case not implemented yet')
 
         else:
             log_stream.info(' ---------> Validate ' + var_name + ' units ... SKIPPED')
             log_stream.warning(' ===> Variable "' + var_name +
-                               '" is not defined in default dictionary. Add it in the "lib_default_variables.py"')
+                               '" is not defined in constants dictionary. Add it in the "lib_default_variables.py"')
 
         # Update class variable(s)
         self.var_info = var_info_valid

@@ -41,6 +41,9 @@ class ModelFinalizer:
         self.obj_run = obj_run
         self.obj_ancillary = obj_ancillary
 
+        # store time run information
+        self.obj_time_run = obj_args.obj_time_arg
+
         self.driver_io_destination = ModelDestination(
             collection_dynamic=self.collection_dynamic,
             obj_dataset=self.obj_args.obj_datasets,
@@ -50,7 +53,8 @@ class ModelFinalizer:
             template_run_ref=self.obj_args.obj_template_run_ref,
             template_analysis_def=self.obj_run.obj_template_analysis_filled,
             template_static=self.obj_args.obj_template_dset_static_ref,
-            template_outcome=self.obj_args.obj_template_dset_outcome_ref)
+            template_outcome=self.obj_args.obj_template_dset_outcome_ref,
+            time_run=self.obj_time_run)
 
         self.flag_cleaning_dynamic_outcome = self.obj_args.obj_datasets['Flags'][
             'cleaning_ancillary_data_dynamic_outcome']

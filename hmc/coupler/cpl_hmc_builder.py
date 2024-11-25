@@ -40,6 +40,9 @@ class ModelBuilder:
         self.obj_run = obj_run
         self.obj_ancillary = obj_ancillary
 
+        # store time run information
+        self.obj_time_run = obj_args.obj_time_arg
+
         self.driver_io_source = ModelSource(
             self.obj_args.obj_datasets,
             template_time=self.obj_args.obj_template_time_ref,
@@ -48,7 +51,8 @@ class ModelBuilder:
             template_run_path=self.obj_run.obj_run_path,
             template_analysis_def=self.obj_run.obj_template_analysis_filled,
             template_static=self.obj_args.obj_template_dset_static_ref,
-            template_dynamic=self.obj_args.obj_template_dset_dynamic_ref)
+            template_dynamic=self.obj_args.obj_template_dset_dynamic_ref,
+            time_run=self.obj_time_run)
 
         self.flag_cleaning_static = self.obj_args.obj_datasets['Flags']['cleaning_ancillary_data_static']
         self.flag_cleaning_dynamic_source = self.obj_args.obj_datasets['Flags']['cleaning_ancillary_data_dynamic_source']

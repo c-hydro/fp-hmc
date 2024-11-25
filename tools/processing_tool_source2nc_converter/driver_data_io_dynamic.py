@@ -185,26 +185,34 @@ class DriverDynamic:
     # -------------------------------------------------------------------------------------
     # Method to set geographical attributes
     @staticmethod
-    def set_geo_attributes(dict_info, tag_data='data', tag_geo_x='geo_x', tag_geo_y='geo_y'):
+    def set_geo_attributes(dict_info, tag_data='data', tag_geo_x='geo_x', tag_geo_y='geo_y', no_grid_message=True):
 
-        if tag_data in list(dict_info.keys()):
-            data_values = dict_info[tag_data]
-        else:
-            log_stream.error(' ===> Tag "' + tag_data + '" is not available. Values are not found')
-            raise IOError('Check your static datasets')
-        if tag_geo_x in list(dict_info.keys()):
-            data_geo_x = dict_info[tag_geo_x]
-        else:
-            log_stream.error(' ===> Tag "' + tag_geo_x + '" is not available. Values are not found')
-            raise IOError('Check your static datasets')
-        if tag_geo_y in list(dict_info.keys()):
-            data_geo_y = dict_info[tag_geo_y]
-        else:
-            log_stream.error(' ===> Tag "' + tag_geo_y + '" is not available. Values are not found')
-            raise IOError('Check your static datasets')
+        if dict_info is not None:
 
-        data_attrs = deepcopy(dict_info)
-        [data_attrs.pop(key) for key in [tag_data, tag_geo_x, tag_geo_y]]
+            if tag_data in list(dict_info.keys()):
+                data_values = dict_info[tag_data]
+            else:
+                log_stream.error(' ===> Tag "' + tag_data + '" is not available. Values are not found')
+                raise IOError('Check your static datasets')
+            if tag_geo_x in list(dict_info.keys()):
+                data_geo_x = dict_info[tag_geo_x]
+            else:
+                log_stream.error(' ===> Tag "' + tag_geo_x + '" is not available. Values are not found')
+                raise IOError('Check your static datasets')
+            if tag_geo_y in list(dict_info.keys()):
+                data_geo_y = dict_info[tag_geo_y]
+            else:
+                log_stream.error(' ===> Tag "' + tag_geo_y + '" is not available. Values are not found')
+                raise IOError('Check your static datasets')
+
+            data_attrs = deepcopy(dict_info)
+            [data_attrs.pop(key) for key in [tag_data, tag_geo_x, tag_geo_y]]
+
+        else:
+            if no_grid_message:
+                log_stream.warning(' ===> Static datasets are not available. Values are set as NoneType.'
+                                   ' ALl information will be extracted from dynamic datasets')
+            data_values, data_geo_x, data_geo_y, data_attrs = None, None, None, None
 
         return data_values, data_geo_x, data_geo_y, data_attrs
     # -------------------------------------------------------------------------------------
@@ -571,7 +579,8 @@ class DriverDynamic:
 
                 if var_compute:
 
-                    var_geo_data = None
+                    no_grid_message, compare_message = True, True
+                    var_geo_data, var_geo_x, var_geo_y, var_geo_attrs = None, None, None, None
                     for var_time, var_file_path_in in zip(time_period, var_file_path_src):
 
                         log_stream.info(' -----> Time "' + var_time.strftime(time_format_algorithm) + '" ... ')
@@ -594,6 +603,10 @@ class DriverDynamic:
                                         self.set_geo_attributes(self.static_data_src[file_geo_reference])
                                     log_stream.info(' ------> Select geo reference for binary datasets ... DONE')
 
+                                if (var_geo_x is None) or (var_geo_y is None):
+                                    log_stream.error(' ===> Geo reference is not defined for binary file case')
+                                    raise IOError('Check your geo reference in the configuration file')
+
                                 var_da_src = read_data_binary(
                                     var_file_path_out, var_geo_x, var_geo_y, var_geo_attrs,
                                     var_scale_factor=var_scale_factor, var_time=var_time,
@@ -610,7 +623,9 @@ class DriverDynamic:
                                 if var_geo_data is None:
                                     log_stream.info(' ------> Select geo reference for netcdf datasets ... ')
                                     var_geo_data, var_geo_x, var_geo_y, var_geo_attrs = \
-                                        self.set_geo_attributes(self.static_data_src[file_geo_reference])
+                                        self.set_geo_attributes(self.static_data_src[file_geo_reference],
+                                                                no_grid_message=no_grid_message)
+
                                     log_stream.info(' ------> Select geo reference for netcdf datasets ... DONE')
 
                                 var_da_src = read_data_nc(
@@ -620,7 +635,9 @@ class DriverDynamic:
                                     coord_name_time=self.coord_name_time,
                                     dim_name_geo_x=self.dim_name_geo_x, dim_name_geo_y=self.dim_name_geo_y,
                                     dim_name_time=self.dim_name_time,
-                                    dims_order=self.dims_order_3d)
+                                    dims_order=self.dims_order_3d, compare_message=compare_message)
+
+                                no_grid_message, compare_message = False, False
 
                             elif file_type == 'tiff':
 
@@ -633,6 +650,14 @@ class DriverDynamic:
                                     dim_name_time=self.dim_name_time,
                                     dims_order=self.dims_order_3d,
                                     decimal_round_data=2, decimal_round_geo=7)
+
+                                '''
+                                var_values = var_da_src[:, :, 0].values
+                                plt.figure()
+                                plt.imshow(var_values)
+                                plt.colorbar()
+                                plt.show()
+                                '''
 
                             else:
                                 log_stream.info(' -----> Time "' + var_time.strftime(time_format_algorithm) + '" ... FAILED')
@@ -654,7 +679,6 @@ class DriverDynamic:
                                 if active_interp:
                                     var_da_dst = apply_var_interp(
                                         var_da_src, geo_da_dst,
-                                        var_name=var_name,
                                         dim_name_geo_x=self.dim_name_geo_x, dim_name_geo_y=self.dim_name_geo_y,
                                         coord_name_geo_x=self.coord_name_geo_x, coord_name_geo_y=self.coord_name_geo_y,
                                         interp_method=self.interp_method)
@@ -680,22 +704,21 @@ class DriverDynamic:
                                 else:
                                     var_da_masked = deepcopy(var_da_dst)
 
-                                #'''
+                                '''
                                 plt.figure(1)
-                                plt.imshow(var_da_dst.values[:, :, 0])
+                                plt.imshow(var_da_dst[:, :, 0].values)
                                 plt.colorbar()
                                 plt.figure(2)
-                                plt.imshow(var_da_src.values[:, :, 0])
+                                plt.imshow(var_da_src[:, :, 0].values)
                                 plt.colorbar()
                                 plt.figure(3)
-                                plt.imshow(var_da_masked.values[:, :, 0])
+                                plt.imshow(var_da_masked[:, :, 0].values)
                                 plt.colorbar()
-                                plt.show()
                                 plt.figure(4)
                                 plt.imshow(geo_da_dst.values)
                                 plt.colorbar()
                                 plt.show()
-                                #'''
+                                '''
 
                                 # Organize data in a common datasets
                                 if self.dim_name_time in list(var_da_masked.dims):

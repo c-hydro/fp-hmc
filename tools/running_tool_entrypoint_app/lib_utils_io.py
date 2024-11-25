@@ -47,20 +47,20 @@ def organize_configuration_file(script_args, tag_arg_template='template', tag_ar
 
 
 # -------------------------------------------------------------------------------------
-# Method to search configuration file in default location (if needed)
+# Method to search configuration file in constants location (if needed)
 def search_configuration_file(file_path_settings, file_location_default=None):
     if os.path.exists(file_path_settings):
         file_path_select = deepcopy(file_path_settings)
     else:
         if file_location_default:
             log_stream.warning(' ===> Configuration file "' + file_path_settings +
-                               '" does not exist. Try to use the default location "' + file_location_default + '"')
+                               '" does not exist. Try to use the constants location "' + file_location_default + '"')
             file_location_settings, file_name_settings = os.path.split(file_path_settings)
             file_path_select = os.path.join(file_location_default, file_name_settings)
         else:
             log_stream.error(' ===> Configuration file "' + file_path_settings +
-                             '" does not exist. The default location must be defined by a string path')
-            raise RuntimeError('The default location is defined by NoneType.')
+                             '" does not exist. The constants location must be defined by a string path')
+            raise RuntimeError('The constants location is defined by NoneType.')
 
     if not os.path.exists(file_path_select):
         log_stream.error(' ===> Configuration file "' + file_path_select + '" does not exist.')

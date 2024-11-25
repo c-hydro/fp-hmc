@@ -247,7 +247,7 @@ def organize_entrypoint_variable(
             obj_entrypoint_variable[tag_run_path_root] = os.environ.get('HOME')
         else:
             obj_entrypoint_variable[tag_run_path_root] = os.environ.get('HOME', run_path_root_default)
-            log_fx.warning(' ===> Variable "HOME" is not defined! Use a default value "' +
+            log_fx.warning(' ===> Variable "HOME" is not defined! Use a constants value "' +
                             str(run_path_root_default) + '"')
     else:
         obj_entrypoint_variable[tag_run_path_root] = var_workspace_local[tag_run_path_root]

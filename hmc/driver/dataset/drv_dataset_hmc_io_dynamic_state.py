@@ -66,7 +66,7 @@ class DSetManager(DSetManager_Outcome):
                                           dset_write_format=dset_write_format,
                                           file_compression_mode=file_compression_mode,
                                           file_compression_ext=file_compression_ext,
-                                          )
+                                          **kwargs)
         # -------------------------------------------------------------------------------------
 
     # -------------------------------------------------------------------------------------

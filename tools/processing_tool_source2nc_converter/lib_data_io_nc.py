@@ -141,7 +141,7 @@ def read_data_nc(file_name, geo_ref_x=None, geo_ref_y=None, geo_ref_attrs=None,
                  var_coords=None, var_scale_factor=1, var_name=None, var_time=None, var_no_data=-9999.0,
                  coord_name_time='time', coord_name_geo_x='Longitude', coord_name_geo_y='Latitude',
                  dim_name_time='time', dim_name_geo_x='west_east', dim_name_geo_y='south_north',
-                 dims_order=None, decimal_round=4):
+                 dims_order=None, decimal_round=4, compare_message=True):
 
     if var_coords is None:
         var_coords = {'x': 'Longitude', 'y': 'Latitude', 'time': 'time'}
@@ -230,7 +230,8 @@ def read_data_nc(file_name, geo_ref_x=None, geo_ref_y=None, geo_ref_attrs=None,
                 assert geo_check_end_x == geo_data_end_x, ' ===> Variable geo x end != Reference geo x end'
                 assert geo_check_end_y == geo_data_end_y, ' ===> Variable geo y end != Reference geo y end'
             else:
-                log_stream.warning(' ===> GeoX and GeoY variables have not compared with a reference GeoX and GeoY')
+                if compare_message:
+                    log_stream.warning(' ===> GeoX and GeoY variables have not compared with a reference GeoX and GeoY')
 
         else:
             log_stream.warning(' ===> Variable ' + var_name + ' not available in loaded datasets!')

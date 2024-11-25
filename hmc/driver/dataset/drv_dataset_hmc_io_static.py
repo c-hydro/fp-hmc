@@ -175,7 +175,7 @@ class DSetManager:
                     elif ((file_name is not None) and (not os.path.exists(file_name))) and (var_name == 'Cell_Area'):
 
                         log_stream.warning(' ===> Static datasets for variable ' +
-                                           var_name + ' not found. Datasets will be created using a default method.')
+                                           var_name + ' not found. Datasets will be created using a constants method.')
 
                         driver_hmc_composer = DSetComposer(file_name, file_info, None, time_dst_info=None)
                         obj_var = driver_hmc_composer.compute_data_static(var_name, self.dset_static_ref)
@@ -201,7 +201,7 @@ class DSetManager:
                                 if file_name is not None:
                                     log_stream.warning(
                                         ' ===> Static datasets for ascii point case will be initialized '
-                                        'using a default method.')
+                                        'using a constants method.')
                                     driver_hmc_reader = DSetReader(file_name, file_info, None, time_src_info=None)
                                     driver_hmc_reader.write_filename_undefined(file_name, var_name)
                                 else:

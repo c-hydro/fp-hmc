@@ -67,7 +67,7 @@ def read_data(file_name_list, var_name=None, var_time_start=None, var_time_end=N
 
             if file_handle.crs is None:
                 file_proj = proj_default_wkt
-                log_stream.warning(' ===> Projection of tiff ' + file_name_step + ' not defined. Use default settings.')
+                log_stream.warning(' ===> Projection of tiff ' + file_name_step + ' not defined. Use constants settings.')
             else:
                 file_proj = file_handle.crs.wkt
             file_geotrans = file_handle.transform

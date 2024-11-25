@@ -6,11 +6,11 @@ script_name='HMC Entrypoint - App'
 script_version='1.0.0'
 script_date='2022/10/14'
 
-# Argument(s) default definition(s)
+# Argument(s) constants definition(s)
 file_entrypoint_app_main_default='hmc_tool_running_entrypoint_app_main.py'
 file_entrypoint_app_configuration_default='hmc_tool_running_entrypoint_app_configuration_hmc_generic.json'
 
-# Virtualenv default definition(s)
+# Virtualenv constants definition(s)
 virtualenv_folder='/home/fabio/fp_system_conda/'
 virtualenv_name='fp_system_conda_hmc_libraries'
 

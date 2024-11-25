@@ -166,6 +166,10 @@ class DSetManager:
         self.column_sep = ';'
         self.list_sep = ':'
 
+        self.time_run = None
+        if 'time_run' in list(kwargs.keys()):
+            self.time_run = kwargs['time_run']
+
         self.attrs_selected = ['time_str_run', 'time_str_start', 'time_str_restart', 'time_run_length',
                                'time_format', 'time_units', 'time_calendar',
                                'time_observed_delta', 'time_forecast_delta', 'time_tc',
@@ -222,7 +226,7 @@ class DSetManager:
         for attr_key, attr_value in file_attrs.items():
             if attr_value is None:
                 log_stream.warning(' ===> Value of attribute "' +
-                                   attr_key + '" is None. Initialize with "' + no_attr + '" default value.')
+                                   attr_key + '" is None. Initialize with "' + no_attr + '" constants value.')
                 attr_value = no_attr
             file_attrs[attr_key] = attr_value
 
@@ -559,6 +563,15 @@ class DSetManager:
 
                     template_time_filled = dict.fromkeys(list(self.template_time.keys()), datestring_idx_step)
                     # template_time_filled = dict.fromkeys(list(self.template_time.keys()), etastring_idx_step)
+
+                    if self.time_run is not None:
+                        template_time_filled['dset_sub_path_run'] = self.time_run.to_pydatetime()
+                        template_time_filled['dset_datetime_run'] = self.time_run.to_pydatetime()
+                    else:
+                        log_stream.warning(' ===> Time run is not defined. Use the dynamic time as constants')
+                        template_time_filled['dset_sub_path_run'] = datetime_eta_step
+                        template_time_filled['dset_datetime_run'] = datetime_eta_step
+
                     template_time_filled['dset_datetime_summary'] = etastring_idx_step
                     template_time_filled['dset_sub_path_summary'] = etastring_idx_step
                     template_merge_filled = {**template_run_filled_step, **template_time_filled}

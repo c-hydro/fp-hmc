@@ -90,12 +90,17 @@ class ModelSource:
         self.list_sep = ':'
         self.sublist_sep = '_'
 
+        self.time_run = None
+        if 'time_run' in list(kwargs.keys()):
+            self.time_run = kwargs['time_run']
+
         self.reader_geo = DSetManager_Static(dset=self.dset_geo,
                                              template_static_ref=self.obj_template_dset_static_ref,
                                              template_run_ref=self.obj_template_run_ref,
                                              template_run_def=self.obj_template_run_def)
 
         self.reader_restart = DSetManager_Restart(
+            time_run=self.time_run,
             dset=self.dset_restart,
             terrain_values=self.reader_geo.dset_static_ref['values'],
             terrain_geo_x=self.reader_geo.dset_static_ref['longitude'],
@@ -112,6 +117,7 @@ class ModelSource:
         }
 
         self.reader_forcing = DSetManager_DynamicForcing(
+            time_run=self.time_run,
             dset=self.dset_forcing,
             terrain_values=self.reader_geo.dset_static_ref['values'],
             terrain_geo_x=self.reader_geo.dset_static_ref['longitude'],
@@ -128,6 +134,7 @@ class ModelSource:
         }
 
         self.reader_updating = DSetManager_DynamicUpdating(
+            time_run=self.time_run,
             dset=self.dset_updating,
             terrain_values=self.reader_geo.dset_static_ref['values'],
             terrain_geo_x=self.reader_geo.dset_static_ref['longitude'],
