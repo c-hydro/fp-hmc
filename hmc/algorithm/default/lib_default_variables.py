@@ -8,7 +8,7 @@ Version:       '3.0.0'
 """
 
 # -------------------------------------------------------------------------------------
-# Variables default information
+# Variables constants information
 variable_default_fields = {
     "Rain": {
         "var_file_name": "hmc.forcing-grid.{dset_datetime_forcing_obs}.nc.gz",

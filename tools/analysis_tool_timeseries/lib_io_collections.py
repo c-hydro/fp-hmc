@@ -72,7 +72,7 @@ def join_collections_ts(dframe_reference=None, dframe_other=None,
                 raise NotImplementedError('Case not implemented yet')
 
             if time_freq is None:
-                log_stream.warning(' ===> Time frequency is not initializes. Use default value')
+                log_stream.warning(' ===> Time frequency is not initializes. Use constants value')
                 time_freq = time_frequency
 
             if time_to < time_from:

@@ -27,7 +27,7 @@ log_stream = logging.getLogger(logger_name)
 # Debug
 import matplotlib.pylab as plt
 
-# Analysis variable default
+# Analysis variable constants
 variable_excluded_default = ['terrain', 'Terrain', 'mask', 'Mask']
 #######################################################################################
 

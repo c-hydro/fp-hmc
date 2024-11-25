@@ -72,7 +72,7 @@ def remove_zip_extension(file_name_zip, file_path_tmp=None, zip_extension_templa
         # Check zip extension format in selected mode
         zip_ext_str = check_zip_extension(zip_extension_template)
     else:
-        # Check zip extension format in default mode
+        # Check zip extension format in constants mode
         file_name_unzip, zip_extension_template = os.path.splitext(file_name_zip)
         # Check zip extension format
         zip_ext_str = check_zip_extension(zip_extension_template)

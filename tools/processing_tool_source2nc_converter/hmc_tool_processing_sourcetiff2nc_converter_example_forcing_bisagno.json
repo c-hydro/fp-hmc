@@ -1,0 +1,152 @@
+{
+  "algorithm": {
+    "general": {
+      "title": "TOOL SOURCE2NC CONVERTER",
+      "web-site": "",
+      "source": "Python library developed by CIMA Research Foundation",
+      "history": "1.1.0 [20211012]",
+      "project-info": "HMC - Hydrological Model Continuum",
+      "algorithm": "Source2NC converter postprocessing tool"
+    },
+    "ancillary": {},
+    "flags": {
+      "cleaning_dynamic_ancillary": true,
+      "cleaning_dynamic_data": true,
+      "cleaning_dynamic_tmp": true
+    },
+    "template": {
+      "source_file_datetime_generic": "%Y%m%d%H%M",
+      "source_folder_datetime_generic": "%Y/%m/%d/",
+      "source_file_datetime_evt": "%Y%m%d",
+      "source_folder_datetime_evt": "%Y/%m/",
+      "ancillary_file_datetime_generic": "%Y%m%d%H%M",
+      "ancillary_folder_datetime_generic": "%Y/%m/%d/",
+      "destination_file_datetime_generic": "%Y%m%d%H%M",
+      "destination_folder_datetime_generic": "%Y/%m/%d/"
+    }
+  },
+  "data": {
+    "static" : {
+      "source": {
+        "Terrain": {
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_static/LiguriaDomain/gridded/",
+          "file_name": "LiguriaDomain.dem.txt"
+        },
+        "Grid": {
+          "xll": 7.4877,
+          "yll": 43.7627,
+          "res": 0.015,
+          "nrows": 56,
+          "ncols": 187
+        }
+      },
+      "destination": {
+        "Terrain": {
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_static/BisagnoDomain/gridded/",
+          "file_name": "bisagno.dem.txt"
+        }
+      }
+    },
+    "dynamic": {
+      "source": {
+        "__comment__" : "file_type: binary, netcdf, tiff",
+        "Rain": {
+          "var_compute": false,
+          "var_name": "Rain",
+          "var_scale_factor": 1,
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_dynamic/LiguriaDomain/forcing/{source_folder_datetime_generic}",
+          "file_name": "Rain_{source_file_datetime_generic}.tif",
+          "file_compression": false,
+          "file_geo_reference": "Terrain",
+          "file_type": "tiff",
+          "file_coords": null,
+          "file_frequency": "H"
+        },
+        "AirTemperature": {
+          "var_compute": true,
+          "var_name": "AirTemperature",
+          "var_scale_factor": 1,
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_dynamic/LiguriaDomain/forcing/{source_folder_datetime_generic}",
+          "file_name": "Temperature_{source_file_datetime_generic}.tif",
+          "file_compression": false,
+          "file_geo_reference": "Terrain",
+          "file_type": "tiff",
+          "file_coords": null,
+          "file_frequency": "H"
+        },
+        "IncRadiation": {
+          "var_compute": true,
+          "var_name": "IncRadiation",
+          "var_scale_factor": 1,
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_dynamic/LiguriaDomain/forcing/{source_folder_datetime_generic}",
+          "file_name": "Radiation_{source_file_datetime_generic}.tif",
+          "file_compression": false,
+          "file_geo_reference": "Terrain",
+          "file_type": "tiff",
+          "file_coords": null,
+          "file_frequency": "H"
+        },
+        "RelHumidity": {
+          "var_compute": true,
+          "var_name": "RelHumidity",
+          "var_scale_factor": 1,
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_dynamic/LiguriaDomain/forcing/{source_folder_datetime_generic}",
+          "file_name": "RelUmid_{source_file_datetime_generic}.tif",
+          "file_compression": false,
+          "file_geo_reference": "Terrain",
+          "file_type": "tiff",
+          "file_coords": null,
+          "file_frequency": "H"
+        },
+        "Wind": {
+          "var_compute": true,
+          "var_name": "Wind",
+          "var_scale_factor": 1,
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_dynamic/LiguriaDomain/forcing/{source_folder_datetime_generic}",
+          "file_name": "Wind_{source_file_datetime_generic}.tif",
+          "file_compression": false,
+          "file_geo_reference": "Terrain",
+          "file_type": "tiff",
+          "file_coords": null,
+          "file_frequency": "H"
+        },
+        "AirPressure": {
+          "var_compute": false,
+          "var_name": "AirPressure",
+          "var_scale_factor": 1,
+          "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_dynamic/LiguriaDomain/forcing/{source_folder_datetime_generic}",
+          "file_name": "AirPressure_{source_file_datetime_generic}.tif",
+          "file_compression": false,
+          "file_geo_reference": "Terrain",
+          "file_type": "tiff",
+          "file_coords": null,
+          "file_frequency": "H"
+        }
+      },
+      "ancillary": {
+        "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_dynamic/BisagnoDomain/ancillary/{ancillary_folder_datetime_generic}",
+        "file_name": "hmc.forcing-grid.{ancillary_file_datetime_generic}.workspace"
+      },
+      "destination": {
+        "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_dynamic/BisagnoDomain/forcing/{destination_folder_datetime_generic}",
+        "file_name": "hmc.forcing-grid.{destination_file_datetime_generic}.nc",
+        "file_geo_reference": "Terrain",
+        "file_compression": true
+      }
+    }
+  },
+  "log": {
+    "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/dte_hydrology/log/",
+    "file_name": "hmc_preprocessing_source2nc_converter_bisagno.txt",
+    "file_history": true
+  },
+  "time": {
+    "time_run": null,
+    "time_period": 0,
+    "time_start": "2022-03-07 00:00",
+    "time_end": "2022-03-10 00:00",
+    "time_frequency": "H",
+    "time_rounding": "H"
+  }
+}
+

@@ -222,6 +222,10 @@ class DSetManager:
         self.column_sep = ';'
         self.list_sep = ':'
 
+        self.time_run = None
+        if 'time_run' in list(kwargs.keys()):
+            self.time_run = kwargs['time_run']
+
         self.template_analysis_def = template_analysis_def
         if self.template_analysis_def is not None:
 
@@ -1448,6 +1452,15 @@ class DSetManager:
                                         template_run_filled_step = {**template_run_filled_step, **template_merge_ref}
 
                                 template_time_filled = dict.fromkeys(list(self.template_time.keys()), datetime_eta_step)
+
+                                if self.time_run is not None:
+                                    template_time_filled['dset_sub_path_run'] = self.time_run
+                                    template_time_filled['dset_datetime_run'] = self.time_run
+                                else:
+                                    log_stream.warning(' ===> Time run is not defined. Use the dynamic time as constants')
+                                    template_time_filled['dset_sub_path_run'] = datetime_eta_step
+                                    template_time_filled['dset_datetime_run'] = datetime_eta_step
+
                                 template_merge_filled = {**template_run_filled_step, **template_time_filled}
 
                                 template_merge_ref = {**template_run_ref_step, **self.template_time}

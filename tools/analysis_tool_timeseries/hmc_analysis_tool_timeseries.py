@@ -98,7 +98,7 @@ file_name_ws = "hmc.collections.nwp_ecmwf0100.202110070700.workspace5"
 attrs_dset = {
     "time_reference": '2021-10-07 07:00',
     "ensemble_n": None,
-    "run_description": "lami-2i deterministic"
+    "run_description": "lami_old-2i deterministic"
 }
 
 attrs_vars = {
@@ -138,7 +138,7 @@ file_name_ws = "hmc.collections.nwp_ecmwf0100.202110070700.workspace5"
 attrs_dset = {
     "time_reference": '2021-10-07 07:00',
     "ensemble_n": None,
-    "run_description": "ecmwf deterministic"
+    "run_description": "ecmwf_OLD deterministic"
 }
 
 attrs_vars = {
@@ -178,7 +178,7 @@ file_name_ws = "hmc.collections.rfarm_lami2i.202110070700.workspace11"
 attrs_dset = {
     "time_reference": '2021-10-07 07:00',
     "ensemble_n": 30,
-    "run_description": "ecmwf probabilistic"
+    "run_description": "ecmwf_OLD probabilistic"
 }
 
 attrs_vars = {
@@ -219,7 +219,7 @@ file_name_ws = "hmc.collections.rfarm_ecmwf0100.202110070700.workspace11"
 attrs_dset = {
     "time_reference": '2021-10-07 07:00',
     "ensemble_n": 30,
-    "run_description": "ecmwf probabilistic"
+    "run_description": "ecmwf_OLD probabilistic"
 }
 
 attrs_vars = {

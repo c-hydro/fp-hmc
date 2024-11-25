@@ -81,6 +81,15 @@ class ModelArgs:
         self.obj_template_dset_outcome_ref = obj_template_ref[self.tag_template_dset_dynamic_outcome]
         self.obj_template_dset_obs_ref = obj_template_ref[self.tag_template_dset_dynamic_obs]
 
+        if 'dset_datetime_run' not in list(self.obj_template_time_ref.keys()):
+            log_stream.warning(' ===> Variable "dset_datetime_run" not defined in the time template.')
+            log_stream.warning(' ===> Variable "dset_datetime_run" is set to constants value ("%Y%m%d%H%M").')
+            self.obj_template_time_ref['dset_datetime_run'] = "%Y%m%d%H%M"
+        if 'dset_sub_path_run' not in list(self.obj_template_time_ref.keys()):
+            log_stream.warning(' ===> Variable "dset_sub_path_run" not defined in the time template.')
+            log_stream.warning(' ===> Variable "dset_sub_path_run" is set to constants value ("%Y/%m/%d/%H00").')
+            self.obj_template_time_ref['dset_sub_path_run'] = "%Y/%m/%d/%H00"
+
         obj_template_run_raw = {}
         for obj_key, obj_value in self.obj_template_run_ref.items():
             obj_tmp = get_dict_value(self.obj_algorithm, obj_key, [])

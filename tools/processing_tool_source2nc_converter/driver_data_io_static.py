@@ -37,12 +37,13 @@ class DriverStatic:
     # Initialize class
     def __init__(self, src_dict, dst_dict=None,
                  alg_ancillary=None, alg_template_tags=None,
-                 flag_file_data='file_obj', flag_grid_data='grid_obj',
+                 flag_file_data='file_obj', flag_grid_data='grid_obj', flag_na_data='na_obj',
                  flag_static_source='source', flag_static_destination='destination',
                  flag_cleaning_static=True):
 
         self.flag_file_data = flag_file_data
         self.flag_grid_data = flag_grid_data
+        self.flag_na_data = flag_na_data
 
         self.flag_static_source = flag_static_source
         self.flag_static_destination = flag_static_destination
@@ -63,43 +64,54 @@ class DriverStatic:
         self.obj_static_src = {}
         for src_key, src_fields in src_dict.items():
 
-            if all(key in list(src_fields.keys()) for key in self.file_obj_fields):
-                folder_name_src = src_fields[self.folder_name_tag]
-                file_name_src = src_fields[self.file_name_tag]
-                file_path_src = os.path.join(folder_name_src, file_name_src)
+            if src_fields is not None:
 
-                file_compression = False
-                if self.file_compression_tag in list(src_fields.keys()):
-                    file_compression = src_fields[self.file_compression_tag]
-                file_type = 'ascii'
-                if self.file_type_tag in list(src_fields.keys()):
-                    file_type = src_fields[self.file_type_tag]
-                file_var = None
-                if self.file_var_tag in list(src_fields.keys()):
-                    file_var = src_fields[self.file_var_tag]
-                file_coords = None
-                if self.file_coords_tag in list(src_fields.keys()):
-                    file_coords = src_fields[self.file_coords_tag]
+                if all(key in list(src_fields.keys()) for key in self.file_obj_fields):
+                    folder_name_src = src_fields[self.folder_name_tag]
+                    file_name_src = src_fields[self.file_name_tag]
+                    file_path_src = os.path.join(folder_name_src, file_name_src)
 
+                    file_compression = False
+                    if self.file_compression_tag in list(src_fields.keys()):
+                        file_compression = src_fields[self.file_compression_tag]
+                    file_type = 'ascii'
+                    if self.file_type_tag in list(src_fields.keys()):
+                        file_type = src_fields[self.file_type_tag]
+                    file_var = None
+                    if self.file_var_tag in list(src_fields.keys()):
+                        file_var = src_fields[self.file_var_tag]
+                    file_coords = None
+                    if self.file_coords_tag in list(src_fields.keys()):
+                        file_coords = src_fields[self.file_coords_tag]
+
+                    self.obj_static_src[src_key] = {}
+                    self.obj_static_src[src_key]['source'] = file_path_src
+                    self.obj_static_src[src_key]['obj'] = self.flag_file_data
+                    self.obj_static_src[src_key]['compression'] = file_compression
+                    self.obj_static_src[src_key]['type'] = file_type
+                    self.obj_static_src[src_key]['variable'] = file_var
+                    self.obj_static_src[src_key]['coords'] = file_coords
+
+                elif all(key in list(src_fields.keys()) for key in self.grid_obj_fields):
+                    self.obj_static_src[src_key] = {}
+                    self.obj_static_src[src_key]['source'] = src_fields
+                    self.obj_static_src[src_key]['obj'] = self.flag_grid_data
+                    self.obj_static_src[src_key]['compression'] = None
+                    self.obj_static_src[src_key]['type'] = None
+                    self.obj_static_src[src_key]['variable'] = None
+                    self.obj_static_src[src_key]['coords'] = None
+                else:
+                    log_stream.error(' ===> Static source key "' + src_key + '" is not in allowed format')
+                    raise NotImplementedError('Case not implemented yet')
+
+            else:
                 self.obj_static_src[src_key] = {}
-                self.obj_static_src[src_key]['source'] = file_path_src
-                self.obj_static_src[src_key]['obj'] = self.flag_file_data
-                self.obj_static_src[src_key]['compression'] = file_compression
-                self.obj_static_src[src_key]['type'] = file_type
-                self.obj_static_src[src_key]['variable'] = file_var
-                self.obj_static_src[src_key]['coords'] = file_coords
-
-            elif all(key in list(src_fields.keys()) for key in self.grid_obj_fields):
-                self.obj_static_src[src_key] = {}
-                self.obj_static_src[src_key]['source'] = src_fields
-                self.obj_static_src[src_key]['obj'] = self.flag_grid_data
+                self.obj_static_src[src_key]['source'] = None
+                self.obj_static_src[src_key]['obj'] = self.flag_na_data
                 self.obj_static_src[src_key]['compression'] = None
                 self.obj_static_src[src_key]['type'] = None
                 self.obj_static_src[src_key]['variable'] = None
                 self.obj_static_src[src_key]['coords'] = None
-            else:
-                log_stream.error(' ===> Static source key "' + src_key + '" is not in allowed format')
-                raise NotImplementedError('Case not implemented yet')
 
         self.obj_static_dst = {}
         for dst_key, dst_fields in dst_dict.items():
@@ -202,6 +214,8 @@ class DriverStatic:
         # Read static data source
         for obj_key, obj_collections in obj_static_src.items():
 
+            log_stream.info(' ----> Source obj "' + obj_key + '" ... ')
+
             obj_data, obj_compression, \
                 obj_format, obj_type, obj_variable, obj_coords = self.extract_var_fields(obj_collections)
 
@@ -224,7 +238,7 @@ class DriverStatic:
                     obj_dims = list(obj_coords.keys())[::-1]
                     obj_data_tmp = read_data_nc(obj_data_file_out, var_coords=obj_coords, dims_order=obj_dims,
                                                 dim_name_geo_x=obj_dims[1], dim_name_geo_y=obj_dims[0],
-                                                var_name=obj_variable)
+                                                var_name=obj_variable, compare_message=False)
 
                     obj_values, obj_geo_x, obj_geo_y, obj_geo_transform = parser_data_nc(obj_data_tmp)
                     obj_data_grid = extract_data_grid(obj_values, obj_geo_x, obj_geo_y, obj_geo_transform)
@@ -236,14 +250,22 @@ class DriverStatic:
             elif obj_format == self.flag_grid_data:
                 obj_data_fields = deepcopy(obj_data)
                 obj_data_grid = create_data_grid(obj_data_fields)
+
+            elif obj_format == self.flag_na_data:
+                log_stream.warning(' ===> Static source obj "' + obj_key + '" is not defined. Initialize with NoneType')
+                obj_data_grid = None
             else:
                 log_stream.error(' ===> Static source obj "' + str(obj_format) + '" is not allowed')
                 raise NotImplementedError('Case not implemented yet')
 
             data_collections[self.flag_static_source][obj_key] = obj_data_grid
 
+            log_stream.info(' ----> Source obj "' + obj_key + '" ... DONE')
+
         # Read static data destination
         for obj_key, obj_collections in obj_static_dst.items():
+
+            log_stream.info(' ----> Destination obj "' + obj_key + '" ... ')
 
             obj_data, obj_compression, \
                 obj_format, obj_type, obj_variable, obj_coords = self.extract_var_fields(obj_collections)
@@ -284,6 +306,8 @@ class DriverStatic:
                 raise NotImplementedError('Case not implemented yet')
 
             data_collections[self.flag_static_destination][obj_key] = obj_data_grid
+
+            log_stream.info(' ----> Destination obj "' + obj_key + '" ... DONE')
 
         # Info end
         log_stream.info(' ---> Organize static datasets ... DONE')

@@ -196,7 +196,7 @@ class DriverDynamic:
                 self.flag_cleaning_dynamic_data = True
                 self.file_check_destination = False
                 log_stream.warning(' ===> Cleaning ancillary datasets is active. '
-                                   'By default the cleaning of destination datasets will be activated.')
+                                   'By constants the cleaning of destination datasets will be activated.')
 
         # -------------------------------------------------------------------------------------
 
@@ -1237,10 +1237,10 @@ class DriverDynamic:
 
                         if file_compression_anc is not None:
                             log_stream.warning(
-                                ' ===> Compression flag is not available for ancillary datasets by default')
+                                ' ===> Compression flag is not available for ancillary datasets by constants')
                         if file_type_anc != 'pickle':
                             log_stream.error(
-                                ' ===> Only "pickle" format is supported for ancillary datasets by default ')
+                                ' ===> Only "pickle" format is supported for ancillary datasets by constants ')
                             raise NotImplementedError('Case not implemented yet')
 
                         for var_time, var_path_list_anc in file_path_collections_anc.items():

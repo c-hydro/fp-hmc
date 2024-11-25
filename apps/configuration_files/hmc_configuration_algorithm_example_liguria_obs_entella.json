@@ -98,9 +98,9 @@
         "file_name": null
       },
       "library": {
-        "file_folder": "/home/fabio/fp_libs_system/hmc/",
+        "file_folder": "/home/fabio/fp_system_apps/hmc/",
         "file_name": "HMC_Model_V3_$RUN.x",
-        "dependencies": ["/home/fabio/fp_libs_system/nc4/lib/"]
+        "dependencies": ["/home/fabio/fp_system_libs_hmc/nc4/"]
       },
       "log": {
         "file_folder": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/log/",

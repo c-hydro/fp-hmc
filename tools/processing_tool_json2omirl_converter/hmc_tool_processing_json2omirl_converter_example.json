@@ -1,0 +1,101 @@
+{
+  "algorithm" : {
+    "general": {
+      "title": "TOOL JSON2DEW CONVERTER",
+      "web-site": "",
+      "source": "Python library developed by CIMA Research Foundation",
+      "history": "1.0.0 [20240215]",
+      "project-info": "HMC - Hydrological Model Continuum",
+      "algorithm": "Json2Omirl converter postprocessing tool"
+    },
+    "flags": {
+      "cleaning_dynamic_source": false,
+      "cleaning_dynamic_destination": true
+    },
+    "ancillary": {
+      "source_domain_name": ["EntellaDomain", "MagraDomain"],
+      "destination_domain_name": ["LiguriaDomain", "LiguriaDomain"],
+      "source_run_name": "weather_stations_realtime",
+      "destination_run_name": "weather_stations_realtime",
+      "run_type": "deterministic",
+      "run_mode" :
+      {
+        "probabilistic" : {
+          "activate": false, "ensemble_start": 1, "ensemble_end": 1, "ensemble_step": 1, "ensemble_format": "{:03d}"},
+        "deterministic" : {
+          "activate": true}
+      }
+    },
+    "template": {
+      "source_domain_name": "string_domain_name_src",
+      "source_point_name": "string_point_name_src",
+      "source_basin_name": "string_basin_name_src",
+      "destination_domain_name": "string_domain_name_dst",
+      "destination_point_name": "string_point_name_dst",
+      "destination_basin_name": "string_basin_name_dst",
+      "source_run_name": "string_run_name_src",
+      "destination_run_name": "string_run_name_dst",
+      "source_ensemble_name": "string_ensemble_name_src",
+      "destination_ensemble_name": "string_ensemble_name_dst",
+      "source_datetime": "%Y%m%d%H00",
+      "source_sub_path_time": "%Y/%m/%d/%H",
+      "destination_datetime": "%Y%m%d%H00",
+      "destination_sub_path_time": "%Y/%m/%d/%H"
+    }
+  },
+  "data": {
+    "static": {
+      "point_data": {
+        "__comment__": "allowed point data types: ['section'] , not implemented ['dam'] ",
+        "file_name": "fp_sections_liguria.shp",
+        "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/data/data_static/LiguriaDomain/shapefile/",
+        "type": "section",
+        "variable": "discharge",
+        "fields_name": [
+          "DOMAIN", "DOMAIN_DES", "BASIN",
+          "SEC_CODE", "SEC_NAME","SEC_DES", "SEC_RS", "SEC_TAG",
+          "TYPE", "HMC_X", "HMC_Y", "LAT", "LON", "AREA",
+          "Q_THR1", "Q_THR2", "Q_THR3"],
+        "fields_type": [
+          "str", "str", "str",
+          "str", "str", "str", "str", "str",
+          "int", "int", "float", "float", "float",
+          "float", "float", "float"],
+        "fields_key": [
+          "point_domain_name", "point_domain_description", "point_catchment_name",
+          "point_code_ws", "point_section_name","point_catchment_description", "point_code_rs", "point_tag",
+          "point_type", "point_idx_x_hmc", "point_idx_y_hmc", "latitude", "longitude", "area",
+          "point_discharge_thr1", "point_discharge_thr2", "point_discharge_thr3"]
+      }
+    },
+    "dynamic": {
+      "source": {
+        "file_name": "hydrograph_{source_point_name}_{source_basin_name}_{source_datetime}.json",
+        "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/archive/{source_domain_name}/{source_run_name}/{source_sub_path_time}/outcome/collections/deterministic/",
+        "keys": {
+          "source_point_name": "point_section_name",
+          "source_basin_name": "point_catchment_name"
+        }
+      },
+      "destination": {
+        "file_name": "hydrograph_{destination_point_name}_{destination_datetime}.json",
+        "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/archive/{destination_domain_name}/{destination_run_name}/{destination_sub_path_time}/time_series/",
+        "keys" : {
+          "destination_point_name": "point_code_ws",
+          "destination_basin_name": null
+        }
+      }
+    }
+  },
+  "log": {
+    "folder_name": "/home/fabio/Desktop/PyCharm_Workspace/hmc-ws/opchain_liguria/log/json2omirl_converter/",
+    "file_name": "hmc_postprocessing_json2omirl_converter.txt",
+    "file_history": true
+  },
+  "time": {
+    "time_run": "2022-03-22 12:43",
+    "time_period": 2,
+    "time_frequency": "H",
+    "time_rounding": "H"
+  }
+}
