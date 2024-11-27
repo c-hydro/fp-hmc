@@ -17,6 +17,7 @@ python3 HMC_calibration -settings_file "hmc_tools_multimodel_merger.py" -time "H
 # -------------------------------------------------------------------------------------
 import xarray as xr
 import glob
+import sys
 import os
 from argparse import ArgumentParser
 import logging

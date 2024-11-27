@@ -3,8 +3,8 @@ Class Features
 
 Name:          drv_configuration_hmc_namelist
 Author(s):     Fabio Delogu (fabio.delogu@cimafoundation.org)
-Date:          '20200401'
-Version:       '3.0.0'
+Date:          '20241126'
+Version:       '4.0.0'
 """
 
 #######################################################################################
@@ -163,13 +163,14 @@ class ModelNamelist:
                         else:
                             value_raw = get_dict_nested_value(obj_tmp, link_tags)
 
-                        if isinstance(value_raw, str):
+                        if value_raw is None:
+                            continue
+                        elif isinstance(value_raw, str):
                             template_merge_ref = {**template_run_ref, **template_time_ref}
                             value_filled = fill_tags2string(value_raw, template_merge_ref, template_run_data)
                             value_tmp = convert_template_date(value_filled)
                         else:
                             value_tmp = value_raw
-
                         structure_namelist_tmp[link_root][link_key] = value_tmp
 
                     elif link_dict is None:
