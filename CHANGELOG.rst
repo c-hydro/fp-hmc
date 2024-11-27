@@ -6,7 +6,8 @@ Version 3.2.0 (20241125)
 - Codes and package based on HMC Fortran codes version 3.2.0;
 - Add the possibility to modify all the keys of the info file in the configuration algorithm file;
 - Add the tool for merging collections from different deterministic modelling chains;
-- Add the tool for merging multiple deterministic runs
+- Add the tool for merging multiple deterministic runs;
+- Fix the management of the standard values of the parameters in the configuration file
 
 Version 3.1.6 (20241113)
 ========================

@@ -24,10 +24,10 @@ link_namelist_default = dict(
         'dWTableHbr': {'algorithm': ['HMC_Info', 'hmc_parameters', 'wtable_hbr']},
         'dKSatRatio': {'algorithm': ['HMC_Info', 'hmc_parameters', 'ksat_ratio']},
         'dSlopeMax': {'algorithm': ['HMC_Info', 'hmc_parameters', 'slope_max']},
-        'dSoil_ksat_infilt': {['HMC_Info', 'hmc_parameters', 'soil_ksat_infilt']},
-        'dSoil_ksat_drain': {['HMC_Info', 'hmc_parameters', 'soil_ksat_drain']},
-        'dSoil_vmax': {['HMC_Info', 'hmc_parameters', 'soil_vmax']},
-        'dWtable_ksath': {['HMC_Info', 'hmc_parameters', 'wtable_ksath']},
+        'dSoil_ksat_infilt': {'algorithm': ['HMC_Info', 'hmc_parameters', 'soil_ksat_infilt']},
+        'dSoil_ksat_drain': {'algorithm': ['HMC_Info', 'hmc_parameters', 'soil_ksat_drain']},
+        'dSoil_vmax': {'algorithm': ['HMC_Info', 'hmc_parameters', 'soil_vmax']},
+        'dWtable_ksath': {'algorithm': ['HMC_Info', 'hmc_parameters', 'wtable_ksath']},
         'sDomainName': {'algorithm': ['Run_Info', 'run_type', 'run_domain']},
     },
 
@@ -69,7 +69,7 @@ link_namelist_default = dict(
         'iFlagEnergyBalance': {'algorithm': ['HMC_Info', 'hmc_flags', 'flag_phys_energy_balance']},
         'iFlagSoilParamsType': {'algorithm': ['HMC_Info', 'hmc_flags', 'flag_phys_soil_parameters_type']},
         'iFlagInfiltRateVariable': {'algorithm': ['HMC_Info', 'hmc_flags', 'flag_phys_infiltration_rate_type']},
-        'iFlagETReductionType': {'algorithm': ['HMC_Info', 'hmc_flags', 'flag_phys_et_reduction_model']},
+        'iFlagBetaET': {'algorithm': ['HMC_Info', 'hmc_flags', 'flag_phys_et_reduction_model']},
 
         'a1dGeoForcing': {'algorithm': ['HMC_Info', 'hmc_geo', 'geo_llcoordinates']},
         'a1dResForcing': {'algorithm': ['HMC_Info', 'hmc_geo', 'geo_cellsize']},
@@ -252,7 +252,7 @@ structure_namelist_default = dict(
         'iFlagEnergyBalance': 1,
         'iFlagSoilParamsType': 1,
         'iFlagInfiltRateVariable': 2,
-        'iFlagETReductionType': 1,
+        'iFlagBetaET': 1,
 
         'a1dGeoForcing': [-9999.0, -9999.0],
         'a1dResForcing': [-9999.0, -9999.0],
