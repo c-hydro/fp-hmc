@@ -211,7 +211,7 @@ structure_namelist_default = dict(
         'dSoil_ksat_drain': 3.5,
         'dSoil_vmax': 500,
         'dWtable_ksath': 1,
-        'sDomainName': "constants",
+        'sDomainName': "constants"
     },
 
     HMC_Namelist={
