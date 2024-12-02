@@ -34,7 +34,7 @@ def read_data_shapefile_section(file_name, columns_name_expected=None, columns_n
         columns_name_expected = ['HMC_X', 'HMC_Y', 'BASIN', 'SEC_NAME', 'SEC_RS', 'AREA',
                                  'Q_THR1', 'Q_THR2', 'Q_THR3', 'DOMAIN', 'BASEFLOW']
     if columns_name_type is None:
-        columns_name_type = ['int', 'int', 'str', 'str', 'int', 'float', 'float',
+        columns_name_type = ['int', 'int', 'str', 'str', 'str', 'float', 'float',
                              'float', 'float', 'str', 'float']
 
     if columns_name_defined is None:
