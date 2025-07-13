@@ -3,14 +3,15 @@
 """
 HMC tools - Merge multimodel results
 
-__date__ = '20231027'
-__version__ = '1.0.1'
+__date__ = '20250713'
+__version__ = '1.1.0'
 __author__ = 'Andrea Libertino (andrea.libertino@cimafoundation.org')
 __library__ = 'HMC'
 
 General command line:
 python3 HMC_calibration -settings_file "hmc_tools_multimodel_merger.py" -time "HHHH-MM-DD HH:MM"
 
+20250713 (1.1.0) -->    Fix issue with missing series
 20230919 (1.0.1) -->    Add support possibility of providing domain as input argument
 20230919 (1.0.0) -->    Beta release
 """
@@ -32,8 +33,8 @@ import numpy as np
 
 # Algorithm information
 alg_name = 'HMC tools - Merge multimodel results'
-alg_version = '1.0.1'
-alg_release = '2023-10-27'
+alg_version = '1.1.0'
+alg_release = '2025-07-13'
 # Algorithm parameter(s)
 time_format = '%Y%m%d%H%M'
 # -------------------------------------------------------------------------------------
@@ -121,7 +122,7 @@ def main():
                         results[section][model] = series
             else:
                 if section in results.keys():
-                    results[section] = pd.DataFrame(index=results[section].index, columns=[model], data=-9999)
+                    results[section][model] = pd.DataFrame(index=results[section].index, columns=[model], data=-9999)
 
     for section in results.keys():
         for model in data_settings["data"]["dynamic"]["model_output"].keys():
